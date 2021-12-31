@@ -46,7 +46,7 @@
 	linkcolor=black,
 	urlcolor=black
 }
-\graphicspath{{./images/}{./results/}}
+\graphicspath{{./images/}{./lstmResults/}{./cnnResults/}}
 \newcommand{\numBytesOffChip}{\mathbb{B}}
 \newcommand{\numOverlap}{\delta}
 \newcommand{\busWidth}{BW}
@@ -116,48 +116,42 @@
 \end{comment}
 \section{Introduction}
 
-\subsection{Why Off-Chip Memory Access Optimization}
-\subsubsection{Impact on performance}
+\subsection{Impact of off-chip memory access}
+\subsubsection{Performance}
 DNN accelerators have large number of processing elements (PEs) to exploit the parallelism of DNNs. While these PEs can perform several operations per cycle, their performance is limited by off-chip memory bandwidth. In the near forseeable future, off-chip memory accesses limits the system performance~\cite{williams2009roofline}. Fig.~\ref{fig:roofline} shows, two kernels with different compute intensity (FLOPS/byte), possibly due to different data reuse techniques. Kernel 2 can perform more computations per byte, compared to Kernel 1. Performance of Kernel 2 is limited by computational roof and it utilizes the compute resources fully (compute bound), while Kernel 1's performance is limited by memory bandwidth (memory bound).
 \begin{figure}[!htb]
 	\centering
-	\includegraphics[width=0.6\linewidth]{./images/roofline}
+	\includegraphics[width=0.5\linewidth]{./images/roofline}
 	\caption{roofline model}
 	\label{fig:roofline}
 \end{figure}
 Memory bound kernels results in under-utilization of compute resources, which results in degraded performance and energy consumption. To improve the DNN accelerators' performance, maximizing the data reuse from on-chip memories is essential.
-\subsubsection{Impact on Energy Consumption}
+\subsubsection{Energy efficiency}
 The energy of DNN accelerators is the sum of computations and data accesses energy. 
 \begin{equation}
 	E=E_{comp} + E_{data}
 \end{equation}
-$E_{comp}$ for a DNN layer depends on the number of operations in the layer, which is fixed as it depends on layer shape e.g. number of activations, filters, and filter sizes. However $E_{data}$ can be optimized using data reuse techniques. Operations of CNN involve three kinds of data and $E_{data}$ is the sum of energies for accessing all three data types.
-\begin{align}
-	E_{data}&=E_{ifm}+E_{ofm}+E_{wts} \\
-	E_{i}&=V_{i}*R_{i}*DW
-\end{align}
-where $i\in \{ifm,ofm,wts\}$ and $DW$ is the data width. A typical DNN accelerator system has multiple levels of memory hierarchy. Each level of memory has different size, energy and access time. The off-chip memory (DDR) has the largest size, and highest energy and access cost compared to other levels of memories in hierarchy.  
+$E_{comp}$ for a DNN layer depends on the number of operations in the layer, which is fixed as it depends on layer shape e.g. number of activations, filters, and filter sizes. However $E_{data}$ can be optimized using data reuse techniques. Typically DNN accelerator system has multiple levels of memory hierarchy. Memory at each level has different size, access-energy and access-time. The off-chip memory (DDR), at the top of the hierarchy, has the largest size, and highest access-energy and access-time compared to memories at lower level of hierarchy.  The off-chip memory access energy is upto two orders higher compared to on-chip memory access energy. 
 
-The off-chip memory access energy is upto two orders higher compared to on-chip memory access energy. Figure~\ref{fig:dataAccessEnergy} illustrates the impact of data reuse from on-chip memories. 
+Reducing the off-chip memory accesses is the key to reduce the energy consumption of DNN accelerators. State of the art DNN accelerators aim to maximize the data reuse from on-chip memory to reduce the off-chip memory accesses. Figure~\ref{fig:dataAccessEnergy} illustrates the impact of data reuse on the energy efficiency of a system with 2 levels of memory (DDR and L1). The energy efficiency can be expressed as below,
 \begin{figure}[!htb]
 	\centering
 	\subfloat[no reuse]
-	{\includegraphics[width=0.4\textwidth]{energyDDR_noreuse.pdf}
+	{\includegraphics[width=0.3\textwidth]{energyDDR_noreuse.pdf}
 		\label{fig:energyNoReuse}}
 	\hfil
 	\subfloat[reuse ($\times{n}$) from on-chip memory L1]
-	{\includegraphics[width=.4\textwidth]{energy_reuse.pdf}
+	{\includegraphics[width=.3\textwidth]{energy_reuse.pdf}
 		\label{fig:energy_reuse}}
 	\caption{data access energy $E_{data}$ with and without reuse.}
 	\label{fig:dataAccessEnergy}
 	\vspace{-1.0em}	
 \end{figure}
-The energy efficiency of an accelerator system with 2 levels of memory (DDR and L1) can be computed as below,
 \begin{align*}
 	\text{energy-efficiency} &= (1-\frac{E^2_{data}}{E^1_{data}})\times{100}\\
 	&= (1-(\frac{1}{n}+\frac{e_{L1}}{e_{ddr}}))\times{100}
 \end{align*}
-As, $e_{L1} << e_{DDR}$, the ratio $\frac{e_{L1}}{e_{ddr}}$ is very small and the energy efficiency depends on number of reuses ($n$) from on-chip memory $L1$. It improves considerably with increasing the number of data reuse ($n$). 
+As, $e_{L1} << e_{DDR}$, the ratio $\frac{e_{L1}}{e_{ddr}}$ is very small, the energy efficiency depends on number of reuses ($n$) from on-chip memory $L1$. It improves considerably with increasing the number of data reuse ($n$). 
 
 In this work, we focus on the key issue to improve the performance and energy efficiency of DNN accelerators by reducing the off-chip memory accesses and maximizing the data reuse from on-chip memories.
 
@@ -171,7 +165,7 @@ It is arduous to create a generic framework for large variety of DNNs and accele
 \end{enumerate}
 \begin{figure}[ht]
 	\centering
-	\includegraphics[width=\linewidth]{./images/blockDiagram}
+	\includegraphics[width=0.7\linewidth]{./images/blockDiagram}
 	\caption{Mapping DNN on coarse grain parallel architectures}
 	\label{fig:introduction}
 \end{figure}
@@ -192,6 +186,7 @@ We compare our approaches and show that our work significantly improves the perf
 	\caption{Energy efficiency optimization approaches}
 	\label{fig:dataEnergyRelatedWork}
 \end{figure}
+
 Some approaches~\cite{lee2016fpga, rybalkin2018finn, ferreira2016fpga} used on-chip memory to store all the weights. Sizes of weights in recent multi-layer LSTM models can be several MB's, and using large on-chip memory is expensive. These approaches are not scalable and effective only for small LSTM models. The proposed approach is independent of model size and effective for large LSTM models.
 
 Several approaches used the fact that neural networks are error-tolerant and have lots of redundancy. They used the quantization and pruning techniques to compress the models' size. Approaches~\cite{ferreira2016fpga,wang2018c} used 18-bit, Chang et al.~\cite{chang2015recurrent} used 16-bit, Han et al.~\cite{han2017ese} used 12-bits precision for storing the inputs and weights, Lee et al.~\cite{lee2016fpga} used 8-bit inputs and 6-bits for weights to reduce the model size. The proposed approach is orthogonal to the quantization techniques and can be integrated with different quantization techniques to reduce the memory accesses further. 
@@ -202,11 +197,18 @@ The other line of works reduced the memory accesses without compromising the acc
 
 Park et al.(~\cite{park2020time}) proposed a time step interleaved weight reuse scheme (TSI-WR) which reuses the weights of $R$ matrix between two adjacent time steps by performing computations in a time-interleaved manner. Their approach logically partitions the $R$ matrix into blocks. A block is accessed from off-chip memory to compute the two consecutive hidden state vectors partially. However, their approach do not fully exploit the data reuse, and several weights are accessed repeatedly from the off-chip memory. In addition, the data reuse in TSI-WR approach depends on the on-chip storage size which limits the benefits of their approach.
 
-\section{The Mapping Framework}
+\section{Off-Chip Memory Access Optimizations for CNN}
 The mapping framework optimizes the performance of feed-forward and recurrent neural networks. Each of these networks has specific challenges that are addressed differently. 
-\subsection{Off-chip Memory Access Estimation Model}\label{sec:OffChipAccessModel}
-DNNs have large amount of parallel operations. However due to large volume of data required for performing the parallel operations, the DNN acclerators' performance are limited by memory bandwidth. In addition, the DNN accelerators have limited on-chip memory, which constrains the data size that can be stored in on-chip memory. The off-chip memory accesses of a layer depends significantly on the tile dimensions~\cite{zhang2015optimizing, Li2018SmartShuttleOO}. Determining optimal tile dimensions requires analyzing off-chip memory accesses for different tile dimensions. Memory accesses also depend on the data bit width and architectural parameters of the accelerator like bus width. 
+\subsection{Introduction}
+CNNs have large number operations in each layer which can be speed up by exploiting the parallel compute capabilities of the CNN accelerators. However, CNN accelerators' performance are limited by memory bandwidth. In addition, the DNN accelerators have limited on-chip memory, which constrains the data size that can be stored in on-chip memory and limits the data reuse from on-chip memory. This results in increase in off-chip memory accesses. 
 
+The off-chip memory accesses of a layer depends significantly on the tile dimensions~\cite{zhang2015optimizing, Li2018SmartShuttleOO}. Determining optimal tile dimensions requires analyzing off-chip memory accesses for different tile dimensions. Memory accesses also depend on the data bit width and architectural parameters of the accelerator like bus width. Towards this end, we have proposed an approach to compute the off-chip memory accesses accurately and used it to determine the optimal tile dimensions and data reuse scheme for CNN layers.
+\subsection{Related Work}
+To meet the computation and energy demands of CNNs, researchers have proposed efficient accelerators~\cite{gokhale2014240,8742284,alwani2016fused, Chen2016EyerissAS}. CNN accelerators apply loop tiling to partition the layer data to fit into on-chip memory. Loop tiling is a compiler  technique~\cite{aho2006compilers} that partitions the loop iteration space and large arrays into smaller tiles to increase the data locality and ensures that data fits into smaller memories. 
+
+Zhang et al.~\cite{zhang2015optimizing} and Li et al.~\cite{Li2018SmartShuttleOO} used loop tiling to optimize the off-chip memory accesses. These approaches expressed off-chip memory access as a function of tile dimensions and layer shape. Zhang et al.~\cite{zhang2015optimizing} determined optimal tile dimensions by enumerating all the legal tile dimensions. To reduce the hardware design complexity, they determined a global optimal tile dimension and used a common data reuse scheme for all the layers. Li et al.~\cite{Li2018SmartShuttleOO} proposed a layer-wise adaptive data partitioning and scheduling scheme. However, previous approaches ignored the architectural parameters and address alignment, and assumed all tiles of the same dimensions have the same off-chip memory accesses. With this assumption, the tile dimensions determined by previous apporaches lead to a suboptimal solution.
+
+\subsection{Bus Width Aware Off-chip Memory Access Estimation}\label{sec:OffChipAccessModel}
 The CNN accelerators use a wide data bus to access off-chip memory to meet the high memory bandwidth requirement~\cite{Chen2016EyerissAS,chen2014diannao}. If the number of bytes accessed from an off-chip memory address is not a multiple of bus width or the address is not aligned to the word boundary, it results in unused bytes lanes of the data bus. Figure~\ref{fig:AXI_AccesseOn64BitDataBus} shows examples of memory accesses on a 64-bit data bus.  Fig.~\ref{fig:AXI_AccesseOn64BitDataBus}a shows a read transaction of 8 bytes from an aligned address and uses the full bus width. However, if only 5 bytes are read from an aligned address, as shown in \figurename~\ref{fig:AXI_AccesseOn64BitDataBus}b, 8 bytes are still accessed. If 5 bytes are read from an unaligned address, it results in 16 bytes of data access, as shown in Fig.~\ref{fig:AXI_AccesseOn64BitDataBus}d. The unused byte lanes do not carry any useful data, but they contribute to overall energy consumption. The length of the data read should be chosen such that bus utilization is high, and off-chip memory accesses and energy consumption are minimized.
 \begin{figure}[!htb]
 	\centering
@@ -217,8 +219,6 @@ The CNN accelerators use a wide data bus to access off-chip memory to meet the h
 To estimate the performance and energy efficiency, we have developed an offline model that estimates the off-chip memory accesses while taking into account the data alignment and memory bus width.
 
 \subsection{Optimal data partitioning for CNNs}
-Due to limited on-chip memory and large layer data sizes, the CNN accelerators apply loop tiling to partition the layer data. Loop tiling is a compiler  technique~\cite{aho2006compilers} that partitions the loop iteration space and large arrays into smaller tiles to increase the data locality and ensures that data fits into smaller memories. 
-
 Fig.~\ref{fig:partitioningDataUsingTiling} shows a CL data stored in off-chip memory and its tiles in the accelerator's on-chip buffer.
 \begin{figure}[!htb]
 	\centering
@@ -227,7 +227,7 @@ Fig.~\ref{fig:partitioningDataUsingTiling} shows a CL data stored in off-chip me
 	\label{fig:partitioningDataUsingTiling}
 	\vspace{-1.0em}
 \end{figure}
-For a given data reuse scheme, all the tiles of a 3D data make the same number of trips from off-chip memory. The off-chip memory access of 3D data can be computed as following
+The off-chip memory access of 3D data can be computed as following
 \begin{align}\label{eq:BasicOffChip3DDataAccess}
 	\numBytesOffChip_{3D}{=}r{\times} \sum_{t=1}^{N_{tiles}}{\numBytesOffChip_{t}}
 \end{align}
@@ -235,13 +235,38 @@ where $N_{tiles}$ is the number of tiles. $r$ and $\numBytesOffChip_{t}$ are the
 
 Tiles of \textit{ifm, ofm} and \textit{wts} reside in on-chip memory.If the on-chip memory buffer size is $\BuffSize$, and $V_{ifm}, V_{ofm}, \text{and }V_{wts}$ are the size of \textit{ifm, ofm}, and \textit{wts} tiles, respectively, then constraints on tile dimensions are
 \begin{align}\label{eq:onChipConstraint}
-		(V_{ifm}{+}V_{wts}{+}V_{ofm})\leq \BuffSize 
+		(V_{ifm}{+}V_{wts}{+}V_{ofm})\cdot{DW}\leq \BuffSize 
 \end{align}
-Determining the tile dimensions which minimize the off-chip memory accesses, is a constraint optimization problem. The  number of bytes accessed from off-chip memory and the constraints \eqref{eq:onChipConstraint} are non-linear functions of four variables and thus solving it is non-trivial.
+Determining the tile dimensions which minimize the off-chip memory accesses, is a constraint optimization problem. The  number of bytes accessed from off-chip memory and the constraints \eqref{eq:onChipConstraint} are non-linear functions of tile dimensions and solving it is non-trivial.
 
-The optimal tile dimensions can be determined by computing the number of bytes accessed from off-chip memory ($\numBytesOffChip$) at all the feasible points in the solution space using section~\ref{sec:OffChipAccessModel}. Our approach determines the optimal tile dimensions for each layer for different data reuse schemes and it can be configured for different on-chip memory sizes, bus widths, and data bit width. 
-
-\section{Data Reuse for Recurrent Neural Network}
+We propose an approach to determine the optimal tile dimensions by computing the number of bytes accessed from off-chip memory ($\numBytesOffChip$) at all the feasible points using section~\ref{sec:OffChipAccessModel}. Our approach determines the optimal tile dimensions for each layer for different data reuse schemes and it can be configured for different on-chip memory sizes, bus widths, and data bit width. 
+\subsection{Results}
+We experimented with three popular CNN networks, AlexNet~\cite{krizhevsky2012imagenet}, VGG16~\cite{simonyan2014very}, and ResNet~\cite{he2016deep} having 8, 16, and 50 layers, respectively, with varying layer shapes and using filters of dimensions $1{\times}1$, $3{\times}3$, $5{\times}5$, $7{\times}7$, and $11{\times}11$. To compare the results with other approaches, we have used the on-chip buffer size of 108 KB, batch size of 3 for VGG16, and 4 for ResNet and AlexNet. Figure~\ref{fig:EffectOnLatency} shows the comparison of the proposed approach with SmartShuttle (SS)~\cite{Li2018SmartShuttleOO} for VGG16. The SS approach determines the tile dimensions and data reuse scheme adaptively for each layer to minimize the data size (volume) accessed from off-chip memory. 
+\begin{figure}[!htb]
+	\centering
+	\subfloat[VGG16: Energy and latency efficiency]
+	{\includegraphics[width=0.3\textwidth]{energy_VGG16_DW8_BW64.pdf}
+		\label{fig:VGG16EnergyEfficiency}}
+	\hfil
+	\subfloat[$\numBytesOffChip_{VGG16}$: Varying on-chip buffer sizes]
+	{\includegraphics[width=0.3\textwidth]{VGG16_mem0_batch3_bw8_dW8_AD0.pdf}
+		\label{fig:VGG16OnChipMemoryEffect}}
+	\hfil
+	\subfloat[VGG16: Fully connected layers]
+	{\includegraphics[width=0.3\textwidth]{VGG16_mem108_batch3_bw0_dW0_AD0_FC.pdf}
+		\label{fig:VGG16FCLayer}}
+	\hfil
+	\caption{Latency and off-chip memory access. BWA: Bus Width Aware, SS:SmartShuttle}
+	\label{fig:EffectOnLatency}
+	\vspace{-1.0em}
+\end{figure}
+\subsubsection{Latency And Energy Analysis}
+\figurename{~\ref{fig:VGG16EnergyEfficiency}} show the energy, off-chip memory accesses, and latency efficiency achieved using the BWA compared to the SS approach for VGG16 for 8 bits data width and 64 bits bus width. Using our FPGA implementation, we measured the memory access latencies and execution time for CLs to estimate the energy efficiency of the BWA approach compared to the SS approach. We observed that the changes in energy and latency are proportional to the changes in memory access. This observation confirms that off-chip memory access dominates the energy consumption of the CNN accelerators.
+\subsubsection{On-chip Memory Size}
+The size of the on-chip memory constrains the tile dimensions. Larger on-chip memory can accommodate bigger tiles which reduces the trips and number of off-chip memory access transactions. \figurename{~\ref{fig:VGG16OnChipMemoryEffect}} shows off-chip memory access for VGG16. Off-chip memory access reduces with increasing on-chip memory size for both approaches. However, the BWA approach performs better than SS for all the on-chip memory sizes.
+\subsubsection{Impact of Bus Width on $\numBytesOffChip$ of FCLs}
+In FCLs, the height and width of tiles and data are the same. Tiles in FCL can be accessed from off-chip memory using a single transaction which results in fewer transactions in FCLs compared to CLs. Whereas in CLs, multiple transactions are required to access different rows of the tiles. Thus the impact of bus width is less on $\numBytesOffChip$ of FCLs as compared to CLs. \figurename~\ref{fig:VGG16FCLayer} shows the off-chip memory accesses of FCLs of VGG16 for 8 bits data width. BWA reduces $\numBytesOffChip_{VGG16}^{FC}$ by 1\%, 2\%, 3\%, and 4\% on 32, 64, 128, and 256 bits wide buses, respectively. 
+\section{Optimizing data reuse of RNNs}
 \subsection{Introduction}
 Many applications involve sequential data processing and time-series predictions, e.g., natural language processing, speech recognition, video activity recognition, sentiment classification. Processing sequential data requires remembering the contextual information from previous data. Recurrent neural networks (RNNs) are deep learning algorithms specialized in handling such problems by maintaining an internal state based on previously seen data. LSTMs \cite{hochreiter1997long} are variants of RNNs designed to handle long-range dependencies by storing useful information about previous inputs for a long duration. 
 
@@ -262,10 +287,6 @@ where $x_t$ is the input, $h_t$ is the hidden state, and $c_t$ is the cell state
 At every time step, $x_t$ is taken as input, and cell state ($c_t$) and hidden state ($h_t$) are computed using~\eqref{eq:lstmEqs}. The dependency of $h_t$ on $h_{t-1}$ and $c_{t-1}$ prevents the parallel processing of multiple time steps and limits the data reuse. 
 
 Figure{~\ref{fig:introToApproach}} shows the LSTM cell computations for two consecutive time steps using  conventional and the proposed approach. To compute the hidden state vector $h_t$, conventional approaches accesses $R$ matrix at each time step $t$, as shown in Fig.{~\ref{fig:introA}}. Accessing the weights at each time step results in a large volume of off-chip memory accesses. 
-
-Que et al.~\cite{que2019efficient} proposed a blocking-batching scheme to reuse the LSTM weights fetched from external memory. Their approach reuses the weights of $W$ matrix on a group of input vectors, by processing those input vectors as a batch. The input vectors in the same batch share the same weight matrices ($W$). However, it is difficult to collect required number of input vectors. As the LSTM cell states computations depend on cell states of the previous time-step, benefit of their batching schemes is limited to $W$ matrix. Reusing weights of $R$ across different time-steps has not been successful because of the state dependency.
-
-Park et al.(~\cite{park2020time}) proposed a time step interleaved weight reuse scheme (TSI-WR) which reuses the weights of $R$ matrix between two adjacent time steps by performing computations in a time-interleaved manner. Their approach logically partitions the $R$ matrix into blocks. A block is accessed from off-chip memory to compute the two consecutive hidden state vectors partially. However, their approach do not fully exploit the data reuse, and several weights are accessed repeatedly from the off-chip memory. In addition, the data reuse in TSI-WR approach depends on the on-chip storage size which limits the benefits of their approach.
 \begin{figure}[!htb]
 	\centering
 	\subfloat[Conventional approaches: $R$ matrix is accessed at each time step.]
@@ -280,6 +301,10 @@ Park et al.(~\cite{park2020time}) proposed a time step interleaved weight reuse 
 	\label{fig:introToApproach}
 	\vspace{-1.0em}	
 \end{figure}
+\subsection{Previous Work}
+Que et al.~\cite{que2019efficient} proposed a blocking-batching scheme to reuse the LSTM weights fetched from external memory. Their approach reuses the weights of $W$ matrix on a group of input vectors, by processing those input vectors as a batch. The input vectors in the same batch share the same weight matrices ($W$). However, it is difficult to collect required number of input vectors. As the LSTM cell states computations depend on cell states of the previous time-step, benefit of their batching schemes is limited to $W$ matrix. Reusing weights of $R$ across different time-steps has not been successful because of the state dependency.
+
+Park et al.(~\cite{park2020time}) proposed a time step interleaved weight reuse scheme (TSI-WR) which reuses the weights of $R$ matrix between two adjacent time steps by performing computations in a time-interleaved manner. Their approach logically partitions the $R$ matrix into blocks. A block is accessed from off-chip memory to compute the two consecutive hidden state vectors partially. However, their approach do not fully exploit the data reuse, and several weights are accessed repeatedly from the off-chip memory. In addition, the data reuse in TSI-WR approach depends on the on-chip storage size which limits the benefits of their approach.
 \subsection{Proposed Approach}
 We proposes an approach that reduces off-chip memory accesses by splitting the computation in two. At each time step, while the computations of a hidden state vector of one time step $h_t$ completes, partial computation of next time step ($S_{t+1}$) is also performed by reusing the weights.
 Our approach schedules the computations in a way that reuses all the weights of $R$ between two adjacent time steps. The data reuse in our approach is independent of on-chip buffer sizes which makes it suitable for accelerators with very small on-chip memory.
@@ -306,6 +331,34 @@ Equation~\eqref{eq:S_L_{t}} uses the lower-diagonal and diagonal elements of $R$
 \end{figure}
 As shown in \figurename{~\ref{fig:TwoTimeStepsComputation}}, $R^L$ and $R^U$ are accessed in consecutive time steps and reused in the partial sum computations of two steps. At time step $t$, $S_t^U$ and $h_{t-1}$ are the inputs from the previous time step, and $R^L$ is reused to compute the partial sums $S_{t}^{L}$ and $S_{t+1}^L$. Input $S_{t}^{U}$ is added to $S_{t}^{L}$ to compute $h_{t}$, and $S_{t+1}^L$ is passed to $(t{+}1)^{th}$ step computations.
 In the same way, at time step $t{+}1$, $R^U$ is reused to compute $S_{t+1}^{U}$ and $S_{t+2}^{U}$. Elements of $R^L$ are accessed from top to bottom, left to right, while elements of $R^U$ are accessed in the reverse order to satisfy the dependencies. As shown in~\figurename{~\ref{fig:TwoTimeStepsComputation}}, the proposed approach accesses the weight matrix $R$ once, to compute $h_{t}$ and $h_{t+1}$. 
+\subsection{Result}
+We have compared our approach with conventional approaches and TSI-WR approach~\cite{park2020time}. Conventional approaches access the hidden state weight matrices $R$ at each step from the off-chip memory. We have used the same on-chip buffer size to store the weight matrices ($4{\times}B{^2}$) to perform a fair comparison. The proposed approach requires additional on-chip memory ($4N{+}4B$) to store the four partial sum and temporary vectors.
+We have experimented with LSTM models used in speech recognition (for TIMIT~\cite{garofolo1993timit}) and character level Language Modelling (LM)~\cite{sundermeyer2015feedforward}.
+\begin{figure}[!htb]
+	\centering
+	\subfloat[]
+	{\includegraphics[width=0.3\textwidth]{memAccessForModels.pdf}
+		\label{fig:memAccessForModels}}
+	\hfil
+	\subfloat[]
+	{\includegraphics[width=0.3\textwidth]{tsiwrComparison.pdf}
+	\label{fig:compareWithTSIWR}}
+	\subfloat[]
+	{\includegraphics[width=0.3\textwidth]{energyTIMIT1024.pdf}
+		\label{fig:energyEfficiencyForSeqLengths}}
+	\caption{(a) off-chip memory access and latency (b) Off-chip memory access comparison between TSI-WR and SACC approach for two consecutive time steps. (c) normalized energy. CONV: conventional}	\label{fig:compareMemAccessAndRunTime}
+	\vspace{-1.0em}	
+\end{figure}
+\subsubsection{Memory Accesses}
+\figurename{~\ref{fig:memAccessForModels}} shows the proposed approach's reduction in off-chip memory accesses compared to conventional approaches. The proposed approach reduces the memory accesses of the $R$ matrices by half. Total memory accesses, including $R, W$, and $b$, for LM and TIMIT models reduce by 28\% and 32\%, and memory access latencies reduce by 29\% and 31\%, respectively.
+The proposed approach reduces the run-time by 12.8\% and 16\% for LM and TIMIT models. 
+\subsubsection{Comparison with TSI-WR}
+\figurename{~\ref{fig:compareWithTSIWR}} compares the off-chip memory accesses of the SACC and the TSI-WR approaches using the simulation results. The performance of the TSI-WR approach depends on on-chip buffer sizes. TSI-WR reduces 50\% off-chip memory accesses when the on-chip buffer size is 70\% of the $R$ matrix. The proposed approach reduces R's memory access by 50\%, irrespective of the on-chip buffer size.
+\subsubsection{Energy Efficiency}
+We computed the energy consumption using the design power reported by the Vivado synthesis tool, execution time, and off-chip memory accesses. \figurename{~\ref{fig:energyEfficiencyForSeqLengths}} shows the normalized energy consumption of the conventional and the proposed approach for TIMIT-1024. Due to the reduction in the run-time and off-chip memory accesses, the SACC approach reduces the energy consumption on average by 13\% and 16\% for LM and TIMIT models.
+
+\section{Optimizing off-chip memory acccesses using Quantization}
+
 %\footnotesize
 \bibliographystyle{abbrv} %IEEEtran % abbrv
 %\vspace{1.5mm}
