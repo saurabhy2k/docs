@@ -2,28 +2,28 @@
 \contentsline {subsection}{\numberline {1.1}Impact of off-chip memory access}{2}{subsection.1.1}%
 \contentsline {subsubsection}{\numberline {1.1.1}Performance}{2}{subsubsection.1.1.1}%
 \contentsline {subsubsection}{\numberline {1.1.2}Energy efficiency}{2}{subsubsection.1.1.2}%
-\contentsline {section}{\numberline {2}Mapping Framework}{3}{section.2}%
-\contentsline {section}{\numberline {3}Related Work}{4}{section.3}%
-\contentsline {section}{\numberline {4}Off-Chip Memory Access Optimizations for CNN}{4}{section.4}%
-\contentsline {subsection}{\numberline {4.1}Introduction}{4}{subsection.4.1}%
-\contentsline {subsection}{\numberline {4.2}Related Work}{5}{subsection.4.2}%
-\contentsline {subsection}{\numberline {4.3}Bus Width Aware Off-chip Memory Access Estimation}{5}{subsection.4.3}%
-\contentsline {subsection}{\numberline {4.4}Optimal data partitioning for CNNs}{6}{subsection.4.4}%
-\contentsline {subsection}{\numberline {4.5}Results}{6}{subsection.4.5}%
-\contentsline {subsubsection}{\numberline {4.5.1}Latency And Energy Analysis}{6}{subsubsection.4.5.1}%
-\contentsline {subsubsection}{\numberline {4.5.2}On-chip Memory Size}{7}{subsubsection.4.5.2}%
-\contentsline {subsubsection}{\numberline {4.5.3}Impact of Bus Width on $\mathbb {B}$ of FCLs}{7}{subsubsection.4.5.3}%
-\contentsline {section}{\numberline {5}Data reuse approach for RNNs}{7}{section.5}%
-\contentsline {subsection}{\numberline {5.1}Introduction}{7}{subsection.5.1}%
-\contentsline {subsection}{\numberline {5.2}Previous Work}{8}{subsection.5.2}%
-\contentsline {subsection}{\numberline {5.3}Proposed data reuse approach}{8}{subsection.5.3}%
-\contentsline {subsection}{\numberline {5.4}Results}{9}{subsection.5.4}%
-\contentsline {subsubsection}{\numberline {5.4.1}Memory Accesses}{10}{subsubsection.5.4.1}%
-\contentsline {subsubsection}{\numberline {5.4.2}Comparison with TSI-WR}{10}{subsubsection.5.4.2}%
-\contentsline {subsubsection}{\numberline {5.4.3}Energy Efficiency}{10}{subsubsection.5.4.3}%
-\contentsline {section}{\numberline {6}Optimizing SOMs using low bit-width}{10}{section.6}%
-\contentsline {subsection}{\numberline {6.1}Introduction}{10}{subsection.6.1}%
-\contentsline {subsection}{\numberline {6.2}Previous Work}{11}{subsection.6.2}%
-\contentsline {subsection}{\numberline {6.3}Analyzing impact of low bit-width}{11}{subsection.6.3}%
-\contentsline {subsection}{\numberline {6.4}Results}{12}{subsection.6.4}%
-\contentsline {section}{\numberline {7}Conclusion}{13}{section.7}%
+\contentsline {section}{\numberline {2}Related Work}{4}{section.2}%
+\contentsline {section}{\numberline {3}Mapping Feed Forward Neural Networks}{4}{section.3}%
+\contentsline {subsection}{\numberline {3.1}Introduction}{4}{subsection.3.1}%
+\contentsline {subsection}{\numberline {3.2}Related Work}{5}{subsection.3.2}%
+\contentsline {subsection}{\numberline {3.3}Impact of architectural parameters on memory access}{6}{subsection.3.3}%
+\contentsline {subsection}{\numberline {3.4}Off-Chip Memory Accesses of CNN Layers}{6}{subsection.3.4}%
+\contentsline {subsection}{\numberline {3.5}Optimizing the off-chip memory access}{7}{subsection.3.5}%
+\contentsline {subsection}{\numberline {3.6}Results}{7}{subsection.3.6}%
+\contentsline {subsubsection}{\numberline {3.6.1}Latency And Energy Analysis}{8}{subsubsection.3.6.1}%
+\contentsline {subsubsection}{\numberline {3.6.2}On-chip Memory Size}{8}{subsubsection.3.6.2}%
+\contentsline {subsubsection}{\numberline {3.6.3}Impact of Bus Width on $\mathbb {B}$ of FCLs}{8}{subsubsection.3.6.3}%
+\contentsline {section}{\numberline {4}Mapping Recurrent Neural Networks}{8}{section.4}%
+\contentsline {subsection}{\numberline {4.1}Introduction}{8}{subsection.4.1}%
+\contentsline {subsection}{\numberline {4.2}Related Work}{9}{subsection.4.2}%
+\contentsline {subsection}{\numberline {4.3}Proposed data reuse approach}{9}{subsection.4.3}%
+\contentsline {subsection}{\numberline {4.4}Results}{10}{subsection.4.4}%
+\contentsline {subsubsection}{\numberline {4.4.1}Memory Accesses}{10}{subsubsection.4.4.1}%
+\contentsline {subsubsection}{\numberline {4.4.2}Comparison with TSI-WR}{11}{subsubsection.4.4.2}%
+\contentsline {subsubsection}{\numberline {4.4.3}Energy Efficiency}{11}{subsubsection.4.4.3}%
+\contentsline {section}{\numberline {5}Optimizing SOMs using low bit-width}{11}{section.5}%
+\contentsline {subsection}{\numberline {5.1}Introduction}{11}{subsection.5.1}%
+\contentsline {subsection}{\numberline {5.2}Related Work}{11}{subsection.5.2}%
+\contentsline {subsection}{\numberline {5.3}Low bit-width FPGA Design of SOM}{11}{subsection.5.3}%
+\contentsline {subsection}{\numberline {5.4}Results}{12}{subsection.5.4}%
+\contentsline {section}{\numberline {6}Conclusion}{12}{section.6}%
