@@ -186,7 +186,7 @@ Figure~\ref{fig:dataAccessEnergy} illustrates the impact of data reuse on the en
 \end{align*}
 As, $e_{L1} << e_{DDR}$, the ratio $\frac{e_{L1}}{e_{ddr}}$ is very small, the energy efficiency depends on number of reuses ($n$) from on-chip memory $L1$. It improves considerably with increasing the number of data reuse ($n$). 
 
-Reducing the off-chip memory accesses is the key to reduce the energy consumption of DNN accelerators. State of the art DNN accelerators aim to maximize the data reuse from on-chip memory to reduce the off-chip memory accesses. Our work aims to improve the performance and energy efficiency of DNN accelerators by reducing the off-chip memory accesses and maximizing the data reuse from on-chip memories. Towards this end we propose a mapping framework~\ref{fig:introduction} to partition and schedule the operations of NNs to improve the data-reuse from on-chip memory. Our main contributions in this thesis dessertations are
+Reducing the off-chip memory accesses is the key to reduce the energy consumption of DNN accelerators. State of the art DNN accelerators aim to maximize the data reuse from on-chip memory to reduce the off-chip memory accesses. Our work aims to improve the performance and energy efficiency of DNN accelerators by reducing the off-chip memory accesses and maximizing the data reuse from on-chip memories. Towards this end we propose a mapping framework (Fig.~\ref{fig:introduction}) that partitions and schedules the operations of NNs to improve the data-reuse from on-chip memory. The framework applies novel approaches to reduce the off-chip memory accesses for feed-forward and recurrent neural networks. Our main contributions in this thesis dessertations are
 \begin{figure}[ht]
 	\centering
 	\includegraphics[width=0.7\linewidth]{./images/blockDiagram}
@@ -197,7 +197,7 @@ Reducing the off-chip memory accesses is the key to reduce the energy consumptio
 	\item We developed a tool that precisely computes the off-chip memory accesses of DNN layers partitioned into tiles, while taking into account the accelerator's architectural parameters.
 	\item We propose an approach that determines the optimal partitoning of the DNN layers for reducing the off-chip memory accesses and energy consumptions. We analytically express the off-chip memory accesses of DNNs  using the layer shapes and tiling parameters and express it as a constraint optimization problem.
 	\item We propose a novel data reuse approach to improve the performance and energy efficiency of recurrent neural networks (RNN). The proposed approach partitions the data and schedules the operations in a way that reduces the off-chip memory accesses of large matrices by half.
-	\item We analyse the effect of using different bit resolutions on the accuracy on a NN, as well as the benefits of using it for designing a battery operated system where the area, power and performance are of critical importance.s
+	\item We analyse the effect of using different bit resolutions on the accuracy on a NN, as well as the benefits of using it for designing a battery operated system where the area, power and performance are of critical importance.
 \end{enumerate}
 
 \section{Related Work}
@@ -464,7 +464,7 @@ Figure \ref{fig:algo} shows a high level schematic of the FPGA implementation of
 	\vspace{-1.0em}	
 \end{figure}
 
-During the training phase \textit{Neuron Update} component is enabled by setting (\textit{Update Enable=1}). The weights of the Neurons are updated using the distance output of the \textit{Compute Distance} module. The \textit{Neuron Update} component is also pipe-lined design with II=1. The pipeline stages are shown in Figure \ref{fig:NeuronUpdate}.
+During the training phase \textit{Neuron Update} component is enabled by setting (\textit{Update Enable=1}). The weights of the Neurons are updated using the distance output of the \textit{Compute Distance} module. The \textit{Neuron Update} component is also pipelined design with II=1. The pipeline stages are shown in Figure \ref{fig:NeuronUpdate}.
 \subsection{Results}
 The SOM has been implemented with a range of fixed-point formats. With fewer bits, one naturally expect that the SOM network for bacterial identification to suffer from accuracy degradation. A MATLAB simulation model was created to analyze the accuracy loss when using fixed-point implementation. We trained 10 SOMs with 10 different bacteria DNA sequences. Each SOM network has 100 neurons inside, and each neuron has 20 weights. We trained the networks by two independent training processes running in parallel. One is implemented using double precision floating point and the other is implemented with fixed-point weights. After training, we used the trained networks to identify the unknow sequence and record their scores.
 
@@ -512,8 +512,7 @@ The area and power numbers for different weight resolutions are extracted from t
 		\bottomrule
 	\end{tabular}
 \end{table}
-The results are summarized in the Figure \ref{fig:area} and \ref{fig:energy}. Both the amount of utilized LUTs and total energy in Joule is presented against the classification error. From the figures, we can easily conclude that, we can substantially reduce the resources used and the energy by using a 16-bit fixed-point representation, without losing accuracy. We can reduce the resources even further by moving to the 12-bit representation, by sacrificing 39\% of the SOM accuracy. 
-\begin{figure*}[htb]
+\begin{figure}[!htb]
 	\centering
 	\subfloat[]{\includegraphics[width=0.45\textwidth]{./somResults/area}
 		\label{fig:area}}
@@ -522,9 +521,13 @@ The results are summarized in the Figure \ref{fig:area} and \ref{fig:energy}. Bo
 		\label{fig:energy}}
 	\caption{comparison between different fixed-point fromat (a) FPGA LUT utilization (b) energy.}
 	\label{fig:metrics}
-\end{figure*}
+\end{figure}
+
+The results are summarized in the Figure \ref{fig:area} and \ref{fig:energy}. Both the amount of utilized LUTs and total energy in Joule is presented against the classification error. From the figures, we can easily conclude that, we can substantially reduce the resources used and the energy by using a 16-bit fixed-point representation, without losing accuracy. We can reduce the resources even further by moving to the 12-bit representation, by sacrificing 39\% of the SOM accuracy. 
+
 \section{Conclusion}
 With the sudden surge in Neural Network based applications, there is a pressing need for improving the performance and energy efficiency of DNN accelerators for their ubiquitous usage in energy constrained devices. The performance of DNN accelerator's is limited by the memory bandwidth and off-chip memory accessed dominates the energy consumption. The key to improving the energy efficiency of these NN is reducing the expensive off-chip memory accesses. Towards this we developed a mapping framework that applies approaches to reduce the off-chip memory accesses for DNNs. The proposed approaches optimizes the data reuse from on-chip memories for CNNs and LSTMs by partioning the data and scheduling the operations, without compromising the accuracy. We have also analyzed the impact of low bit resolution on the accuracy and energy, area performance. 
+
 \footnotesize
 \bibliographystyle{abbrv} %IEEEtran % abbrv
 %\vspace{1.5mm}
