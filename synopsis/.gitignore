@@ -1,0 +1,14 @@
+*.aux
+*.bbl
+*.blg
+*.log
+*.synctex.gz
+*.o
+*.mon
+**/obj
+*.out
+*.so
+*.a
+*.swp
+*.toc
+tags
