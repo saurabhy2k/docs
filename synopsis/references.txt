@@ -1,0 +1,93 @@
+Machine learning is a field of Artificial Intelligence that gives computers the ability to learn without being explicitly programmed. Machine learning algorithms learns by the training process instead of explicitly programmed. ANNs are class of machine learning algorithms that perform computations to learn from the training inspired by the human brains. It consists of several neurons that are connected together in different ways to solve different kind of problems. Each neuron has weights and biases that are applied to inputs. These weights and biases are learned during the training (or learning) process. Once trained these weights and biases are applied in the inference phase. 
+
+There are different ways in which learning can be performed. Most common learning methods are supervised and unsupervised learning. In supervised learning, each input sample is labelled i.e. correct output is provided. And the learning process updates the network parameters based on the error corrections. In unsupervised learning, the input samples are not labelled and the objective of the network is to cluster the input data e.g., Self Organizing Maps (SOMs). SOM applies a competitive learning approach to adjust the weights of the data. 
+
+
+Neurons in NNs are organized in the form of layers. The NNs which have more than three layers are called Deep Neural Networks (DNNs). Modern DNNs consists of layers ranging from three to several hundreds. 
+
+To solve different kind of problems, different NNs are proposed. There are wide variety of NNs to solve different kind of problems. The y differe from each other in shape, sizes and how they share the data. On the basis of how the data or information flows, NNs can be broadly classified into two main categories, Feed-forward and Recurrent neural networks. In feed-forward networks layers perform computations in sequence. The output of one layer is forwarded to the next layer for processing. They do not store any information from the previous inputs. The other class of NNs are recurrent neural networks, which stores the information extracted from input as an internal state and use this information for processing next inputs. They are useful in processing sequential data where the predictions depends on current as well as pevious seen inputs.
+
+
+An MIT Press book Ian Goodfellow and Yoshua Bengio and Aaron Courville
+https://www.deeplearningbook.org/     
+
+Xilinx AI Architecture
+https://docs.xilinx.com/r/en-US/am009-versal-ai-engine/AI-Engine-Array-Interface
+
+
+https://www.allerin.com/blog/3-types-of-neural-networks-that-ai-uses
+   classifies 3 type of NN, FeedForward, RNN/LSTM, CNN
+   different kinds of neural networks are being developed to solve different kinds of problems. While there are numerous types of artificial neural networks being developed and used by researchers, a few have found greater applicability -- and hence, popularity -- as compared to the rest. 
+  
+   https://www.sciencedirect.com/science/article/pii/S2405844018332067
+   
+Mendeley:   A Survey of FPGA-based Neural Network Inference Accelerators
+Efficient Processing of Deep Neural Network
+Eyeriss: A Spatial Architecture for Energy-Efﬁcient Dataﬂow for Convolutional Neural Networks: 
+A Method to Estimate the Energy Consumption of Deep Neural Networks: 
+Using Dataflow to Optimize Energy Efficiency of Deep Neural Network Accelerators: 
+
+The self-organizing map is a single layer feedforward network where the output neurons are arranged in low dimensional (usually 2D or 3D) grid. Each input x is connected to all output neurons. Attached to every neuron there is a weight vector W k with the same dimensionality as the input vectors
+
+
+
+Details overview of ML and NN
+https://www.javatpoint.com/machine-learning-algorithms
+
+NN vs DNN search
+https://stats.stackexchange.com/questions/182734/what-is-the-difference-between-a-neural-network-and-a-deep-neural-network-and-w
+
+What's the principal difference between ANN,RNN,DNN and CNN?
+https://datascience.stackexchange.com/questions/58728/whats-the-principal-difference-between-ann-rnn-dnn-and-cnn
+
+What's the difference between feed-forward and recurrent neural networks?
+https://stats.stackexchange.com/questions/2213/whats-the-difference-between-feed-forward-and-recurrent-neural-networks
+
+https://www.tutorialspoint.com/artificial_intelligence/artificial_intelligence_neural_networks.htm
+
+About unsupervised learning algorithms
+https://www.guru99.com/unsupervised-machine-learning.html
+
+What are the main similarities and differences between feed–forward neural
+networks and self–organising maps?
+Answer: Similarities are:
+• Both are feed–forward networks (no loops).
+• Nodes have weights corresponding to each link.
+• Both networks require training.
+The main differences are:
+• Self–organising maps (SOM) use just a single output layer, they do
+not have hidden layers.
+• In feed–forward neural networks (FFNN) we have to calculate weighted
+sums of the nodes. There are no such calculations in SOM, weights
+are only compared with the input patterns using Euclidean distance.
+• In FFNN the output values of nodes are important, and they are
+defined by the activation functions. In SOM nodes do not have any
+activation functions, and the output values are not important.
+• In FFNN all the output nodes can fire, while in SOM only one.
+• The output of FFNN can be a complex pattern consisting of the values
+of all the output nodes. In SOM we only need to know which of the
+output nodes is the winner.
+• Training of FFNN usually employs supervised learning algorithms,
+which require a training set. SOM use unsupervised learning algo-
+rithm. There are, however, unsupervised training methods for FFNN
+as well.
+
+Differnce between ANN and DNN
+https://becominghuman.ai/artificial-neural-networks-and-deep-learning-a3c9136f2137
+
+ANNs like the one above with limited number of layers and neurons can only do so much. To represent more complex features and to “learn” increasingly complex models for prediction and classification of information that depends on thousands or even millions of features, we need ANNs a little more complex than the one above. This is accomplished by simply increasing the number of hidden layers and / or the number of neurons per hidden layer. More layers and more neurons can represent increasingly complex models but they also come at the cost of increasing time and power-consuming computations.
+
+Such neural networks which consist of more than three layers of neurons (including the input and output layer) are called as Deep Neural Networks. And training them is called as Deep Learning.
+
+
+
+
+
+
+
+Learning Python
+https://learnpython.org/
+
+Learning Tensorflow 
+HANDS ON MACHINE LEARNING WITH SCIKIT LEARN, KERAS & TENSORFLOW 2/ED UPDATED FOR TENSORFLOW 2 (FULL COLOUR EDITION)
+

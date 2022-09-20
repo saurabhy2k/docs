@@ -118,32 +118,77 @@
 	9. References - 2 pages
 \end{comment}
 \section{Introduction}
-Last few years have seen rapid growth in Neural Network (NN) based applications due to their high accuracy. To achieve high accuracy modern NNs are very deep (deep neural networks or DNNs) and perform compute and memory intensive operations. To improve the user experience and eliminate network bandwidth issues manufacturers are shifting the processing of NNs from cloud to edge devices like smart-phones, tablets etc. These battery operated edge devices have limited resources and tight energy budget which poses significant challenges in processing of NNs. 
+\begin{comment}
+	1. About the NN, ANNs, ML and their importance, applications, wide spread usage.
+	2. Details about NNs and their types, learning types, neurons and organization of neurons.
+	3. DNN which have changed the way problems are solved and have shown remarkable accuracy CNNs and LSTMs in the field of computer vision, image recognition, SMALL ANNs like SOMs
+	3. Edge vs Cloud, importance in embedded systems, consumer electronics.
+	3. Innovation in the architectures and typical architectures used : Spatial architectures, Systolic Array 
+	4. Important metrics for NN performance: energy and throughput, leading to memory optimizations.
+	5. Optimization description, types and limitations, applicability of each type to different NNs
+	6. Contributions made in this thesis: What user will find in this report.
+\end{comment}
+Past few years have seen rapid growth in Neural Network (NN) based applications. They are widely used in different areas like healthcare, agriculture, road safety, surveillance, defence and several others. Modern computing systems capable of storing and processing large volumes of data, availability of big data sets, enabled NNs to achieve human like performance, which was not possible few decades ago. 
 
-Neural Networks are field of machine learning algorithms inspired by the learning performed by human brain. They consists of several neurons connected to each other. Each neuron has its own weights and biases, that are learned using training process. Once trained, these weights and biases are used in the application for inferencing. There are different types of NNs, each specialized for solving a specific set of problems. They differ each other in number of neurons, connections between them, method of learning. \figurename{~\ref{fig:learnClassification}} shows two categories of NNs based on the learning. The supervised learning algorithms require labelled training data set, while unsupervised learning algorithms don't require labelled data and their prime objective is to cluster the input data. K-Means Clustering, Self Organizing Maps (SOM) are examples of unsupervised learning. Popular supervised learning algorithms are Convolutional Neural Networks (CNNs) and Recurrent Neural Networks (RNNs). 
-NNs can also be classified based on how the information or data flows between layers, as shown in \figurename{~\ref{fig:connectClassification}}.  In feed-forward neural networks the data flows in the forward direction from one layer to next layer and there is no internal state maintained (e.g. CNNs). While feed-back or recurrent networks store the information extracted from previous inputs and use it for processing the subsequent inputs (e.g. RNNs, LSTMs). 
+Neural Networks are field of machine learning algorithms inspired by the processing of the brain. They consists of several neurons connected to each other and organized as layers. \figurename{~\ref{fig:simpleNN}} shows a simple NN example. Each layer has its weights and biases, that are learned using training process. Once trained, these weights and biases are used in the applications for inferencing. There are several classes of NN that differ each other in the number of neurons, connections between them, method of training. 
+%\begin{figure}[!htb]
+%	\centering
+%	\includegraphics[width=0.25\textwidth]{simpleFFNN}
+%	\caption{Example of simple Neural Network.}
+%	\label{fig:simpleNN}
+%\end{figure}
+%
+%\begin{figure}[!htb]
+%	\centering
+%	\includegraphics[width=0.5\textwidth]{nnClassification}
+%	\caption{Broad categories of NNs}
+%	\label{fig:nnClassification}
+%\end{figure}
+
 \begin{figure}[!htb]
 	\centering
 	\subfloat[]
-	{\includegraphics[width=0.4\textwidth]{nnClassification_learning}
-		\label{fig:learnClassification}}
+	{\includegraphics[width=0.2\textwidth]{simpleFFNN}
+		\label{fig:simpleNN}}
 	\hfil
 	\subfloat[]
-	{\includegraphics[width=0.4\linewidth]{nnClassification_connection}
-		\label{fig:connectClassification}}
-	\caption{Broad categories of NNs based on (a) learning method (b) connections  }
-	\label{fig:nnClassification}
+	{\includegraphics[width=0.4\textwidth]{nnClassification}
+		\label{fig:nnClassification}}
+	\hfil
+	\caption{(a) Example of simple Neural Network. (b) Broad categories of NNs.}
+	\label{fig:intro}
 	\vspace{-1.0em}	
 \end{figure}
 
-Energy efficiency and throughput are the two most important metrices for edge devices. While energy-efficiency is of paramount importance for longer battery time, high throughput is desired for better user-response time. To meet these energy and throughput demands, edge devices mostly use customized accelerators.
-Several FPGA~\cite{zhang2015optimizing,wei2019overcoming,gokhale2014240,8742284,gupta2015deep,alwani2016fused}, GPU~\cite{chetlur2014cudnn} and ASIC~\cite{Chen2016EyerissAS,chen2014diannao,chen2014dadiannao,du2015shidiannao} accelerators are proposed to meet the performance and energy targets. 
-%\begin{figure}[!htb]
-%	\centering
-%	\includegraphics[width=0.5\textwidth]{typicalDNNAccelerator}
-%	\caption{Typical DNN accelerator architecture}
-%	\label{fig:typicalDNNAccelerator}
-%\end{figure}
+\figurename{~\ref{fig:nnClassification}} shows two broad classes of NNs, feedforward neural networks (FFNNs) and recurrent neural networks (RNNs). In FFNNs the data flow from input to the output layer via intermediate layers and there are no loops. They can be represented as directed acyclic graph. FFNNs don't have any internal state and output depends on the current input and the parameters. Based on the number of layers FFNNs can be further classified as single layer and multilayer FFNNs. Single Layer Feedforward NNs consists of just two layers input and output layer. Only the output layer performs the computation. Self-Organizing Maps (SOMs) is an example of single layer NN, and used in dimensionality reduction and clustering applications. 
+
+Multilayer FFNNs represents the most important class of machine algorithms. They consists of one or more intermediate layers (hidden layers) between input and output layer. Depending on whether the neurons in the layer are connected to all or few of the neurons in previous layers, they can be further classified as fully connected FFNN (\figurename{~\ref{fig:fullyConnected}}) or sparsely connected FFNN (\figurename{~\ref{fig:sparselyConnected}}), respectively. One of the most popular convolutional neural networks (CNNs) used for image classification and recognition are special class of multi layer FFNN.
+
+Another popular class of NNs are recurrent neural networks (RNNs), which have layers with loops (\figurename{~\ref{fig:recurrentLayer}}). These networks extracts information from the inputs and stores them as internal states. In this class of NNs, the output depends not only on current input but also on the internal states. These networks are widely used in speech recognition, natural language processing (NLP) and other sequential data processing applications. Long short-term memory networks (LSTMs) are one of the popular variant of RNNs.
+
+\begin{figure}[!htb]
+	\centering
+	\subfloat[]
+	{\includegraphics[width=0.15\textwidth]{fullyConnected}
+		\label{fig:fullyConnected}}
+	\hfil
+	\subfloat[]
+	{\includegraphics[width=0.15\linewidth]{sparselyConnected}
+		\label{fig:sparselyConnected}}
+	\hfil
+	\subfloat[]
+	{\includegraphics[width=0.15\linewidth]{recurrentLayer}
+	\label{fig:recurrentLayer}}
+	\caption{Types of NN layers (a) Fully Connected FF. (b) Sparsely Connected FF. (c) Recurrent. }
+	\label{fig:nnLayers}
+	\vspace{-1.0em}	
+\end{figure}
+
+Multilayer NNs with more than three layers are referred as deep neural networks (DNNs) and they are capable of learning complex functions. These DNNs have layers in the range of five upto several hundreds. Recently proposed DNNs have millions of parameters (weights and biases) and they perform compute and memory intensive operations. Learning of these DNN models require large training data set, multiple iterations to achieve desired accuracy and thus require significant computational resources and time. The training of these large models are mostly performed on the high-end servers and consume high energy. Once these models are trained they can be used in applications for inferencing both in cloud and embedded devices.
+
+To improve the user experience, eliminate network bandwidth issues, improve privacy and security manufacturers are shifting the processing of NNs from cloud to edge devices like smart-phones, tablets etc. These battery operated edge devices have limited resources and tight energy budget which poses significant challenges. Efficient processing of DNNs inferencing on edge devices is of critical for their wide spread usage. In this work we focused on efficient processing of NNs inference on edge devices. 
+
+Energy efficiency and throughput are the two most important metrices for edge devices. While energy-efficiency is of paramount importance for longer battery time, high throughput is desired for better user-response time. To meet these energy and throughput demands, edge devices mostly use customized accelerators. Several FPGA~\cite{zhang2015optimizing,wei2019overcoming,gokhale2014240,8742284,gupta2015deep,alwani2016fused}, GPU~\cite{chetlur2014cudnn} and ASIC~\cite{Chen2016EyerissAS,chen2014diannao,chen2014dadiannao,du2015shidiannao} accelerators are proposed to meet the performance and energy targets. 
 \begin{figure}[!htb]
 	\centering
 	\subfloat[]
@@ -160,45 +205,98 @@ Several FPGA~\cite{zhang2015optimizing,wei2019overcoming,gokhale2014240,8742284,
 
 \figurename{~\ref{fig:typicalDNNAccelerator}} shows a typical DNN accelerator architecture, which consists of an off-chip memory and an accelerator chip. Accelerator chip mainly consists of an on-chip memory of few KBs and an array of Processing Elements (PEs). The accelerator system has multiple memory levels: off-chip memory, on-chip memory, and the registers inside the PE. Each memory level has different access latency and energy cost. The memory access energy from off-chip memory is upto two orders of magnitude higher than a PE computation operation~\cite{Chen2016EyerissAS}. It has been observed that more than 80\% of the overall energy consumption of these accelerators is due to off-chip memory accesses~\cite{chen2014diannao}. 
 
-The PE-array (\figurename{~\ref{fig:typicalDNNAccelerator}}) has large number of processing elements, capable of performing several operations per cycle. However, throughput is often limited by off-chip memory bandwidth~\cite{williams2009roofline}. Fig.~\ref{fig:roofline} shows, two kernels (A and B) with different compute intensity (FLOPS/byte). Performance of kernels are limited by the memory bandwidth, which is typically the case for most of the DNN accelerators. Kernel B, applies data-reuse techniques to improve the computational intensity compared to kernel A and achieves better throughput. Better data-reuse techniques are required to improve the performance on bandwidth-limited parallel architectures. Therefore, reducing the off-chip memory is the key to improve the throughput and energy efficiency of DNN accelerators and most of the recent works focused on reducing off-chip memory accesses.
-
+The PE-array (\figurename{~\ref{fig:typicalDNNAccelerator}}) has large number of processing elements, capable of performing several operations per cycle. However, throughput is often limited by off-chip memory bandwidth~\cite{williams2009roofline}. Fig.~\ref{fig:roofline} illustrates the performance comparison of two kernels (A and B) on an accelerator architecture. Performance of kernels are limited by the memory bandwidth, which is typically the case for most of the DNN accelerators. Kernel B, has better computational intensity (FLOPS/byte) compared to kernel A and achieves better throughput. Better data-reuse techniques are required to improve the performance on bandwidth-limited parallel architectures. Therefore, reducing the off-chip memory is the key to improve the throughput and energy efficiency of DNN accelerators and several recent works focused on reducing off-chip memory accesses.
 \begin{figure}[!htb]
 	\centering
 	\includegraphics[width=0.5\textwidth]{previousWorkClassification}
 	\caption{Broad Classification of previous works for improving the performance of DNN accelerators.}
 	\label{fig:previousWorkClassification}
 \end{figure}
-There are two broad categories of work that aim to reduce the off-chip memory accesses of DNN accelerators as shown in Figure~\ref{fig:previousWorkClassification}. One category of work exploits error-tolerence and redundancy in NNs using quantization and pruning techniques to compress the models' size~\cite{ferreira2016fpga,wang2018c,chang2015recurrent,han2017ese,lee2016fpga}. However, quantization and pruning approaches impacts the accuracy of the networks and may not be suitable where accuracy can not be compromised. The other category of works applies the data-reuse techniques to reduce the memory accesses without effecting the accuracy of the network~\cite{zhang2015optimizing,Li2018SmartShuttleOO,que2019efficient,park2020time}. 
 
-In this work we have explored quantization and data reuse techniques for state of the art NNs. For NNs, with limited data reuse opportunities or where weights can be stored completely in on-chip memory (e.g. Self Organizing Maps (SOM)), we have analyzed the impact of 
-quantization to improve the performance and energy-efficiency.  However, sizes of weights in recent NN models can be several MB's, and using large on-chip memory is expensive. For DNNs with large number of parameters, storing all the weight in on-chip memory is not a scalable solution. For such DNNs (e.g.,CNNs and RNNs) we proposed novel data reuse approaches. These data-reuse approaches are orthogonal to the quantization techniques and can be integrated with different quantization techniques to reduce the memory accesses further. 
+Recent works that aim to reduce the off-chip memory accesses of NN accelerators can be classified in two broad categories, as shown in Figure~\ref{fig:previousWorkClassification}. One category of work exploits error-tolerence and redundancy in NNs using quantization, compression and pruning techniques to reduce the precision, number of operations and models' size~\cite{ferreira2016fpga,wang2018c,chang2015recurrent,han2017ese,lee2016fpga}. With reduced precision, the storage requirement and memory accesses reduces linearly and improves the energy efficiency. In shallow NNs the number of parameters are smaller compared to DNNs. Quantization and pruning techiques result in reduced NN model sizes. The reduced model for shallow NNs may fit into the on-chip memory and thus eliminate the off-chip memory bandwidth bottleneck. However, quantization and pruning approaches impacts the accuracy of the networks and may not be suitable where accuracy can not be compromised. Also, the number of parameters in modern DNNs are significantly large. For these DNNs, beside quantization and pruning, additional techniques are required to reduce the off-chip memory accesses further.
+The other broad category of works applies the data-reuse techniques to reduce the memory accesses without effecting the accuracy of the network~\cite{zhang2015optimizing,Li2018SmartShuttleOO,que2019efficient,park2020time}. During the inference phase, the weights are repeatedly used for all the inputs. To reuse the weights, inputs are grouped together as a batch and processed together. This technique is referrred to as batch processing. Increasing the batch size increases the weigths reuse, however it also increases the latency. There are other data reuse techniques, such as data partitioning and operation scheduling, to improve the data reuse from the on-chip memory.  
+
+In this work we have proposed novel data reuse techniques that reduces the off-chip memory accesses to optimize the energy and performance of state of the art feedforward and recurrent neural networks. These data-reuse approaches are orthogonal to the quantization techniques and can be integrated with different quantization techniques to gain further improvements.
 
 Our main contributions in this thesis dessertations are
 \begin{enumerate}
-	\item We propose an analytical model that analyses a neural network computations and memory accesses while considering the accelerator's architectural parameters and implemetation constraints. The analytical model explores the large search space of tile dimensions, data reuse schemes and helpful in quickly analysing the off-chip memory accesses and estimating the performance of NNs.
-	
-	\item We propose an approach that determines the optimal partitoning and scheduling scheme of the convolution (CL) and fully connected (FC) layers to mimimize the off-chip memory access and improve the energy-efficiency of CNN accelerators. We analytically express the off-chip memory accesses of CNNs  as a function of layer shapes, tiling parameters and the number of trips from the off-chip memory and express it as a constraint optimization problem. Using the above analytical model we explore the design space to find the optimal solution. We implemented CL and FC layers on FPGA to demonstrate the efficacy of our approach compared to state of the art approaches.  
-	
-	\item We propose a novel data reuse approach to improve the throughput and energy efficiency of recurrent neural networks (RNNs). The proposed approach partitions the data and schedules the operations in a way that reduces the off-chip memory accesses of large matrices significantly. We implemented Long-Short Term Memory Network (LSTMs) accelerators for different approaches on FPGA to measure the design power and memory accesses and show the energy and througput improvements achieved by our approach.
-	\item We analyse the effect of using different bit resolutions on the accuracy of a NN, as well as the benefits of using low bit width data resolution for self organizing maps (SOM) for designing a battery operated system where the area, power and performance are of critical importance. We implemented a SOM network on FPGA which can be configured for different bit resolution to compare the performace of different bit resolutions.
+	\item An analytical framework that quantifies the off-chip memory accesses and compute-cycles for DNN layers. It considers the architectural constraints and shapes of DNN layers and compares the performance of different data partitioning and scheduling schemes. The framework explores the large design space in order to find the optimal solution for improving the energy and throughput. The framework is useful for comparative analysis for different types of data reuse schemes.
+	\item We propose a data reuse approach that takes into account the architectural parameters of the DNN accelerators and determines the optimal partitoning and scheduling scheme to mimimize the off-chip memory access of CNN layers. We demostrated the efficacy of our partitioning and adaptive scheduling approach on compute and memory intensive CNN layers. 
+	\item We propose a novel data reuse approach to improve the throughput and energy efficiency of state of the art recurrent neural networks (RNNs). The proposed approach splits the computations and combines them in a way that reduces the off-chip memory accesses of large matrices significantly. We implemented Long-Short Term Memory Network (LSTMs) accelerators on FPGA to measure the design power and memory accesses and show the energy and throughput improvements achieved by our approach.
+	\item We analyse the effect of using different bit resolutions on the accuracy of a NN, as well as the benefits of using low bit width data resolution for self organizing maps (SOM) for designing a battery operated system where the area, power and performance are of critical importance. We implemented an efficient SOM design on FPGA which can be configured for different bit resolution and compared the performance for different data precisions.
 \end{enumerate}
-\section{Analytical Model for Energy and Performance Estimation}
+\section{Analytical Framework for Energy and Performance Estimation}
+NN accelerators use on-chip memories and reuse the data from it to minimize the off-chip memory accesses. Figure~\ref{fig:memsAccess} illustrates the impact of on-chip memory data-reuse on off-chip memory accesses and energy efficiency. Figure~\ref{fig:memsAccessSingle} shows the memory accesses and energy estimates when $N$ bytes are directly accessed from the off-chip memory and Figure~\ref{fig:memsAccessDouble} shows the reduction in off-chip memory accesses when re-using the data from on-chip memory. If the energy per bytes access from the off-chip and on-chip memories are $e_{1}$ and $e_{2}$, respectively, the energy efficiency can be expressed as, 
+\begin{equation}\label{e_efficiency}
+	E_{efficiency}=1-\frac{E_2}{E_1}=1-(\frac{1}{n}+\frac{e_{2}}{e_{1}})
+\end{equation}
 
-Modern DNNs have millions of parameters which are stored in off-chip memory. Limited on-chip memory of DNN accelerators can accomodate only a fraction of this data. To improve the energy-efficiency, DNN accelerators aims to minimize the accesses from off-chip memory by reusing the data from local on-chip memory. DNN accelerators apply loop tiling to partition the layer data into small tiles that fits into on-chip memory. Loop tiling is a compiler  technique~\cite{aho2006compilers} that partitions the loop iteration space and large arrays into smaller tiles to increase the data locality and ensures that data fits into smaller memories. The order of loops determines the scheduling of the tiles. 
-
-The computations in DNNs involve three kinds of data, input feature maps ($ifm$), filter weight ($wts$), and output feature maps ($ofm$). The scheduling scheme, which minimizes the trips of the \textit{ifm} tiles between the accelerator and off-chip memory, is referred to as the input-reuse-oriented scheme (IRO). Similarly, the other two schemes, which minimize the trips of \textit{ofm} and \textit{wts} are referred to as output-reuse-oriented (ORO) and weight-reuse-oriented (WRO) scheme, respectively. The tile dimensions and scheduling significantly impacts the off-chip memory accesses~\cite{zhang2015optimizing, Li2018SmartShuttleOO} and hence throughput and enegy-efficiency.  NN have several layers with varying shapes. The optimal partitioning and scheduling scheme for one layer may be sub-optimal for other layers. Hence each layer need to be analyzed. Large search space, architecture parameters and implementation constraints make determining the optimal partitioning and scheduling scheme challenging.
-
-To estimate the memory acccesses, performance and energy efficiency, we have developed an analytical model that analyses the off-chip memory accesses, mac-efficiency, energy of a NN while considering the architectural and implementation constraints. Figure~\ref{fig:previousWorkClassification} shows the block diagram of the analytical model. The analytical model estimates the energy-consumption, MAC efficiency of different tile partitions and scheduling schemes and thus helpful in determining the optimal partitioning and scheduling schemes.
+For a given architecture, $e_{1}$ and $e_{2}$ are fixed and $e_1$ is significantly high compared to $e_2$. The energy efficiency mainly depends on the data reuse and improves significantly with the data reuse. DNN accelerators use multiple levels of on-chip memories and techniques to maximize the data-reuse from lower level of memories to improve the energy-efficiency. 
 \begin{figure}[!htb]
 	\centering
-	\includegraphics[width=0.8\textwidth]{analyticalModel}
-	\caption{Analytical Model to estimate the performance, off-chip memory accesses and energy of DNNs.}
+	\subfloat[]{\includegraphics[width=0.25\textwidth]{memAccessSingleLevel}
+		\label{fig:memsAccessSingle}}
+	\hfil	
+	\subfloat[]{\includegraphics[width=0.3\textwidth]{memAccess2Level.pdf}
+		\label{fig:memsAccessDouble}}
+	\hfil	
+	\caption{Memory accesses and energy estimates for accessing data (a) always from the off-chip memory. (b) from two-level of memory hierarchy while reusing the data from on-chip memory.}
+	\label{fig:memsAccess}
+	\vspace{-1.0em}	
+\end{figure}
+
+The NN accelerator  reads the input data (or input activations), filter weights, and partial computations from the off-chip memory and stores them temporarly in the on-chip memory to perform the layer computations. The output of the computations are then finally stored into the off-chip memory, as shown in Figure~\ref{fig:nnDataFlow}. The layer data is stored as multi-dimensional arrays in the off-chip memory and generally it is too large to fit in the local on-chip memory. To perform  the computations, the 3D layer data  (Figure~\ref{fig:layerTiling}) is partitioned into small tiles (Figure~\ref{fig:zoomedTile}) and these tiles are fetched from the off-chip memory repeatedly to compute the final output sum. The tile dimensions (data-partitioning) and the order in which these tiles are processed (scheduling) significantly impact the amount of data reuse and thus the overall energy consumption and throughput of DNN accelerators. 
+
+Determining the optimal tile dimensions require comparison of the off-chip memory accesses for different tile dimensions and data reuse approaches. Modern DNNs have variety of layers (convolution, fully connected, recurrent, pooling) which exhibit different type of data access patterns. Even the layers of the same type differs each other in shapes and sizes. Due to varying layer shapes and sizes, optimal partitioning and scheduling varies among layers. Finding the optimal partitioning and scheduling scheme by performing the measurements on the hardware is time consuming and large search space makes it practically impossible.
+\begin{figure}[!htb]
+	\centering
+	\subfloat[]{\includegraphics[width=0.35\textwidth]{nnDataFlow.pdf}
+		\label{fig:nnDataFlow}}
+	\hfil	
+	\subfloat[]{\includegraphics[width=0.25\textwidth]{partitioned3DShape.pdf}
+		\label{fig:layerTiling}}
+	\hfil
+	\subfloat[]{\includegraphics[width=0.15\textwidth]{zoomedTile.pdf}
+    	\label{fig:zoomedTile}}
+   \hfil	
+	\caption{(a) Read/Write of inputs, weights and partial/final outputs from different level of memories. (b) 3D data partitioned into tiles. (c) A 3D tile.}
+	\label{fig:nnLayerData}
+	\vspace{-1.0em}	
+\end{figure}
+
+To address this we have developed an analytical framework that computes the off-chip memory accesses and data access energy of a layer, number of compute cycles for mapping a layer on a given PE-array, while considering the architectural and implementation constraints. Figure~\ref{fig:analyticalModel} shows the block diagram of the analytical framework. The framework is used as a design space exploration engine to find the optimal partitioning and scheduling scheme for a given layer shape to optimize the energy efficiency and throughput of NN accelerators. 
+\begin{figure}[!htb]
+	\centering
+	\includegraphics[width=0.7\textwidth]{analyticalModel}
+	\caption{Analytical framework to estimate the performance, off-chip memory accesses and energy of DNNs.}
 	\label{fig:analyticalModel}
 \end{figure}
+The data shape and tile dimensions are $\langle W,H,N\rangle$ and $\langle T_c,T_r,T_n\rangle$, as shown in Figure~\ref{fig:layerTiling} and Figure~\ref{fig:zoomedTile}, respectively. For a given data-reuse approach, all the tiles of a given 3D data type make the same number of trips from off-chip memory. The off-chip memory access of a partitioned 3D data can be computed as following
+\begin{align}\label{eq:BasicOffChip3DDataAccess}
+	\numBytesOffChip_{3D}{=}\sum_{t=1}^{N_{tiles}}(\numBytesOffChip_{t}{\times}r){=}r{\times} \sum_{t=1}^{N_{tiles}}{\numBytesOffChip_{t}}
+\end{align}
+where $N_{tiles}$ is the number of tiles. $r$ and $\numBytesOffChip_{t}$ are the trips count and the number of bytes accessed from off-chip memory for the $t^{th}$ tile, respectively. 
+\begin{figure}[!htb]
+	\centering
+	\subfloat[]{\includegraphics[width=0.35\textwidth]{measuredVsEstimated.pdf}
+		\label{fig:measVsEst}}
+	\hfil
+	\subfloat[]{\includegraphics[width=0.35\textwidth]{memAccessDistribution.pdf}
+		\label{fig:ifmOfmWtsDistribution}}
+	\hfil   
+	\caption{Off-chip memory accesss of VGG16 layers (a) Comparison between the analytical framework and measured on hardware. (b) Breakdown by data type using analytical framework.}
+	\label{fig:nnLayerData}
+%	\vspace{-1.0em}	
+\end{figure}
+The analytical framework computes the off-chip memory accesses of a given 3D data using the above methodology, while considering the data resolution, architectural constraint. For example, limited size of the on-chip memory constraints the tile dimensions.  In addition, the framework takes into account the bus width and data alignment to precisely compute the off-chip memory accesses. Analytical framework implements models for different kinds of layers, data reuse schemes to precisely compute the memory accesses and data access energy. 
+
+Figure~\ref{fig:measVsEst} shows the comparison between the off-chip memory accesses estimated by the analytical framework and measurements performed on Xilinx FPGA for different layers of varying shapes and sizes of a popular CNN, VGG16. The experimental results on popular CNNs, VGG16, AlexNet and VGG16 shows that the difference between estimated and measured off-chip memory accesses is less than 4\%. The framework is also useful in analyzing the layer wise distribution and breakdown of memory accesses as shown in Figure~\ref{fig:ifmOfmWtsDistribution}. The proposed framework serve as a useful tool for quickly analysing the memory accesses and data access energy for different tile dimensions and data reuse scheme to search for the optimal solution. 
+
+%\subsubsection{Estimating the compute cycles}
 
 \section{Optimizing the Performance of CNN Accelerators}
 \subsection{Introduction}
-Modern CNNs are very deep and have millions of parameters. To achieve high accuracy CNNs perform compute and memory intensive operations.  CNN accelerators exploits the parallelism to speed up the computations, however limited on-chip memory restricts the data reuse from on-chip memory. This results in large number of off-chip memory accesses, which degrades the performance and energy efficiency of CNN acclerators. 
+To achieve high accuracy CNNs perform compute and memory intensive operations. To speed up the computations, CNN accelerators use large number of processing elements to exploit the parallelism. However limited off-chip memory bandwidth limits their performance. In addition, large volume of data transfer from the off-chip memory also results in high energy consumption. To improve the energy-efficiency and throughput it is critical to maximize the data reuse from the on-chip memory.  
 
 CNNs have a sequence of mainly three types of layers: convolution layer (CL), pooling layer, and fully connected layer (FCL). There are several CLs, and a pooling layer usually follows each CL. The last few layers of the CNNs are FCLs. The computations of a CL and an FCL are illustrated in Figure~\ref{fig:CLOps} and~\ref{fig:FCLOps}, respectively. Each CL and FCL layer takes 3D input frames (\textit{ifm}) and applies filter weights (\textit{wts}) to compute output frames (\textit{ofm}).
 \begin{figure}[!htb]
@@ -214,7 +312,7 @@ CNNs have a sequence of mainly three types of layers: convolution layer (CL), po
 	\vspace{-1.0em}	
 \end{figure}
 
-CNN accelerators apply loop tiling to partition the layer data into small tiles that fits into on-chip memory. Loop tiling is a compiler  technique~\cite{aho2006compilers} that partitions the loop iteration space and large arrays into smaller tiles to increase the data locality and ensures that data fits into smaller memories. 
+Due to limited on-chip memory size, CNN accelerators apply loop tiling to partition the layer data into small tiles that fits into on-chip memory. Loop tiling is a compiler  technique~\cite{aho2006compilers} that partitions the loop iteration space and large arrays into smaller tiles to increase the data locality and ensures that data fits into smaller memories. 
 Fig.~\ref{fig:partitioningDataUsingTiling} shows a layer's data stored in off-chip memory and its tiles in the accelerator's on-chip buffer.
 \begin{figure}[!htb]
 	\centering
@@ -223,51 +321,11 @@ Fig.~\ref{fig:partitioningDataUsingTiling} shows a layer's data stored in off-ch
 	\label{fig:partitioningDataUsingTiling}
 	\vspace{-1.0em}
 \end{figure}
- The order of loops determines the scheduling of the tiles. The scheduling scheme, which minimizes the trips of the \textit{ifm} tiles between the accelerator and off-chip memory, is referred to as the input-reuse-oriented scheme (IRO). Similarly, the other two schemes, which minimize the trips of \textit{ofm} and \textit{wts} are referred to as output-reuse-oriented (ORO) and weight-reuse-oriented (WRO) scheme, respectively. The off-chip memory access depends on the data reuse scheme and the tile dimensions.  The tile dimensions significantly impacts the off-chip memory accesses~\cite{zhang2015optimizing, Li2018SmartShuttleOO}. 
+ The order of loops determines the scheduling of the tiles. The scheduling scheme, which minimizes the trips of the \textit{ifm} tiles between the accelerator and off-chip memory, is referred to as the input-reuse-oriented scheme (IRO). Similarly, the other two schemes, which minimize the trips of \textit{ofm} and \textit{wts} are referred to as output-reuse-oriented (ORO) and weight-reuse-oriented (WRO) scheme, respectively. The off-chip memory access depends on the scheduling scheme and the tile dimensions~\cite{zhang2015optimizing, Li2018SmartShuttleOO}. 
    
-CNN's layers have varying shapes. First few layers have large volume of \textit{ifm} and \text{ofm} and last few CLs and FCLs have large volume of \textit{wts}. The data reuse scheme optimal for one layer may be suboptimal for other layers due to varying layer shapes. In addition, memory accesses depend on the architectural parameters of the accelerator like bus width and data alignment. Our approach considers architectural parameters to compute the off-chip memory accesses and determines the optimal solution for each CL and FC layer.
-
+CNN's layers have varying shapes. First few layers have large volume of \textit{ifm} and \text{ofm} and last few CLs and FCLs have large volume of \textit{wts}. The data reuse scheme optimal for one layer may be suboptimal for other layers due to varying layer shapes. In addition, memory accesses depend on the architectural parameters of the accelerator like bus width and data alignment. 
 \subsection{Related Work}
-Zhang et al.~\cite{zhang2015optimizing} and Li et al.~\cite{Li2018SmartShuttleOO} used loop tiling to optimize the off-chip memory accesses. They expressed the off-chip memory access as a function of tile dimensions and layer shape. Zhang et al.~\cite{zhang2015optimizing} determined optimal tile dimensions by enumerating all the legal tile dimensions. To reduce the hardware design complexity, they determined a global optimal tile dimension and used a common data reuse scheme for all the layers. 
-Li et al.~\cite{Li2018SmartShuttleOO} proposed a layer-wise adaptive data partitioning and scheduling scheme. However, their approach ignored the architectural parameters and address alignment, and assumed that all tiles of the same dimensions have the same off-chip memory accesses. With these assumptions, the tile dimensions determined by previous apporaches lead to a suboptimal solution.
-\subsection{Off-Chip Memory Accesses of CNN Layers}
-CNN accelerator access \textit{ifm}, \textit{ofm} and \textit{wts} of the layers from off-chip memory using loop tiling. Tiles are accessed multiple times from off-chip memory. The trips count depend on the data reuse scheme, layer shape, and tile dimensions. Trip counts of IRO, ORO, and WRO schemes can be expressed as the rows of the matrix \eqref{eq:TripCount}, where columns represent ifm, ofm, and weights.
-\begin{align}\label{eq:TripCount}
-	\mathbf{R}=
-	\begin{bmatrix}
-		\mathbf{r}_{iro} \\  \mathbf{r}_{oro} \\ \mathbf{r}_{wro} \\
-	\end{bmatrix}= 
-	\begin{bmatrix}
-		1  & (2\ceil[\big]{\frac{N}{T_n}}-1) & \ceil[\big]{\frac{H}{T_r}} \ceil[\big]{\frac{W}{T_c}}\\[6pt]
-		\ceil[\big]{\frac{M}{T_m}} & 1 & \ceil[\big]{\frac{H}{T_r}} \ceil[\big]{\frac{W}{T_c}}\\[6pt]
-		\ceil[\big]{\frac{M}{T_m}} & (2\ceil[\big]{\frac{N}{T_n}}-1) & 1\\
-	\end{bmatrix}
-\end{align}
-where $\langle T_{c_i},T_{r_i},T_{n_i}\rangle$, $\langle T_{c_o},T_{r_o},T_{m_o}\rangle$ and $\langle K,K,T_{n_i}\rangle$ are the tile dimensions, and $\langle W_i,H_i,N_i\rangle$, $\langle W_o,H_o,M_o\rangle$ and $\langle K,K,N_i\rangle$ are the data shape of \textit{ifm}, \textit{ofm} and \textit{wts}, respectively. The number of bytes accessed from off-chip memory ($\numBytesOffChip$) for a layer can be expressed as the following sum
-\begin{equation}\label{eq:TotalOffChipAccess}
-	\numBytesOffChip{}={}{r_{i}}{\cdot}\numBytesOffChip_{i}{+}{r_{o}}{\cdot}\numBytesOffChip_{o}{+}{r_{w}}{\cdot}\numBytesOffChip_{w}
-\end{equation}
-where $\numBytesOffChip_{i}$, $\numBytesOffChip_{o}$ and $\numBytesOffChip_{w}$ are the number of bytes accessed in one trip and $r_{i}$, $r_{o}$ and $r_{w}$ are the trips count of \textit{ifm, ofm} and \textit{wts} for the data reuse scheme, respectively. We compute the $\numBytesOffChip_{i}$, $\numBytesOffChip_{o}$ and $\numBytesOffChip_{w}$ for each layer considering the architectural parameters using equation~\ref{eq:accessfromUnalignedAddr}.
-
-\subsubsection{Constraints}
-The CNN accelerator stores the tiles of \textit{ifm}, \textit{ofm} and \textit{wts} in on-chip memory to perform the computations. Limited on-chip memory and the layer shape constraints the tile dimensions. Constraints are shown in~\eqref{eq:onChipConstraint} below
-\begin{align}\label{eq:onChipConstraint}
-	\begin{split}
-		&(V_{i}{+}V_{o}{+}V_{w})\leq \BuffSize \\
-		&0<T_{c_o}\leq W_o,~\ 0<T_{r_o}\leq H_o\\
-		&0<T_{n_i}\leq N_i,~\ 0<T_{m_o}\leq M_o
-	\end{split}
-\end{align}
-where $\BuffSize$ is the on-chip memory size and $V_{i}$, $V_{o}$ and $V_{w}$ are the \textit{ifm}, \textit{ofm} and \textit{wts} tile sizes computed as following 
-\begin{align}\label{eq:tilesVol}
-	\begin{split}
-		V_{i}&=T_{c_i}{\cdot} T_{r_i}{\cdot} T_{n_i}{\cdot}\dataWidth\\
-		V_{o}&=T_{c_o}{\cdot} T_{r_o}{\cdot} T_{m_o}{\cdot}\dataWidth\\
-		V_{w}&=K^2{\cdot} T_{n_i}{\cdot} T_{m_o}{\cdot}\dataWidth
-	\end{split}
-\end{align}
-where $\dataWidth$ is the data width in bytes.
-Determining the optimal tile dimensions that minimizes $\numBytesOffChip$~\eqref{eq:TotalOffChipAccess}, is a constraint optimization problem. Equations~\eqref{eq:TotalOffChipAccess} and~\eqref{eq:onChipConstraint} are non linear and involve four variables $T_{c_o},T_{r_o},T_{n_i},T_{m_o}$. Thus it is not trivial to find the optimal solution.
+Zhang et al.~\cite{zhang2015optimizing} and Li et al.~\cite{Li2018SmartShuttleOO} used loop tiling to optimize the off-chip memory accesses. They expressed the off-chip memory access as a function of tile dimensions and layer shape and determined optimal tile dimensions by enumerating all the legal tile dimensions. To reduce the hardware design complexity, they determined a global optimal tile dimension and used a common data reuse scheme for all the layers. Due to varying layer shapes, the optimal tile dimension and data-reuse scheme for different layers varies. To overcome  this, Li et al.~\cite{Li2018SmartShuttleOO} proposed a layer-wise adaptive data partitioning and scheduling scheme. However, their approach ignored the architectural parameters and address alignment, and assumed that all tiles of the same dimensions have the same off-chip memory accesses.  With this assumption, the tile dimensions determined by their apporaches is suboptimal.
 \subsection{Impact of architectural parameters on memory access}\label{sec:OffChipAccessModel}
 The CNN accelerators use a wide data bus to access off-chip memory to meet the high memory bandwidth requirement~\cite{Chen2016EyerissAS,chen2014diannao}. If the number of bytes accessed from an off-chip memory address is not a multiple of bus width or the address is not aligned to the word boundary, it results in unused bytes lanes of the data bus. Figure~\ref{fig:AXI_AccesseOn64BitDataBus} illustrates memory accesses on a 64-bit data bus.  Fig.~\ref{fig:AXI_AccesseOn64BitDataBus}a shows a read transaction of 8 bytes from an aligned address and uses the full bus width. However, if only 5 bytes are read from an aligned address, as shown in \figurename~\ref{fig:AXI_AccesseOn64BitDataBus}b, 8 bytes are still accessed. If 5 bytes are read from an unaligned address, it results in 16 bytes of data access, as shown in Fig.~\ref{fig:AXI_AccesseOn64BitDataBus}d. The unused byte lanes do not carry any useful data, but they contribute to overall energy consumption. The length of the data read should be chosen such that bus utilization is high, and off-chip memory accesses and energy consumption are minimized.
 \begin{figure}[!htb]
@@ -284,15 +342,54 @@ The number of bytes accessed from off-chip memory ($\numBytesOffChip$) for acces
 	\end{aligned}
 \end{equation}
 CNN accelerators access 3D data (ifm, ofm and weights) partitioned into tiles. We proposed a bus width aware approach (BWA) that factors in the architectural parameters to precisely compute the off-chip memory access of CNN layers.
-\subsection{Offline-Tool For Design Space Exploration}
- Exploring design space of tile dimensions on hardware is time consuming and practically not possible. For a given CNN, the optimal tile dimensions and data reuse scheme need to be determined once. To determine the optimal tile dimensions, we have developed an offline tool that computes the off-chip memory access of CLs and FCLs of CNN which considering the architectural parameters as described in section~\ref{sec:OffChipAccessModel}
- \begin{figure}[!htb]
- 	\centering
- 	\includegraphics[width=0.7\textwidth]{offlineFrameworkForCNN}
- 	\caption{Architecture Aware Offline-Tool for design space exploration}
- 	\label{fig:offlineFrameworkForCNN}
- \end{figure}
- The tool takes layers description and architecture parameters as input and analyzes the off-chip memory accesses ($\numBytesOffChip$) for all feasible solutions that satisfy the constraints (\figurename~\ref{fig:offlineFrameworkForCNN}). The offline-tool can be configured for different on-chip buffer sizes, data reuse schemes, bus-width, data-resolution and determines each layer's optimal data reuse scheme and tile dimensions. The optimal solution determined by the offline-tool is then used in the CNN layers implementation on FPGA implementation to measure the energy and run-time. 
+\subsection{Off-Chip Memory Accesses of CNN Layers}
+CNN accelerator access \textit{ifm}, \textit{ofm} and \textit{wts} of the layers from off-chip memory. The number of bytes accessed from off-chip memory ($\numBytesOffChip$) for a layer can be expressed as the following sum
+\begin{equation}\label{eq:TotalOffChipAccess}
+	\numBytesOffChip{}={}{r_{i}}{\cdot}\numBytesOffChip_{i}{+}{r_{o}}{\cdot}\numBytesOffChip_{o}{+}{r_{w}}{\cdot}\numBytesOffChip_{w}
+\end{equation}
+where $\numBytesOffChip_{i}$, $\numBytesOffChip_{o}$ and $\numBytesOffChip_{w}$ are the number of bytes accessed in one trip and $r_{i}$, $r_{o}$ and $r_{w}$ are the trips count of \textit{ifm, ofm} and \textit{wts} for the data reuse scheme, respectively. We compute the $\numBytesOffChip_{i}$, $\numBytesOffChip_{o}$ and $\numBytesOffChip_{w}$ for each layer considering the architectural parameters using equation~\ref{eq:accessfromUnalignedAddr}.
+
+\subsubsection{Constraints}
+The CNN accelerator stores the tiles of \textit{ifm}, \textit{ofm} and \textit{wts} in on-chip memory to perform the computations. Limited on-chip memory constraints the tile dimensions. Constraints are shown in~\eqref{eq:onChipConstraint} below
+\begin{align}\label{eq:onChipConstraint}
+	\begin{split}
+		&(V_{i}{+}V_{o}{+}V_{w})\leq \BuffSize \\
+		&0<T_{c_o}\leq W_o,~\ 0<T_{r_o}\leq H_o\\
+		&0<T_{n_i}\leq N_i,~\ 0<T_{m_o}\leq M_o
+	\end{split}
+\end{align}
+where $\BuffSize$ is the on-chip memory size and $V_{i}$, $V_{o}$ and $V_{w}$ are the \textit{ifm}, \textit{ofm} and \textit{wts} tile sizes computed as following 
+\begin{align}\label{eq:tilesVol}
+	\begin{split}
+		V_{i}&=T_{c_i}{\cdot} T_{r_i}{\cdot} T_{n_i}{\cdot}\dataWidth\\
+		V_{o}&=T_{c_o}{\cdot} T_{r_o}{\cdot} T_{m_o}{\cdot}\dataWidth\\
+		V_{w}&=K^2{\cdot} T_{n_i}{\cdot} T_{m_o}{\cdot}\dataWidth
+	\end{split}
+\end{align}
+where $\dataWidth$ is the data width in bytes. Limited on-chip memory size results in accessing the tiles multiple times from the off-chip memory.  The trips count depend on the data reuse scheme, layer shape, and tile dimensions. Trip counts of IRO, ORO, and WRO schemes can be expressed as the rows of the matrix \eqref{eq:TripCount}, where columns represent ifm, ofm, and weights.
+\begin{align}\label{eq:TripCount}
+	\mathbf{R}=
+	\begin{bmatrix}
+		\mathbf{r}_{iro} \\  \mathbf{r}_{oro} \\ \mathbf{r}_{wro} \\
+	\end{bmatrix}= 
+	\begin{bmatrix}
+		1  & (2\ceil[\big]{\frac{N}{T_n}}-1) & \ceil[\big]{\frac{H}{T_r}} \ceil[\big]{\frac{W}{T_c}}\\[6pt]
+		\ceil[\big]{\frac{M}{T_m}} & 1 & \ceil[\big]{\frac{H}{T_r}} \ceil[\big]{\frac{W}{T_c}}\\[6pt]
+		\ceil[\big]{\frac{M}{T_m}} & (2\ceil[\big]{\frac{N}{T_n}}-1) & 1\\
+	\end{bmatrix}
+\end{align}
+where $\langle T_{c_i},T_{r_i},T_{n_i}\rangle$, $\langle T_{c_o},T_{r_o},T_{m_o}\rangle$ and $\langle K,K,T_{n_i}\rangle$ are the tile dimensions, and $\langle W_i,H_i,N_i\rangle$, $\langle W_o,H_o,M_o\rangle$ and $\langle K,K,N_i\rangle$ are the data shape of \textit{ifm}, \textit{ofm} and \textit{wts}, respectively. 
+
+Determining the optimal tile dimensions that minimizes $\numBytesOffChip$~\eqref{eq:TotalOffChipAccess}, is a constraint optimization problem. Equations~\eqref{eq:TotalOffChipAccess} and~\eqref{eq:onChipConstraint} are non linear and involve four variables $T_{c_o},T_{r_o},T_{n_i},T_{m_o}$. Thus it is not trivial to find the optimal solution.
+\subsection{Design Space Exploration}
+Exploring design space of tile dimensions on hardware is time consuming and practically not possible. For a given CNN, the optimal tile dimensions and data reuse scheme need to be determined once. To determine the optimal tile dimensions, we have developed an offline tool that computes the off-chip memory access of CLs and FCLs of CNN which considering the architectural parameters as described in section~\ref{sec:OffChipAccessModel}
+\begin{figure}[!htb]
+	\centering
+	\includegraphics[width=0.7\textwidth]{offlineFrameworkForCNN}
+	\caption{Architecture Aware design space exploration}
+	\label{fig:offlineFrameworkForCNN}
+\end{figure}
+The tool takes layers description and architecture parameters as input and analyzes the off-chip memory accesses ($\numBytesOffChip$) for all feasible solutions that satisfy the constraints (\figurename~\ref{fig:offlineFrameworkForCNN}). The offline-tool can be configured for different on-chip buffer sizes, data reuse schemes, bus-width, data-resolution and determines each layer's optimal data reuse scheme and tile dimensions. The optimal solution determined by the offline-tool is then used in the CNN layers implementation on FPGA implementation to measure the energy and run-time. 
 \subsection{Results}
 We experimented with three popular CNN networks, AlexNet~\cite{krizhevsky2012imagenet}, VGG16~\cite{simonyan2014very}, and ResNet~\cite{he2016deep} having 8, 16, and 50 layers, respectively, with varying layer shapes and using filters of dimensions $1{\times}1$, $3{\times}3$, $5{\times}5$, $7{\times}7$, and $11{\times}11$. To compare the results with other approaches, we have used the on-chip buffer size of 108 KB, batch size of 3 for VGG16, and 4 for ResNet and AlexNet. 
 \begin{figure}[!htb]
