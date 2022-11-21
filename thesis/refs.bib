@@ -1,0 +1,765 @@
+%ASIC design of an LSTM accelerator named ELSA, that is suitable for energy-constrained devices.
+@article{azari2020elsa,
+	title={ELSA: A Throughput-Optimized Design of an LSTM Accelerator for Energy-Constrained Devices},
+	author={Azari, Elham and Vrudhula, Sarma},
+	journal={ACM Transactions on Embedded Computing Systems (TECS)},
+	volume={19},
+	number={1},
+	pages={1--21},
+	year={2020},
+	publisher={ACM New York, NY, USA}
+}
+@inproceedings{han2017ese,
+	title={Ese: Efficient speech recognition engine with sparse lstm on fpga},
+	author={Han, Song and Kang, Junlong and Mao, Huizi and Hu, Yiming and Li, Xin and Li, Yubin and Xie, Dongliang and Luo, Hong and Yao, Song and Wang, Yu and others},
+	booktitle={Proceedings of the 2017 ACM/SIGDA International Symposium on Field-Programmable Gate Arrays},
+	pages={75--84},
+	year={2017}
+}
+@inproceedings{park2018maximizing,
+	title={Maximizing system performance by balancing computation loads in LSTM accelerators},
+	author={Park, Junki and Kung, Jaeha and Yi, Wooseok and Kim, Jae-Joon},
+	booktitle={2018 Design, Automation \& Test in Europe Conference \& Exhibition (DATE)},
+	pages={7--12},
+	year={2018},
+	organization={IEEE}
+}
+
+@inproceedings{que2019efficient,
+	title={Efficient weight reuse for large lstms},
+	author={Que, Zhiqiang and Nugent, Thomas and Liu, Shuanglong and Tian, Li and Niu, Xinyu and Zhu, Yongxin and Luk, Wayne},
+	booktitle={2019 IEEE 30th International Conference on Application-specific Systems, Architectures and Processors (ASAP)},
+	volume={2160},
+	pages={17--24},
+	year={2019},
+	organization={IEEE}
+}
+
+@inproceedings{park2020time,
+	title={Time-step interleaved weight reuse for LSTM neural network computing},
+	author={Park, Naebeom and Kim, Yulhwa and Ahn, Daehyun and Kim, Taesu and Kim, Jae-Joon},
+	booktitle={Proceedings of the ACM/IEEE International Symposium on Low Power Electronics and Design},
+	pages={13--18},
+	year={2020}
+}
+
+@article{hochreiter1997long,
+	title={Long short-term memory},
+	author={Hochreiter, Sepp and Schmidhuber, J{\"u}rgen},
+	journal={Neural computation},
+	volume={9},
+	number={8},
+	pages={1735--1780},
+	year={1997},
+	publisher={MIT Press}
+}
+
+%Compression
+@article{wang2017accelerating,
+	title={Accelerating recurrent neural networks: A memory-efficient approach},
+	author={Wang, Zhisheng and Lin, Jun and Wang, Zhongfeng},
+	journal={IEEE Transactions on Very Large Scale Integration (VLSI) Systems},
+	volume={25},
+	number={10},
+	pages={2763--2775},
+	year={2017},
+	publisher={IEEE}
+}
+
+% LSTM Accelerators
+@article{yazdani2019lstm,
+	title={Lstm-sharp: An adaptable, energy-efficient hardware accelerator for long short-term memory},
+	author={Yazdani, Reza and Ruwase, Olatunji and Zhang, Minjia and He, Yuxiong and Arnau, Jose-Maria and Gonz{\'a}lez, Antonio},
+	journal={arXiv preprint arXiv:1911.01258},
+	year={2019}
+}
+@inproceedings{chen2018compact,
+	title={A compact and configurable long short-term memory neural network hardware architecture},
+	author={Chen, Kewei and Huang, Leilei and Li, Minjiang and Zeng, Xiaoyang and Fan, Yibo},
+	booktitle={2018 25th IEEE International Conference on Image Processing (ICIP)},
+	pages={4168--4172},
+	year={2018},
+	organization={IEEE}
+}
+@inproceedings{li2015fpga,
+	title={Fpga acceleration of recurrent neural network based language model},
+	author={Li, Sicheng and Wu, Chunpeng and Li, Hai and Li, Boxun and Wang, Yu and Qiu, Qinru},
+	booktitle={2015 IEEE 23rd Annual International Symposium on Field-Programmable Custom Computing Machines},
+	pages={111--118},
+	year={2015},
+	organization={IEEE}
+}
+
+%pruning, sparse, FPGA-Based LSTM Accelerator Architecture
+@inproceedings{zheng2019high,
+	title={A high energy-efficiency FPGA-based LSTM accelerator architecture design by structured pruning and normalized linear quantization},
+	author={Zheng, Yong and Yang, Haigang and Huang, Zhihong and Li, Tianli and Jia, Yiping},
+	booktitle={2019 International Conference on Field-Programmable Technology (ICFPT)},
+	pages={271--274},
+	year={2019},
+	organization={IEEE}
+}
+
+@inproceedings{guan2017fpga,
+	title={FPGA-based accelerator for long short-term memory recurrent neural networks},
+	author={Guan, Yijin and Yuan, Zhihang and Sun, Guangyu and Cong, Jason},
+	booktitle={2017 22nd Asia and South Pacific Design Automation Conference (ASP-DAC)},
+	pages={629--634},
+	year={2017},
+	organization={IEEE}
+}
+@article{bank2019polar,
+	title={POLAR: A Pipelined/Overlapped FPGA-Based LSTM Accelerator},
+	author={Bank-Tavakoli, Erfan and Ghasemzadeh, Seyed Abolfazl and Kamal, Mehdi and Afzali-Kusha, Ali and Pedram, Massoud},
+	journal={IEEE Transactions on Very Large Scale Integration (VLSI) Systems},
+	volume={28},
+	number={3},
+	pages={838--842},
+	year={2019},
+	publisher={IEEE}
+}
+%Approximate Multiplier AM
+@inproceedings{azari2019energy,
+	title={An energy-efficient reconfigurable LSTM accelerator for natural language processing},
+	author={Azari, Elham and Vrudhula, Sarma},
+	booktitle={2019 IEEE International Conference on Big Data (Big Data)},
+	pages={4450--4459},
+	year={2019},
+	organization={IEEE}
+}
+
+@article{park2019balancing,
+	title={Balancing computation loads and optimizing input vector loading in LSTM accelerators},
+	author={Park, Junki and Yi, Wooseok and Ahn, Daehyun and Kung, Jaeha and Kim, Jae-Joon},
+	journal={IEEE Transactions on Computer-Aided Design of Integrated Circuits and Systems},
+	volume={39},
+	number={9},
+	pages={1889--1901},
+	year={2019},
+	publisher={IEEE}
+}
+
+@article{chang2015recurrent,
+	title={Recurrent neural networks hardware implementation on FPGA},
+	author={Chang, Andre Xian Ming and Martini, Berin and Culurciello, Eugenio},
+	journal={arXiv preprint arXiv:1511.05552},
+	year={2015}
+}
+@inproceedings{ferreira2016fpga,
+	title={An FPGA implementation of a long short-term memory neural network},
+	author={Ferreira, Joao Canas and Fonseca, Jose},
+	booktitle={2016 International Conference on ReConFigurable Computing and FPGAs (ReConFig)},
+	pages={1--8},
+	year={2016},
+	organization={IEEE},
+}
+
+@inproceedings{lee2016fpga,
+	title={FPGA-based low-power speech recognition with recurrent neural networks},
+	author={Lee, Minjae and Hwang, Kyuyeon and Park, Jinhwan and Choi, Sungwook and Shin, Sungho and Sung, Wonyong},
+	booktitle={2016 IEEE International Workshop on Signal Processing Systems (SiPS)},
+	pages={230--235},
+	year={2016},
+	organization={IEEE}
+}
+
+@inproceedings{wang2018c,
+	title={C-LSTM: Enabling efficient LSTM using structured compression techniques on FPGAs},
+	author={Wang, Shuo and Li, Zhe and Ding, Caiwen and Yuan, Bo and Qiu, Qinru and Wang, Yanzhi and Liang, Yun},
+	booktitle={Proceedings of the 2018 ACM/SIGDA International Symposium on Field-Programmable Gate Arrays},
+	pages={11--20},
+	year={2018}
+}
+
+@inproceedings{rybalkin2018finn,
+	title={FINN-L: Library extensions and design trade-off analysis for variable precision LSTM networks on FPGAs},
+	author={Rybalkin, Vladimir and Pappalardo, Alessandro and Ghaffar, Muhammad Mohsin and Gambardella, Giulio and Wehn, Norbert and Blott, Michaela},
+	booktitle={2018 28th international conference on field programmable logic and applications (FPL)},
+	pages={89--897},
+	year={2018},
+	organization={IEEE}
+}
+
+%ASIC Designs
+@inproceedings{conti2018chipmunk,
+	title={Chipmunk: A systolically scalable 0.9 mm 2, 3.08 Gop/s/mW@ 1.2 mW accelerator for near-sensor recurrent neural network inference},
+	author={Conti, Francesco and Cavigelli, Lukas and Paulin, Gianna and Susmelj, Igor and Benini, Luca},
+	booktitle={2018 IEEE Custom Integrated Circuits Conference (CICC)},
+	pages={1--4},
+	year={2018},
+	organization={IEEE}
+}
+
+@article{garofolo1993timit,
+	title={Timit acoustic phonetic continuous speech corpus},
+	author={Garofolo, John S},
+	journal={Linguistic Data Consortium, 1993},
+	year={1993}
+}
+
+@article{sundermeyer2015feedforward,
+	title={From feedforward to recurrent LSTM neural networks for language modeling},
+	author={Sundermeyer, Martin and Ney, Hermann and Schl{\"u}ter, Ralf},
+	journal={IEEE/ACM Transactions on Audio, Speech, and Language Processing},
+	volume={23},
+	number={3},
+	pages={517--529},
+	year={2015},
+	publisher={IEEE}
+}
+
+
+
+
+@article{chetlur2014cudnn,
+	title={{cuDNN}:Efficient primitives for deep learning},
+	author={Chetlur, Sharan and Woolley, Cliff and Vandermersch, Philippe and Cohen, Jonathan and Tran, John and Catanzaro, Bryan and Shelhamer, Evan},
+	journal={arXiv preprint arXiv:1410.0759},
+	year={2014}
+}
+
+@inproceedings{zhang2015optimizing,
+	title={Optimizing {FPGA}-based accelerator design for deep convolutional neural networks},
+	author={Zhang, Chen and Li, Peng and Sun, Guangyu and Guan, Yijin and Xiao, Bingjun and Cong, Jason},
+	booktitle={FPGA},
+	year={2015},
+}
+@inproceedings{wei2019overcoming,
+	title={Overcoming Data Transfer Bottlenecks in {FPGA}-based {DNN} Accelerators via Layer Conscious Memory Management.},
+	author={Wei, Xuechao and Liang, Yun and Cong, Jason},
+	booktitle={DAC},
+	year={2019}
+}
+@inproceedings{gokhale2014240,
+	title={A 240 {G}-ops/s mobile coprocessor for deep neural networks},
+	author={Gokhale, Vinayak and Jin, Jonghoon and Dundar, Aysegul and Martini, Berin and Culurciello, Eugenio},
+	booktitle={CVPR Workshops},
+	year={2014}
+}
+@INPROCEEDINGS{8742284,
+	author={L. {Xie} and X. {Fan} and W. {Cao} and L. {Wang}},
+	booktitle={FPT},
+	title={High Throughput {CNN} Accelerator Design Based on {FPGA}},
+	year={2018}
+}
+@inproceedings{gupta2015deep,
+	title={Deep learning with limited numerical precision},
+	author={Gupta, Suyog and Agrawal, Ankur and Gopalakrishnan, Kailash and Narayanan, Pritish},
+	booktitle={ICML},
+	year={2015}
+}
+@inproceedings{alwani2016fused,
+	title={Fused-layer {CNN} accelerators},
+	author={Alwani, Manoj and Chen, Han and Ferdman, Michael and Milder, Peter},
+	booktitle={MICRO},
+	year={2016}
+}
+
+@article{Chen2016EyerissAS,
+	title={Eyeriss: A Spatial Architecture for Energy-Efficient Dataflow for Convolutional Neural Networks},
+	author={Yu-Hsin Chen and Joel S. Emer and Vivienne Sze},
+	journal={ACM/IEEE ISCA},
+	year={2016}
+}
+@article{chen2016eyeriss,
+	title={Eyeriss: An energy-efficient reconfigurable accelerator for deep convolutional neural networks},
+	author={Chen, Yu-Hsin and Krishna, Tushar and Emer, Joel S and Sze, Vivienne},
+	journal={IEEE Journal of Solid-State Circuits},
+	year={2016},
+}
+@article{chen2014diannao,
+	author = {Chen, Tianshi and Du, Zidong and Sun, Ninghui and Wang, Jia and Wu, Chengyong and Chen, Yunji and Temam, Olivier},
+	year = {2014},
+	title = {Dian{N}ao: A Small-Footprint High-Throughput Accelerator for Ubiquitous Machine-Learning},
+	journal = {ASPLOS}
+}
+@inproceedings{du2015shidiannao,
+	title={Shi{D}ian{N}ao: Shifting vision processing closer to the sensor},
+	author={Du, Zidong and Fasthuber, Robert and Chen, Tianshi and Ienne, Paolo and Li, Ling and Luo, Tao and Feng, Xiaobing and Chen, Yunji and Temam, Olivier},
+	booktitle={ISCA},
+	year={2015}
+}
+
+@inproceedings{chen2014dadiannao,
+	title={Da{D}ian{N}ao: A machine-learning supercomputer},
+	author={Chen, Yunji and Luo, Tao and Liu, Shaoli and Zhang, Shijin and He, Liqiang and Wang, Jia and Li, Ling and Chen, Tianshi and Xu, Zhiwei and Sun, Ninghui and others},
+	booktitle={MICRO},
+	year={2014},
+}
+@article{Li2018SmartShuttleOO,
+	title={Smart{S}huttle: Optimizing off-chip memory accesses for deep learning accelerators},
+	author={Jiajun Li and Guihai Yan and Wenyan Lu and Shuhao Jiang and Shijun Gong and Jingya Wu and Xiaowei Li},
+	journal={DATE},
+	year={2018},
+}
+@manual{AxiProtocolSpec,
+	organization  = "ARM",
+	title         = "AMBA AXI Protocol Specification [Online]. Available at https://developer.arm.com/docs",
+	number        = "IHI 0022D",
+	year          =  2010,
+	note          = "Rev. 2.0"
+}
+@manual{APM,
+	organization  = "Xilinx",
+	title         = "AXI Performance Monitor v5.0 [Online]. Available at https://www.xilinx.com/support/documentation/",
+	number        = "PG037",
+	year          =  2017,
+	note          = "v5.0"
+}
+@manual{XilinxZeroCopy,
+	organization  = "Xilinx",
+	title         = "SDSoC Environment Profiling and Optimization Guide  [Online]. Available at https://www.xilinx.com/support/documentation/",
+	number        = "ug1235",
+	year          =  2018,
+	note          = "v2017.4"
+}
+@manual{XilinxSDSocUserGuide,
+	organization  = "Xilinx",
+	title         = "SDSoC Environment UserGuide [Online]. Available at https://www.xilinx.com/support/documentation/",
+	number        = "UG1027",
+	year          =  2018,
+	note          = "v2018.2"
+}
+@article{simonyan2014very,
+	title={Very deep convolutional networks for large-scale image recognition},
+	author={Simonyan, Karen and Zisserman, Andrew},
+	journal={arXiv preprint arXiv:1409.1556},
+	year={2014}
+}
+@inproceedings{krizhevsky2012imagenet,
+	title={Imagenet classification with deep convolutional neural networks},
+	author={Krizhevsky, Alex and Sutskever, Ilya and Hinton, Geoffrey E},
+	booktitle={NIPS},
+	year={2012}
+}
+@inproceedings{hashemi2017understanding,
+	title={Understanding the impact of precision quantization on the accuracy and energy of neural networks},
+	author={Hashemi, Soheil and Anthony, Nicholas and Tann, Hokchhay and Bahar, R Iris and Reda, Sherief},
+	booktitle={DATE},
+	year={2017},
+}
+
+@Article{Hunter:2007,
+	Author    = {Hunter, J. D.},
+	Title     = {Matplotlib: A 2D graphics environment},
+	Journal   = {Computing in Science \& Engineering},
+	publisher = {IEEE COMPUTER SOC},
+	year      = 2007
+}
+
+@inproceedings{horowitz20141,
+	title={computing's energy problem (and what we can do about it)},
+	author={Horowitz, Mark},
+	booktitle={(ISSCC)},
+	year={2014},
+	organization={IEEE}
+}
+@misc{aho2006compilers,
+	title={Compilers: Principles, Techniques, and Tools},
+	author={Aho, Alfred V and Lam, Monica S and Sethi, Ravi and Ullman, Jeffrey D},
+	year={2006},
+	publisher={Pearson Education, Inc}
+}
+@inproceedings{he2016deep,
+	title={Deep residual learning for image recognition},
+	author={He, Kaiming and Zhang, Xiangyu and Ren, Shaoqing and Sun, Jian},
+	booktitle={CVPR},
+	year={2016}
+}
+@electronic{appleFaceID,
+	title         = "About {Face ID} advanced technology",
+	url           = "https://support.apple.com/en-in/HT208108",
+	year          = "2020"
+}
+@inproceedings{tewari2020bus,
+	title={Bus Width Aware Off-Chip Memory Access Minimization for CNN Accelerators},
+	author={Tewari, Saurabh and Kumar, Anshul and Paul, Kolin},
+	booktitle={ISVLSI},
+	year={2020},
+}
+@article{williams2009roofline,
+	title={Roofline: an insightful visual performance model for multicore architectures},
+	author={Williams, Samuel and Waterman, Andrew and Patterson, David},
+	journal={Communications of the ACM},
+	volume={52},
+	number={4},
+	pages={65--76},
+	year={2009},
+	publisher={ACM New York, NY, USA}
+}
+
+@article{lin2016overcoming,
+  title={Overcoming challenges in fixed point training of deep convolutional networks},
+  author={Lin, Darryl D and Talathi, Sachin S},
+  journal={arXiv preprint arXiv:1607.02241},
+  year={2016}
+}
+
+@IEEEtranBSTCTL{IEEEexample:BSTcontrol,
+	CTLuse_forced_etal       = "yes",
+	CTLmax_names_forced_etal = "3",
+	CTLnames_show_etal       = "3" 
+}
+
+@inproceedings{Zhang2015,
+	author = {Zhang, Qian and Wang, Ting and Tian, Ye and Yuan, Feng and Xu, Qiang},
+	title = {ApproxANN: An Approximate Computing Framework for Artificial Neural Network},
+	booktitle = {Proceedings of the Design, Automation Test in Europe Conference Exhibition (DATE)},
+	year = {2015},
+	isbn = {978-3-9815370-4-8},
+	location = {Grenoble, France},
+	pages = {701--706},
+	numpages = {6},
+	acmid = {2755913},
+	publisher = {EDA Consortium},
+	address = {San Jose, CA, USA},
+} 
+
+@INPROCEEDINGS{Moons2017, 
+	author={B. {Moons} and R. {Uytterhoeven} and W. {Dehaene} and M. {Verhelst}}, 
+	booktitle={IEEE International Solid-State Circuits Conference (ISSCC)}, 
+	title={14.5 Envision: A 0.26-to-10TOPS/W subword-parallel dynamic-voltage-accuracy-frequency-scalable Convolutional Neural Network processor in 28nm FDSOI}, 
+	year={2017}, 
+	volume={}, 
+	number={}, 
+	pages={246-247}, 
+}
+
+@inproceedings{Gupta2015,
+	author = {Gupta, Suyog and Agrawal, Ankur and Gopalakrishnan, Kailash and Narayanan, Pritish},
+	title = {Deep Learning with Limited Numerical Precision},
+	booktitle = {Proceedings of the 32Nd International Conference on International Conference on Machine Learning},
+	year = {2015},
+	location = {Lille, France},
+	pages = {1737--1746},
+	numpages = {10}
+} 
+
+
+@inproceedings{Hashemi2017,
+	author = {Hashemi, Soheil and Anthony, Nicholas and Tann, Hokchhay and Bahar, R. Iris and Reda, Sherief},
+	title = {Understanding the Impact of Precision Quantization on the Accuracy and Energy of Neural Networks},
+	booktitle = {Proceedings of the Design, Automation Test in Europe Conference Exhibition (DATE)},
+	year = {2017},
+	pages = {1478--1483},
+	numpages = {6},
+}
+
+@inproceedings{Zhang2014,
+	author = {Zhang, Qian and Yuan, Feng and Ye, Rong and Xu, Qiang},
+	title = {ApproxIt: An Approximate Computing Framework for Iterative Methods},
+	booktitle = {Proceedings of the 51st Annual Design Automation Conference},
+	year = {2014},
+	pages = {97:1--97:6},
+	articleno = {97},
+	numpages = {6},
+} 
+
+@INPROCEEDINGS{Ye2013, 
+	author={R. {Ye} and T. {Wang} and F. {Yuan} and R. {Kumar} and Q. {Xu}}, 
+	booktitle={IEEE/ACM International Conference on Computer-Aided Design (ICCAD)}, 
+	title={On reconfiguration-oriented approximate adder design and its application}, 
+	year={2013}, 
+	volume={}, 
+	number={}, 
+	pages={48-54}, 
+}
+
+@INPROCEEDINGS{Esmaeilzadeh2012, 
+	author={H. {Esmaeilzadeh} and A. {Sampson} and L. {Ceze} and D. {Burger}}, 
+	booktitle={45th Annual IEEE/ACM International Symposium on Microarchitecture}, 
+	title={Neural Acceleration for General-Purpose Approximate Programs}, 
+	year={2012}, 
+	volume={}, 
+	number={}, 
+	pages={449-460}, 
+}
+
+@inproceedings{Venkataramani2012,
+	author = {Venkataramani, Swagath and Sabne, Amit and Kozhikkottu, Vivek and Roy, Kaushik and Raghunathan, Anand},
+	title = {SALSA: Systematic Logic Synthesis of Approximate Circuits},
+	booktitle = {Proceedings of the 49th Annual Design Automation Conference},
+	year = {2012},
+	isbn = {978-1-4503-1199-1},
+	pages = {796--801},
+	numpages = {6},
+} 
+
+@ARTICLE{Gupta2012, 
+	author={V. {Gupta} and D. {Mohapatra} and A. {Raghunathan} and K. {Roy}}, 
+	journal={IEEE Tran. on Computer-Aided Design of Integrated Circuits and Systems}, 
+	title={Low-Power Digital Signal Processing Using Approximate Adders}, 
+	year={2013}, 
+	volume={32}, 
+	number={1}, 
+	pages={124-137}, 
+}
+
+@inproceedings{Narayanan2014,
+	author = {Narayanan, Vijaykrishnan and Datta, Suman and Cauwenberghs, Gert and Chiarulli, Don and Levitan, Steve and Wong, Philip},
+	title = {Video Analytics Using Beyond CMOS Devices},
+	booktitle = {Design, Automation Test in Europe Conference Exhibition (DATE)},
+	year = {2014},
+	isbn = {978-3-9815370-2-4},
+	pages = {344:1--344:5},
+} 
+
+@article{Phelim2015,
+	author = {Bradley, Phelim and Gordon, N. Claire and Walker, Timothy M. and Dunn, Laura and Heys, Simon and Huang, Bill and Earle, Sarah and Pankhurst, Louise J. and Anson, Luke and de Cesare, Mariateresa and Piazza, Paolo and Votintseva, Antonina A. and Golubchik, Tanya and Wilson, Daniel J. and Wyllie, David H. and Diel, Roland and Niemann, Stefan and Feuerriegel, Silke and Kohl, Thomas A. and Ismail, Nazir and Omar, Shaheed V. and Smith, E. Grace and Buck, David and McVean, Gil and Walker, A. Sarah and Peto, Tim E. A. and Crook, Derrick W. and Iqbal, Zamin},
+	journal = {Nature Communications},
+	month = {dec},
+	number = {1},
+	pages = {10063},
+	title = {{Rapid antibiotic-resistance predictions from genome sequence data for Staphylococcus aureus and Mycobacterium tuberculosis}},
+	volume = {6},
+	year = {2015}
+}
+
+@article{McConnell2012,
+	year = 2012,
+	month = {feb},
+	publisher = {{IOP} Publishing},
+	volume = {341},
+	pages = {012018},
+	author = {Sabine McConnell and Robert Sturgeon and Gregory Henry and Andrew Mayne and Richard Hurley},
+	title = {Scalability of Self-organizing Maps on a {GPU} cluster using {OpenCL} and {CUDA}},
+	journal = {Journal of Physics: Conference Series},
+}
+
+
+@inbook{Porrmann2006,
+	Address = {Boston, MA},
+	Author = {Porrmann, Mario and Witkowski, Ulf and R{\"u}ckert, Ulrich},
+	Booktitle = {FPGA Implementations of Neural Networks},
+	Editor = {Omondi, Amos R. and Rajapakse, Jagath C.},
+	Pages = {247--269},
+	Publisher = {Springer US},
+	Title = {Implementation of Self-Organizing Feature Maps in Reconfigurable Hardware},
+	Ty = {CHAP},
+	Year = {2006}}
+
+@article{Kohonen2013,
+	author = {Kohonen, Teuvo},
+	title = {Essentials of the Self-organizing Map},
+	journal = {Neural Netw.},
+	issue_date = {January, 2013},
+	volume = {37},
+	month = jan,
+	year = {2013},
+	issn = {0893-6080},
+	pages = {52--65},
+	numpages = {14},
+	publisher = {Elsevier Science Ltd.},
+} 
+
+@article{Ansaloni2011EGRA:Template, title = {{EGRA: A coarse grained reconfigurable architectural template}}, year = {2011}, journal = {IEEE Transactions on Very Large Scale Integration (VLSI) Systems}, author = {Ansaloni, Giovanni and Bonzini, Paolo and Pozzi, Laura}, number = {6}, pages = {1062--1074}, volume = {19}, publisher = {IEEE} }
+
+@inproceedings{Hartenstein1995AArchitecture, title = {{A datapath synthesis system for the reconfigurable datapath architecture}}, year = {1995}, booktitle = {Design Automation Conference, 1995. Proceedings of the ASP-DAC'95/CHDL'95/VLSI'95., IFIP International Conference on Hardware Description Languages. IFIP International Conference on Very Large Scal}, author = {Hartenstein, Reiner W and Kress, Rainer}, pages = {479--484} }
+
+@inproceedings{Mei2003ADRES:Matrix, title = {{ADRES: An architecture with tightly coupled VLIW processor and coarse-grained reconfigurable matrix}}, year = {2003}, booktitle = {Inter. Conf. on Field Programmable Logic and App.}, author = {Mei, Bingfeng and Vernalde, Serge and Verkest, Diederik and De Man, Hugo and Lauwereins, Rudy}, pages = {61--70} }
+
+@article{Taylor2002ThePrograms, title = {{The raw microprocessor: A computational fabric for software circuits and general-purpose programs}}, year = {2002}, journal = {IEEE micro}, author = {Taylor, Michael Bedford and Kim, Jason and Miller, Jason and Wentzlaff, David and Ghodrat, Fae and Greenwald, Ben and Hoffman, Henry and Johnson, Paul and Lee, Jae-Wook and Lee, Walter and {others}}, number = {2}, pages = {25--35}, volume = {22}, publisher = {IEEE} }
+
+@inproceedings{Yang2018RiBoSOM, title = {{RiBoSOM}}, year = {2018}, booktitle = {Proceedings of the 18th International Conference on Embedded Computer Systems Architectures, Modeling, and Simulation - SAMOS}, author = {Yang, Yu and Stathis, Dimitrios and Sharma, Prashant and Paul, Kolin and Hemani, Ahmed and Grabherr, Manfred and Ahmad, Rafi}, pages = {105--114}, publisher = {ACM Press}, address = {New York, New York, USA}, isbn = {9781450364942}, doi = {10.1145/3229631.3229650}, keywords = {3D DRAM, GPU, neural networks, parallel architecture, self-organizing maps, silago, synchoros VLSI design} }
+
+@inproceedings{Hemani2017,
+	author = {Hemani, Ahmed and Jafri, Syed Mohammed Asad Hassan and Masoumian, Shayesteh},
+	booktitle = {Proceedings of the Eleventh IEEE/ACM International Symposium on Networks-on-Chip},
+	pages = {1--10},
+	title = {{Synchoricity and NOCs could make Billion Gate Custom Hardware Centric SOCs Affordable}},
+	year = {2017}
+}
+
+@INPROCEEDINGS{COG,
+	author={S. M. A. H. {Jafri} and N. {Farahini} and A. {Hemani}},
+	booktitle={IEEE Computer Society Annual Symposium on VLSI},
+	title={SiLago-CoG: Coarse-Grained Grid-Based Design for Near Tape-Out Power Estimation Accuracy at High Level},
+	year={2017},
+	volume={},
+	number={},
+	pages={25-31},
+}
+
+@phdthesis{shami2012dynamically,
+	title={Dynamically reconfigurable resource array},
+	author={Shami, Muhammad Ali},
+	year={2012},
+	school={KTH Royal Institute of Technology}
+}
+
+@inproceedings{li2013system,
+	title={System level synthesis of hardware for DSP applications using pre-characterized function implementations},
+	author={Li, Shuo and Farahini, Nasim and Hemani, Ahmed and Rosvall, Kathrin and Sander, Ingo},
+	booktitle={Proceedings of the Ninth IEEE/ACM/IFIP International Conference on Hardware/Software Codesign and System Synthesis},
+	pages={16},
+	year={2013},
+}
+@inproceedings{Pagliari2018,
+	address = {New York, New York, USA},
+	author = {Pagliari, Daniele Jahier and Macii, Enrico and Poncino, Massimo},
+	booktitle = {Proceedings of the International Symposium on Low Power Electronics and Design},
+	pages = {1--6},
+	publisher = {ACM Press},
+	title = {{Dynamic Bit-width Reconfiguration for Energy-Efficient Deep Learning Hardware}},
+	year = {2018}
+}
+@INPROCEEDINGS{8056820,
+	author={L. {Jiao} and C. {Luo} and W. {Cao} and X. {Zhou} and L. {Wang}},
+	booktitle={27th International Conference on Field Programmable Logic and Applications},
+	title={Accelerating low bit-width convolutional neural networks with embedded FPGA},
+	year={2017},
+	volume={},
+	number={},
+	pages={1-4},
+	month={Sep.}}
+
+@Article{3dstack,
+	author="Liu, Pei
+	and Hemani, Ahmed
+	and Paul, Kolin
+	and Weis, Christian
+	and Jung, Matthias
+	and Wehn, Norbert",
+	title="3D-Stacked Many-Core Architecture for Biological Sequence Analysis Problems",
+	journal="International Journal of Parallel Programming",
+	year="2017",
+	month="Dec",
+	day="01",
+	volume="45",
+	number="6",
+	pages="1420--1460"
+}
+@Article{fft,
+	author="Shami, Muhammad Ali
+	and Tajammul, Muhammad Adeel
+	and Hemani, Ahmed",
+	title="Configurable FFT Processor Using Dynamically Reconfigurable Resource Arrays",
+	journal="Journal of Signal Processing Systems",
+	year="2019",
+	month="May",
+	day="01",
+	volume="91",
+	number="5",
+	pages="459--473"
+}
+
+@INPROCEEDINGS{39watt,
+	author={N. {Farahini} and S. {Li} and M. A. {Tajammul} and M. A. {Shami} and G. {Chen} and A. {Hemani} and W. {Ye}},
+	booktitle={2013 IEEE International Symposium on Circuits and Systems (ISCAS2013)},
+	title={39.9 GOPs/watt multi-mode CGRA accelerator for a multi-standard basestation},
+	year={2013},
+	volume={},
+	number={},
+	pages={1448-1451},
+	month={May},}
+
+@INPROCEEDINGS{control,
+	author={M. A. {Shami} and A. {Hemani}},
+	booktitle={2010 22nd International Symposium on Computer Architecture and High Performance Computing},
+	title={Control Scheme for a CGRA},
+	year={2010},
+	volume={},
+	number={},
+	pages={17-24},
+	month={Oct},}
+
+
+@INPROCEEDINGS{AGU,
+	author={M. A. {Shami} and A. {Hemani}},
+	booktitle={ASAP 2011 - 22nd IEEE International Conference on Application-specific Systems, Architectures and Processors},
+	title={Address generation scheme for a coarse grain reconfigurable architecture},
+	year={2011},
+	volume={},
+	number={},
+	pages={17-24},
+	month={Sep.},}
+
+@INPROCEEDINGS{mocha,
+	author={S. M. A. H. {Jafri} and A. {Hemani} and K. {Paul} and N. {Abbas}},
+	booktitle={2017 IEEE International Parallel and Distributed Processing Symposium (IPDPS)},
+	title={MOCHA: Morphable Locality and Compression Aware Architecture for Convolutional Neural Networks},
+	year={2017},
+	volume={},
+	number={},
+	pages={276-286},
+	month={May},}
+
+
+@INPROCEEDINGS{dimarch,
+	author={M. {Adeel Tajammul} and M. A. {Shami} and A. {Hemani} and S. {Moorthi}},
+	booktitle={NORCHIP 2010},
+	title={A NoC based distributed memory architecture with programmable and partitionable capabilities},
+	year={2010},
+	volume={},
+	number={},
+	pages={1-6},
+	month={Nov},}
+
+@INPROCEEDINGS{dpu,
+	author="Shami, Muhammad Ali
+	and Hemani, Ahmed",
+	booktitle={2009 IEEE Workshop on Signal Processing Systems},
+	title={Morphable DPU: Smart and efficient data path for signal processing applications},
+	year={2009},
+	volume={},
+	number={},
+	pages={167-172},
+	month={Oct},}
+
+
+@INPROCEEDINGS{inteconnect,
+	author={M. A. {Shami} and A. {Hemani}},
+	booktitle={2009 IEEE 8th International Conference on ASIC},
+	title={Partially reconfigurable interconnection network for dynamically reprogrammable resource array},
+	year={2009},
+	volume={},
+	number={},
+	pages={122-125},
+	month={Oct},}
+
+@article{sze2017efficient,
+  title={Efficient processing of deep neural networks: A tutorial and survey},
+  author={Sze, Vivienne and Chen, Yu-Hsin and Yang, Tien-Ju and Emer, Joel S},
+  journal={Proceedings of the IEEE},
+  volume={105},
+  number={12},
+  pages={2295--2329},
+  year={2017},
+  publisher={Ieee}
+}
+
+@inproceedings{wolf1991data,
+  title={A data locality optimizing algorithm},
+  author={Wolf, Michael E and Lam, Monica S},
+  booktitle={Proceedings of the ACM SIGPLAN 1991 conference on Programming language design and implementation},
+  pages={30--44},
+  year={1991}
+}
+
+@article{lam1991cache,
+  title={The cache performance and optimizations of blocked algorithms},
+  author={Lam, Monica D and Rothberg, Edward E and Wolf, Michael E},
+  journal={ACM SIGOPS Operating Systems Review},
+  volume={25},
+  number={Special Issue},
+  pages={63--74},
+  year={1991},
+  publisher={ACM New York, NY, USA}
+}
+@article{mckellar1969organizing,
+  title={Organizing matrices and matrix operations for paged memory systems},
+  author={McKellar, AC and Coffman Jr, Edward G},
+  journal={Communications of the ACM},
+  volume={12},
+  number={3},
+  pages={153--165},
+  year={1969},
+  publisher={ACM New York, NY, USA}
+}
+@inproceedings{sarkar1991optimization,
+  title={Optimization of array accesses by collective loop transformations},
+  author={Sarkar, Vivek and Gao, Guang R},
+  booktitle={Proceedings of the 5th International Conference on Supercomputing},
+  pages={194--205},
+  year={1991}
+}

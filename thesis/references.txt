@@ -1,0 +1,99 @@
+In summary, deep learning is an approach to machine learning that has drawn
+heavily on our knowledge of the human brain, statistics and applied math as it
+developed over the past several decades. In recent years, it has seen tremendous
+growth in its popularity and usefulness, due in large part to more powerful com-
+puters, larger datasets and techniques to train deeper networks. The years ahead
+are full of challenges and opportunities to improve deep learning even further and
+bring it to new frontiers.
+
+Deep feedforward networks, also often called feedforward neural networks,
+or multilayer perceptrons (MLPs), are the quintessential deep learning models.
+The goal of a feedforward network is to approximate some function f ∗ . For example,
+for a classiﬁer, y = f ∗ (x ) maps an input x to a category y . A feedforward network
+deﬁnes a mapping y = f (x; θ) and learns the value of the parameters θ that result
+in the best function approximation.
+
+These models are called feedforward because information ﬂows through the
+function being evaluated from x, through the intermediate computations used to
+deﬁne f , and ﬁnally to the output y. There are no feedback connections in which
+outputs of the model are fed back into itself. When feedforward neural networks
+are extended to include feedback connections, they are called recurrent neural
+networks, presented in chapter 10 .
+
+Diagram to compare ASIC, FPGA, CGRA, DSP, GPU and CPU MOPS/w and flexibility.
+	A Survey of Coarse-Grained Reconfigurable Architecture and Design: Taxonomy, Challenges, and Applications
+
+Inventors dreamed about creating machines that can think. AI is a thriving field with many practical applications. It solves the problem to solve complex problems like understand speech and images, automate several routine jobs and make diagnoses in medicine and active research.
+Machine learning allows computer to learn from real world data. They learn in terms of hierarchy of concepts build on top of each others. This hierarch allow them to learn complicated concepts by building them from simpler concepts. Machine learning systems have the ability to acquire the knwoledge by extracting patterns from the data.
+
+The quintessential example of a deep learning model is the feedforward deep network or multilayer perceptron (MLP). A multilayer perceptron is just a mathematical function mapping some set of input values to output values. The function is formed by composing many simpler functions. We can think of each application of a diﬀerent mathematical function as providing a new representation
+of the input.
+
+The last decade has witnessed the penetration and proliferation of machine learning as well as computer vision algorithms into our daily lives. (Kedia)
+
+Talk about the systems that can adapt with changes in NN Architectures : Configurable/Programmable.
+Different kind of technologies and tradeoffs GPUs vs. ASIC vs. FPGA vs. Custom DNN vs. CGRAs.
+Talk in detail about the edge AI Accelerators.
+
+Cloud Computing also has energy is a prime concern in data centers for reducing the carbon footprint. 
+Different computation modes of AI inferencing Cloud, Edge Devices. Benefits of using AI on edge devices. (near sensor processing).
+
+
+A CGRA-based Approach for Accelerating Convolutional Neural Networks
+________________________________________________________________________
+Implementing the entire computing pipelines as hardware
+improves energy efﬁciency, so that more operations can be
+performed at a time. However, such hardwired logics cannot
+be modiﬁed drastically after the fabrication of hardware. The
+state-of-the-art deep learning algorithms are rapidly evolving.
+Therefore the programmability of the computing platform is
+desirable and important.
+
+
+Last Decade has observed phenomenal growth in NN based applications. NNs are able to solve several complex problems which long ago were dreamed by researchers.  Modern NN models have demonstrated high accuracy in several fields like computer vision, speech recognition. However their high accuracy comes at a cost of large number of computations and energy consumptions which limits their usage in resource and energy constrained embedded devices like smartphones, tablets, wearable and IOT devices. To meet the energy and performance targets customized NN accelerators and novel approaches have been proposed. These NN accelerators are somewhat able to meet the performance targets but their energy consumption is still far from desired. There is a pressing need for energy efficient solutions for their widespread usage in handheld devices. 
+
+
+
+
+
+
+
+
+
+
+NNs are machine learning algorithms and need not be programmed explicitly. They learn from the raw data to provide solutions to real world problems. For example, to classify the object in an image is a dog or cat or to identify the speaker's age, sex from a voice sample. In this learning process they are provided a large set of real world examples and they determine the weights and biases of each neuron. This learning process is referred to as training of the neural network. 
+
+The objective of the training is to determine the weights and biases to provide accurate results for new inputs. The accuracy is measured using a score value which estimates the difference between the expected and produced output by the NN. During the training a loss function is used to estimate the correctness of the output. Using this loss function, weights are updated using some optimization technique, frequently gradient descent. The gradient descent involve computations of partial derivatives to estimate the loss due to each weight by using chain rule of calculas. This involves storing the intermediate output of the network and thus require large storage. During the training, computations are performed using high precision to avoid accuracy loss, which further increases the storage and computations requirements.
+
+
+
+
+Since DNNs are an instance of a machine learning algorithm, the basic program does not change as it learns to perform its given tasks.In the specific case of DNNs, this learning involves determining the value of the weights (and bias) in the network,and is referred to as training the network. Once trained, the program can perform its task by computing the output of the network using the weights determined during the training process. Running the program with these weights is referred to as inference.
+
+The overarching goal for training a DNN is to determine the weights that maximize the score of the correct class and minimize the scores of the incorrect classes. When training the network the correct class is often known because it is given for the images used for training (i.e., the training set of the network). The gap between the ideal correct scores and the scores computed by the DNN the ideal correct scores and the scores computed by the DNN Thus the goal of training DNNs is to find a set of weights to minimize the average loss over a large training set.
+
+When training a network, the weights (w ij ) are usually updated using a hill-climbing optimization process called gradient descent. A multiple of the gradient of the loss relative to each weight, which is the partial derivative of the loss with respect to the weight, is used to update the weight (i.e., updated t+1 ∂L t −α ∂w , where α is called the learning rate). Note that this gradient indicates how the weights should change in order to reduce the loss. The process is repeated iteratively to reduce the overall loss.
+
+
+An efficient way to compute the partial derivatives of the gradient is through a process called backpropagation. Backpropagation, which is a computation derived from the chain rule of calculus, operates by passing values backwards through the network to compute how the loss is affected by each weight.
+
+It is, however, important to note a couple of points. First, backpropagation requires intermediate outputs of the network to be preserved for the backwards computation, thus training has increased storage requirements. Second, due to the gradients use for hill-climbing, the precision requirement for training is generally higher than inference. Thus many of the reduced precision techniques discussed in Section VII are limited to inference only.
+
+There are multiple ways to train the weights. The most common approach, as described above, is called supervised learning, where all the training samples are labeled (e.g., with the correct class). Unsupervised learning is another approach where all the training samples are not labeled and essentially the goal is to find the structure or clusters in the data. Semi-supervised learning falls in between the two approaches where only a small subset of the training data is labeled (e.g., use unlabeled data to define the cluster boundaries, and use the small amount of labeled data to label the clusters). Finally, reinforcement learning can be used to the train weights such that given the state of the current environment, the DNN can output what action the agent should take next to maximize expected rewards; however, the rewards might not be available immediately after an action, but instead only after a series of actions.
+
+Another commonly used approach to determine weights is fine-tuning, where previously-trained weights are available and are used as a starting point and then those weights are adjusted for a new dataset (e.g., transfer learning) or for a new constraint (e.g., reduced precision). This results in faster training than starting from a random starting point, and can sometimes result in better accuracy.
+This article will focus on the efficient processing of DNN inference rather than training, since DNN inference is often performed on embedded devices (rather than the cloud) where resources are limited as discussed in more details later.
+
+
+
+
+
+
+
+
+
+
+
+
+
+

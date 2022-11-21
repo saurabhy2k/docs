@@ -1,0 +1,370 @@
+%\documentclass[11pt,twoside,a4paper]{report}
+\documentclass[12pt,twoside]{book}
+\pdfminorversion=1
+
+\setcounter{secnumdepth}{4}
+
+%\usepackage{amsthm}
+\usepackage{xspace}
+%\usepackage{myalgorithm}
+%\usepackage{myalgorithmic}
+%\usepackage{algorithm, algorithmicx}
+%\usepackage[noend]{algpseudocode}
+\usepackage{tabu}
+\usepackage{bbm}
+\usepackage{caption}
+\usepackage{verbatim}
+\usepackage{comment}
+\usepackage{epsfig} 
+\usepackage{xcolor}
+%\usepackage{subfigure}
+\usepackage[figuresright]{rotating}
+\usepackage{makeidx}
+\usepackage[nottoc,notlof,notlot]{tocbibind}
+\usepackage{setspace}
+\usepackage{latexsym,amssymb,amsmath,bm}
+\usepackage{bbm}
+\usepackage{amsthm}
+\usepackage{threeparttable}
+\usepackage{colortbl}
+
+%\usepackage[standard]{ntheorem}
+\newtheorem{axiom}{Axiom}
+\DeclareMathOperator{\Exists}{\exists}
+\DeclareMathOperator{\Forall}{\forall}
+
+\usepackage{makeidx}
+\usepackage{lscape}
+\usepackage{verbatim}
+\usepackage{rotate}
+\usepackage{placeins}
+\usepackage{fancyvrb}
+
+\usepackage{amsmath}
+%\usepackage{mathptmx}
+\usepackage{helvet}
+\usepackage{courier}
+\usepackage{type1cm}         
+\usepackage{graphicx}        % standard LaTeX graphics tool
+\usepackage{multicol}        % used for the two-column index
+\usepackage[bottom,stable]{footmisc}% places footnotes at page bottom
+\usepackage{fancyhdr}
+\usepackage[english]{babel}
+\makeatletter\AtBeginDocument{\let\@elt\relax}\makeatother %fix by Saurabh for compiling tex
+\usepackage{multirow}
+\usepackage{longtable,booktabs,makecell}
+
+\usepackage{enumerate}
+\usepackage{times}
+\usepackage{moreverb} 
+\usepackage{listings}
+\usepackage{xcolor}			
+
+\usepackage{rotating}
+\usepackage{multicol}
+\usepackage{fancybox}
+\usepackage{textcomp}
+\usepackage{pdfpages}
+%\usepackage{named}
+\usepackage[numbers,sort]{natbib}
+%\usepackage{hyperref}
+%\usepackage{subfig}
+\usepackage{xcolor}
+
+
+ \usepackage{subcaption}
+
+% \usepackage{cleveref}
+
+% \captionsetup[subfigure]{subrefformat=simple,labelformat=simple}
+% \renewcommand\thesubfigure{(\alph{subfigure})}
+
+\usepackage{float}
+\floatstyle{ruled}
+
+\usepackage[hyphens]{url}
+\usepackage[pdfpagemode={UseOutlines},bookmarks=true,bookmarksopen=true,
+   pdfauthor={Saurabh Tewari},pdfcreator={Saurabh Tewari},
+   bookmarksopenlevel=0,bookmarksnumbered=true,hypertexnames=false,
+   colorlinks,linkcolor={black},citecolor={black},urlcolor={black},
+   pdfstartview={FitV},unicode,breaklinks=true]{hyperref}
+\def\figref#1{Figure~\ref{#1}}
+\def\eqref#1{Equation~\ref{#1}}
+\def\chapref#1{Chapter~\ref{#1}}
+\def\secref#1{Section~\ref{#1}}
+\def\appref#1{Appendix~\ref{#1}}
+\def\eqnref#1{Equation~(\ref{#1})}
+\def\tabref#1{Table~\ref{#1}}
+\def\algref#1{Algorithm~\ref{#1}}
+
+%\hyphenation{Balakrishnan}
+
+\newcommand{\subgraphname}{part}
+\newcommand{\subgraphnamespace}{part }
+\newcommand{\subgraphnameCaps}{Part}
+
+
+%\input{defines}
+
+\addtolength{\topmargin}{-45pt} %we cannot put this restriction
+% \addtolength{\oddsidemargin}{10pt}
+% \addtolength{\evensidemargin}{-65pt}
+\addtolength{\evensidemargin}{-45pt}
+\addtolength{\textwidth}{64pt}
+\addtolength{\textheight}{90pt} %we cannot put this restriction
+\setlength{\emergencystretch}{10pt}
+%-------------------------------------------------------------------------
+%\let\oldmarginpar\marginpar
+%\renewcommand\marginpar[1]{\-\oldmarginpar[\raggedleft\small\itshape
+%#1]{\raggedright\small\itshape #1}}
+%------------------------------------------------------------------------- 
+
+
+%customizing header
+\pagestyle{fancy}
+\renewcommand{\chaptermark}[1]{\markboth{#1}{}}
+\fancyhf{}
+\fancyhead[LO,RE]{\bfseries \leftmark}
+\fancyhead[LE,RO]{\bfseries \thepage}
+\fancyhead[RE]{\bfseries\leftmark}
+\addtolength{\headheight}{14.6pt}
+
+%change
+%\renewcommand{\algorithmicrequire}{\textbf{Input:}}
+%\renewcommand{\algorithmicensure}{\textbf{Output:}}
+
+
+\let\mysubsection=\subsection % define a pointer to the current definition of the command \section
+\renewcommand{\subsection}[1]{ \FloatBarrier\mysubsection{#1}}
+
+\let\mysection=\section % define a pointer to the current definition of the command \section
+\renewcommand{\section}[1]{ \FloatBarrier\mysection{#1}}
+
+
+
+\newcommand{\etal}{\mbox{\it et al.}}
+
+%\newtheorem{defn}{Definition}[section]
+%\newtheorem{thm}{Theorem}[section]
+%\newtheorem{lem}{Lemma}[section]
+
+%\DeclareMathOperator*{\argmax}{arg\,max}
+%\DeclareMathOperator*{\argmin}{arg\,min}
+
+\definecolor{LightGray}{gray}{0.75}
+\definecolor{DarkGray}{gray}{0.5}
+
+\definecolor{dkgreen}{rgb}{0,0.6,0}
+\definecolor{gray}{rgb}{0.5,0.5,0.5}
+\definecolor{mauve}{rgb}{0.58,0,0.82}
+
+% \lstset{frame=tb,
+%   language=Java,
+%   aboveskip=3mm,
+%   belowskip=3mm,
+%   showstringspaces=false,
+%   columns=flexible,
+%   basicstyle={\small\ttfamily},
+%   numbers=none,
+%   numberstyle=\tiny\color{gray},
+%   keywordstyle=\color{blue},
+%   commentstyle=\color{dkgreen},
+%   stringstyle=\color{mauve},
+%   breaklines=true,
+%   breakatwhitespace=true
+%   tabsize=3
+% }
+
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+
+\lstdefinestyle{mystyle}{
+    backgroundcolor=\color{backcolour},   
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{magenta},
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\footnotesize,
+    breakatwhitespace=false,         
+    breaklines=true,                 
+    captionpos=b,                    
+    keepspaces=true,                 
+    numbers=left,                    
+    numbersep=5pt,                  
+    showspaces=false,                
+    showstringspaces=false,
+    showtabs=false,                  
+    tabsize=2
+}
+ 
+\lstset{style=mystyle}
+
+
+\definecolor{Wheat3}{rgb}{0.803922,0.729412,0.588235}
+
+
+
+%\algdef{SE}[DOWHILE]{Do}{doWhile}{\algorithmicdo}[1]{\algorithmicwhile\ #1}%
+
+\usepackage[linesnumbered,ruled,vlined]{algorithm2e} % For algorithms
+
+
+\newtheorem{notation}{Notation}
+
+\newcommand\mycommfont[1]{\footnotesize\ttfamily\textcolor{blue}{#1}}
+\SetCommentSty{mycommfont}
+\SetKwComment{Comment}{$\triangleright$\ }{}
+\usepackage{enumitem}
+
+%following four lines avoid hyphenation while still keeping the text within the margins
+\tolerance=1
+\emergencystretch=\maxdimen
+\hyphenpenalty=10000
+\hbadness=10000
+
+\date{}
+%\usepackage{layouts} %http://ctan.org/pkg/layouts
+\begin{document}
+%\pagevalues
+%------------------------------------------------------------------------- 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+
+%==================================================================================
+%===          Switch on this part to generate Coverpage, Certificate, ACK
+%==================================================================================
+
+%\doublespacing
+\pagestyle{empty}
+%\cleardoublepage
+%\newpage \ \newpage
+\onehalfspacing 
+%\newpage \ \newpage
+%------------------------------------------------------------------------- 
+\pagenumbering{gobble}
+\include{ThesisSpecificPages/cover_page}
+% \cleardoublepage
+% \include{ThesisSpecificPages/copyright}
+%\cleardoublepage
+\include{ThesisSpecificPages/inner_cover_page}
+%\cleardoublepage
+\pagenumbering{roman}
+
+%\newpage  \newpage
+%\begin{center}
+%	\ \\ \
+%	\vspace{5.5cm}
+%	\ \\ \
+%	\large
+%	DEDICATED TO\\
+%	\textsf{\textit{\large{} My daughter Anika.}}
+%	\par \end{center}{\large \par}
+
+%\doublespacing 
+%\include{ThesisSpecificPages/certificate}
+\cleardoublepage
+
+\pagestyle{plain}
+
+%\doublespacing 
+%\include{ThesisSpecificPages/acknowledge}
+%\addcontentsline{toc}{chapter}{\numberline{}Acknowledgements}
+%==================================================================================
+%===
+%==================================================================================
+
+\normalfont
+
+%==================================================================================
+%=== Switch on this to generate TOC, ListOfFig, ListOfTab
+%==================================================================================
+%\singlespacing
+\cleardoublepage
+%\doublespacing 
+%\include{abstract}
+\cleardoublepage
+%\onehalfspacing 
+%\includepdf[pages=-]{Hindi_Abstract.pdf}
+\cleardoublepage
+\setcounter{page}{7}
+%\pagestyle{fancy}
+\pagestyle{plain}
+\tableofcontents
+
+%\newpage \ \newpage
+%\phantomsection
+%\listoffigures
+%\addcontentsline{toc}{chapter}{\listfigurename}
+%\newpage \ \newpage
+
+%\listoftables
+\addcontentsline{toc}{chapter}{List of Tables}
+%\cleardoublepage
+%\newpage
+%\newpage \ \newpage
+\pagestyle{plain}
+%==================================================================================
+%=== After Activating Above you can deactivae bellow \TOC
+%==================================================================================
+%\tableofcontents
+%\makeatletter\@addtoreset{chapter}{part}\makeatother%
+
+\pagenumbering{arabic}
+\pagestyle{plain}
+\pagestyle{fancy}
+%\singlespacing
+%\onehalfspacing
+%\doublespacing
+%\part{Prologue}
+\input{Ch1-Introduction/Chapter1.tex}
+%\input{Ch2-RelatedWork/main.tex}
+%\input{Ch3-OverallFlow/main.tex}
+%\input{Ch4-DSE/main.tex}
+%\input{Ch5-GraphicalModel/main.tex}
+%\input{Ch6-RuntimeCtrl/main.tex}
+%\input{Ch7-CaseStudies/main.tex}
+%\input{Ch8-Conclusion/main.tex}
+%\input{appendix}
+
+
+
+%----------------------------------------------------- 
+\pagestyle{fancy}
+\cleardoublepage
+%------------------------------------------------------------------------- 
+\addtocontents{toc}{\vspace{1em}} % Add a gap in the Contents, for aesthetics
+\bibliographystyle{abbrv} 
+\bibliography{refs}
+%\include{appendix}
+
+%\cleardoublepage
+
+\pagestyle{plain}
+%\doublespacing
+\cleardoublepage
+
+\input{ThesisSpecificPages/publication}
+\cleardoublepage
+%\onehalfspacing
+
+%\doublespacing 
+\input{ThesisSpecificPages/bio}
+\cleardoublepage
+%\onehalfspacing
+\pagestyle{plain}
+
+
+
+%==================================================================================
+%  Activate this line
+%==================================================================================
+\newpage \thispagestyle{empty} %\  \newpage \pagestyle{empty}
+
+\newpage \thispagestyle{empty} \  \newpage \pagestyle{empty}
+
+
+\end{document}
