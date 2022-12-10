@@ -103,7 +103,17 @@
 \newcommand{\subgraphnamespace}{part }
 \newcommand{\subgraphnameCaps}{Part}
 
-
+\usepackage{mathtools}
+\DeclarePairedDelimiter{\ceil}{\lceil}{\rceil}
+\DeclarePairedDelimiter\floor{\lfloor}{\rfloor}
+\newcommand{\numBytesOffChip}{\mathbb{B}}
+\newcommand{\numOverlap}{\delta}
+\newcommand{\busWidth}{BW}
+\newcommand{\dataWidth}{DW}
+\newcommand{\dataLength}{l}
+\newcommand{\addressSym}{Addr}
+\newcommand{\BuffSize}{buffSize}
+\newcommand{\removelatexerror}{\let\@latex@error\@gobble}
 %\input{defines}
 
 \addtolength{\topmargin}{-45pt} %we cannot put this restriction
@@ -321,7 +331,7 @@
 %\doublespacing
 %\part{Prologue}
 \input{Ch1-Introduction/Chapter1.tex}
-%\input{Ch2-RelatedWork/main.tex}
+\input{Ch2-AnalyticalFw/Chapter2.tex}
 %\input{Ch3-OverallFlow/main.tex}
 %\input{Ch4-DSE/main.tex}
 %\input{Ch5-GraphicalModel/main.tex}

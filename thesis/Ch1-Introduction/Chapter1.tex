@@ -100,10 +100,10 @@ Training of NNs involve updating weights and biases using large number of input 
 	\caption{VGG16: A Convolution NN (a) Multiply And Accumlate Operations (MACs) per Inference. (b) Number of Parameters used per Inference.}
 	\label{fig:MACAndParamsSize}
 \end{figure}
-\figurename{~\ref{fig:vgg16GMACsOverview}} and \figurename{~\ref{fig:vgg16ParamsOverview}} shows the layer wise distribution of number of operations (MACs) and parameters accessed per inference in a popular Convolution NN, VGG16, respectively. Overall for a single inference, VGG16 performs 15.47 GMACs operations and it accesses 138 million parameters. This illustrates, inferencing involve compute and memory intensive operations. If the NNs are deployed on the cloud, the throughput and energy demands are met using high performance systems like GPU. However, if they are deployed on energy and resource constrained edge devices, optimizing these models is a must to meet the targets. In this work we mainly focus on optimizing NN models before they are used for inference in energy constrained edge-devices.
+\figurename{~\ref{fig:vgg16GMACsOverview}} and \figurename{~\ref{fig:vgg16ParamsOverview}} shows the layer wise distribution of number of operations (MACs) and parameters accessed per inference in a popular Convolution NN, VGG16, respectively. Overall for a single inference, VGG16 performs 15.47 GMACs operations and accesses 138 million parameters. This illustrates, inferencing involve compute and memory intensive operations. If the NNs are deployed on the cloud, the throughput and energy demands can be met using high performance systems like GPU. However, on edge devices, which have limited resources and tight energy budged, it is a challenge. Hence optimizing these models before inferencing on edge devices is a must. In this work we mainly focus on optimizing NN models before they are used for inference in energy constrained edge-devices.
 
 \section{Edge AI}
-Few years back, inferencing were commonly performed on the cloud, while the edge devices were used for collecting the real world data. Recent growth of deep learning has enabled several intelligent applications for consumer and edge devices. Today we see explosion of applications using deep learning algorithms in consumer electronic devices like Hello Google, Alexa, Creta. Key enablers of edge AI are deep learning tools, and recent researches in the area of edge AI accelerators. Deep learning tools that were earlier used by researchers to develop the deep learning algorithms, have evolved in past few years and now they can be used by even non-experts to develop intelligent applications for consumer devices like smartphones. Recent research to improve the computation and energy efficiency of Edge AI accelerators also enabled this transition. 
+Few years back, inferencing were commonly performed on the cloud, while the edge devices were used for collecting the real world data. Recent growth of deep learning has enabled several intelligent applications for consumer and edge devices. Today we see explosion of applications using deep learning algorithms in consumer electronic devices. Advancement in deep learning tools, and recent researches in the field of edge AI accelerators are the key enablers of edge AI. Deep learning tools that were earlier used by researchers, have evolved in past few years and now even non-experts can use them to develop intelligent applications. Recent research to improve the computation and energy efficiency of Edge AI accelerators also enabled this transition. 
 
 Edge AI is gaining momentum as it improves the user experience, eliminates network bandwidth issues, and improves privacy and security. Due to these reasons, there is a growing trend of shifting the processing of these DNN applications from cloud to edge devices, near the sensors. Manufacturers are shifting the processing of NNs from cloud to edge devices like smartphones and tablets. 
 
@@ -112,28 +112,45 @@ Edge AI devices are battery-operated with limited resources and a tight energy b
 	\centering
 	\captionsetup{font=sf}
 	\includegraphics[width=0.6\textwidth]{edgeAIChallenges}
-	\caption{Challenges for Edge-AI Accelerator}
+	\caption{Key challenges for Edge-AI Accelerator}
 	\label{fig:edgeAIChallenges}
 \end{figure}
-\section{Customized NN Accelerator for Edge Devices}
+\section{Customized NN Accelerator}
 Edge devices mostly use customized accelerators to meet energy and throughput demands. Several FPGA~\cite{zhang2015optimizing,wei2019overcoming,gokhale2014240,8742284,gupta2015deep,alwani2016fused}, GPU~\cite{chetlur2014cudnn} and ASIC~\cite{Chen2016EyerissAS,chen2014diannao,chen2014dadiannao,du2015shidiannao} accelerators have been proposed to meet the performance and energy targets. 
+
+\figurename{~\ref{fig:typicalDNNAccelerator}} shows a typical DNN accelerator architecture, which consists of an off-chip memory and an accelerator chip. An accelerator chip mainly consists of an on-chip memory of a few hundred KBs and an array of Processing Elements (PEs). The accelerator system has multiple memory levels: off-chip memory, on-chip memory, and the registers inside the PEs. As shown in \figurename{~\ref{fig:memoryHierarchy}}, each memory level has different storage capacity, access latency and energy costs. The memory access energy from off-chip memory is up to two orders of magnitude higher than a PE computation operation~\cite{Chen2016EyerissAS}. 
 \begin{figure}[!htb]
 	\centering
 	\captionsetup{font=sf}
 	\subfloat[]
-	{\includegraphics[width=0.45\textwidth]{typicalDNNAccelerator}
+	{\includegraphics[width=0.5\textwidth]{typicalDNNAccelerator}
 		\label{fig:typicalDNNAccelerator}}
 	\hfil
-	\subfloat[]
-	{\includegraphics[width=0.4\linewidth]{roofline}
-		\label{fig:roofline}}
-	\caption{(a) Typical DNN accelerator architecture. (b) Roofline model}
+	\subfloat[]{\includegraphics[width=0.4\textwidth]{memoryLevelsEnergy.pdf}
+		\label{fig:memoryHierarchy}}
+	\caption{(a) Typical DNN accelerator architecture. (b) Memory access energy consumption, normalized w.r.t. MAC Operation.}
 	\label{fig:acceleratorAndRoofline}
 \end{figure}
-\figurename{~\ref{fig:typicalDNNAccelerator}} shows a typical DNN accelerator architecture, which consists of an off-chip memory and an accelerator chip. An accelerator chip mainly consists of an on-chip memory of a few hundred KBs and an array of Processing Elements (PEs). The accelerator system has multiple memory levels: off-chip memory, on-chip memory, and the registers inside the PEs. Each memory level has different access latency and energy costs. The memory access energy from off-chip memory is up to two orders of magnitude higher than a PE computation operation~\cite{Chen2016EyerissAS}. It has been observed that more than 80\% of the overall energy consumption of these accelerators is due to off-chip memory accesses~\cite{chen2014diannao}. 
 
-The PE-array (\figurename{~\ref{fig:typicalDNNAccelerator}}) has a large number of processing elements, capable of performing several operations per cycle. However, throughput is often limited by off-chip memory bandwidth~\cite{williams2009roofline}. Fig.~\ref{fig:roofline} shows attainable throughput in such a scenario as a function of the operational intensity of an application. The figure shows two application kernels (A and B) with different operational intensities (FLOPS/byte), with performance limited by the memory bandwidth in both cases, which is typically the case for most DNN accelerators. Kernel B, however, has better operational intensity than kernel A and achieves better throughput. Effective data-reuse techniques are required to improve the performance of bandwidth-limited parallel architectures. Therefore, reducing the off-chip memory is the key to improving the throughput and energy efficiency of DNN accelerators. Much recent research has focused on reducing off-chip memory accesses.
-\section{Efficient Edge AI Processing}
+\figurename{~\ref{fig:energyDistribution}} shows the energy consumption of NN accelerator results from computations ($E_{comp}$) and data movement ($E_{data}$). The number and type of operations in NN layers are known. $E_{data}$ can be computed by accumlating the products of energy per operation and number of operations for different type of operations involved in the layer. $E_{data}$ can be estimated by multiplying number of memory accesses and energy per access for a given memory. NN accelerator has multiple levels of memory and and the number of memory accesses at each level depends on the data flow scheme used, type of layer, etc., which makes estimating $E_{data}$ challenging . $E_{data}$ is a sum of data access energy from the off-chip memory $E_{OffChip}$ and on-chip memory $E_{OnChip}$. Multiple levels of memories inside the accelerator chip contribute to $E_{OnChip}$ as shown in \figurename{~\ref{fig:energyDistribution}}. It has been observed that more than 80\% of the overall energy consumption of these accelerators is due to off-chip memory accesses ($E_{OffChip}$) ~\cite{chen2014diannao}. 
+\begin{figure}[!htb]
+	\centering
+	\captionsetup{font=sf}
+	\includegraphics[width=0.6\textwidth]{energyTriangle.pdf}
+	\caption{Computation and data movement energy in NN accelerators.}
+	\label{fig:energyDistribution}
+\end{figure}
+
+\begin{figure}[!htb]
+	\centering
+	\captionsetup{font=sf}
+	\includegraphics[width=0.4\linewidth]{roofline}
+	\caption{Roofline Model}
+	\label{fig:roofline}
+\end{figure}
+
+The PE-array (\figurename{~\ref{fig:typicalDNNAccelerator}}) has a large number of processing elements, capable of performing several operations per cycle. However, throughput is often limited by off-chip memory bandwidth~\cite{williams2009roofline}. Fig.~\ref{fig:roofline} shows attainable throughput in such a scenario as a function of the operational intensity of an application. The figure shows two application kernels (A and B) with different operational intensities (FLOPS/byte), with performance limited by the memory bandwidth in both cases, which is typically the case for most DNN accelerators. Kernel B, however, has better operational intensity than kernel A and achieves better throughput. Effective data-reuse techniques are required to improve the performance of bandwidth-limited parallel architectures. Therefore, reducing the off-chip memory is the key to improving the throughput and energy efficiency of DNN accelerators. Most recent research has focused on reducing off-chip memory accesses.
+\section{Efficient Processing of NNs}
 \begin{figure}[!htb]
 	\centering
 	\captionsetup{font=sf}
