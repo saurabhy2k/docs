@@ -8,8 +8,8 @@
 \usepackage{xspace}
 %\usepackage{myalgorithm}
 %\usepackage{myalgorithmic}
-%\usepackage{algorithm, algorithmicx}
-%\usepackage[noend]{algpseudocode}
+\usepackage{algorithm, algorithmicx}
+\usepackage[noend]{algpseudocode}
 \usepackage{tabu}
 \usepackage{bbm}
 \usepackage{caption}
@@ -218,14 +218,14 @@
 
 %\algdef{SE}[DOWHILE]{Do}{doWhile}{\algorithmicdo}[1]{\algorithmicwhile\ #1}%
 
-\usepackage[linesnumbered,ruled,vlined]{algorithm2e} % For algorithms
+%\usepackage[linesnumbered,ruled,vlined]{algorithm2e} % For algorithms
 
 
 \newtheorem{notation}{Notation}
 
 \newcommand\mycommfont[1]{\footnotesize\ttfamily\textcolor{blue}{#1}}
-\SetCommentSty{mycommfont}
-\SetKwComment{Comment}{$\triangleright$\ }{}
+%\SetCommentSty{mycommfont}
+%\SetKwComment{Comment}{$\triangleright$\ }{}
 \usepackage{enumitem}
 
 %following four lines avoid hyphenation while still keeping the text within the margins
@@ -275,7 +275,7 @@
 %	\par \end{center}{\large \par}
 
 %\doublespacing 
-%\include{ThesisSpecificPages/certificate}
+\include{ThesisSpecificPages/certificate}
 \cleardoublepage
 
 \pagestyle{plain}
@@ -295,7 +295,7 @@
 %\singlespacing
 \cleardoublepage
 %\doublespacing 
-%\include{abstract}
+\include{abstract}
 \cleardoublepage
 %\onehalfspacing 
 %\includepdf[pages=-]{Hindi_Abstract.pdf}
@@ -307,15 +307,15 @@
 
 %\newpage \ \newpage
 %\phantomsection
-%\listoffigures
-%\addcontentsline{toc}{chapter}{\listfigurename}
+\listoffigures
+\addcontentsline{toc}{chapter}{\listfigurename}
 %\newpage \ \newpage
 
-%\listoftables
+\listoftables
 \addcontentsline{toc}{chapter}{List of Tables}
 %\cleardoublepage
 %\newpage
-%\newpage \ \newpage
+\newpage \ \newpage
 \pagestyle{plain}
 %==================================================================================
 %=== After Activating Above you can deactivae bellow \TOC
@@ -332,9 +332,9 @@
 %\part{Prologue}
 \input{Ch1-Introduction/Chapter1.tex}
 \input{Ch2-AnalyticalFw/Chapter2.tex}
-%\input{Ch3-OverallFlow/main.tex}
-%\input{Ch4-DSE/main.tex}
-%\input{Ch5-GraphicalModel/main.tex}
+\input{Ch3-CNN/Chapter3.tex}
+\input{Ch4-RNN/Chapter4.tex}
+\input{Ch5-SOM/Chapter5.tex}
 %\input{Ch6-RuntimeCtrl/main.tex}
 %\input{Ch7-CaseStudies/main.tex}
 %\input{Ch8-Conclusion/main.tex}
@@ -358,11 +358,11 @@
 \cleardoublepage
 
 \input{ThesisSpecificPages/publication}
-\cleardoublepage
+%\cleardoublepage
 %\onehalfspacing
 
 %\doublespacing 
-\input{ThesisSpecificPages/bio}
+%\input{ThesisSpecificPages/bio}
 \cleardoublepage
 %\onehalfspacing
 \pagestyle{plain}

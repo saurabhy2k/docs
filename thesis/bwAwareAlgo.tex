@@ -1,72 +1,54 @@
-%\begin{figure}[tb]
-%	\centering
-%%	\removelatexerror
-%	\SetAlFnt{\small}
-	\begin{algorithm}[H]
-		\DontPrintSemicolon
-		\SetNoFillComment %to remove the space between end of the comment and "*/" sign
-		\SetKwData{KwBW}{BW} % emphasizing the variable BW
-		\SetKwData{KwDW}{DW}% emphasizing the variable DW
-		
-		\SetKwFunction{BWAware}{BWA}
-		\SetKwFunction{Union}{Union}\SetKwFunction{ComputeTileDimensions}{GetTileDim}
-		\SetKwFunction{Union}{Union}\SetKwFunction{ComputeTileAddress}{GetTileAddr}
-		\SetKwFunction{Union}{Union}\SetKwFunction{BWAwareTileAccess}{GetTileAcc}
-		\SetKwFunction{Union}{Union}\SetKwFunction{NumBytesAcc}{$\numBytesOffChip$}
-		\SetKwProg{myalg}{Algorithm}{}{}
-		\SetKwProg{myproc}{Function}{}{}
+\begin{algorithm}[H]
+	\caption{BW Aware off-chip memory access}
+	 \label{Algorithm1}
+	 \begin{algorithmic}[1]
+	 	\Procedure{BWA}{$Addr_{data},\langle T_c,T_r,T_n\rangle,\langle W,H,N\rangle,\numOverlap$} \label{alg:BWA}
+	 	\State $Acc_{data}\gets 0$
+	 	\State $Addr_{tile}\gets Addr_{data}$
+        \For{$x,y,z\leftarrow (0,0,0)$ ~\textbf{to} $(\ceil[\big]{\frac{W}{T_c-\numOverlap}}{-}1,\ceil[\big]{\frac{H}{T_r-\numOverlap}}{-}1,\ceil[\big]{\frac{N}{T_n}}{-}1)${\label{alg:ForAllTilesLoopk}}}
+        \State $c\gets x\cdot (T_c-\numOverlap)$\label{alg:idxc}
+        \State $r\gets y\cdot (T_r-\numOverlap)$\label{alg:idxr}
+        \State $n\gets z\cdot T_n$\label{alg:idxn}
+        \State $Addr_{tile}\gets \Call{GetTileAddr}{Addr_{data},c,r,n,\langle W,H,N\rangle}$\label{alg:tileAddr}
+        \State $\langle T_c^1,T_r^1,T_n^1\rangle\gets$ \Call{GetTileDim}{$c,r,n,\langle T_c,T_r,T_n\rangle,\langle W,H,N\rangle$}\label{alg:tileDim}
+        \State $Acc_{data}\gets Acc_{data}+$ \Call{GetTileAcc}{$Addr_{tile},\langle T_c^1,T_r^1,T_n^1\rangle,\langle W,H,N\rangle$}\label{alg:tileAcc}
+	 	\label{alg:UpDiag_ReuseR2}   
+	 	\EndFor \label{alg:loopkEnd}
+	 	\State \textbf{return} $Acc_{data}$
+	 	\EndProcedure
+	 	
+	 	\Procedure{GetTileAcc}{Addr$_{tile}$,$\langle T_c,T_r,T_n\rangle$,$\langle W,H,N\rangle$} \label{alg:FuncTileAccess}
+	    \State $Acc_{tile}\gets 0$
+	    \If{$T_c = W$ {\bf and} $T_r=H${\label{alg:TileAccessIf1}}}
+	    	\State$contSz\gets T_c\cdot T_r\cdot T_n\cdot DW$\label{alg:TileAccessSingleTxn}
+	    	\State$Acc_{tile}{\gets}$$\numBytesOffChip({Addr_{tile},contSz,BW})$\label{alg:TileAccessIf1End}
+	    \Else
+	    	    \For{$f\leftarrow 1$ ~\textbf{to} $T_n${\label{alg:TileAccessFor1}}}
+	    	       \State Addr$_{f}{\gets} Addr_{tile}{+}(f{-}1){\cdot}H{\cdot}W$\label{alg:TileAccessFrameAddr}
+	    	       \If{$T_c = W${\label{alg:TileAccessIf2}}}
+   					    \State $contSz{\gets}T_c\cdot T_r\cdot DW$
+                        \State $Acc_{tile}{\gets}Acc_{tile}+$$\numBytesOffChip({Addr_f,contSz,BW})$\label{alg:TileAccess2}
+	    	       \Else
+	    	           \State $contSz{\gets}T_c{\cdot}DW$
+	    	           \For{$r\leftarrow 1$ ~\textbf{to} $T_r${\label{alg:TileAccessFor2}}}
+                            \State $Addr_{(f,r)}{\gets}Addr_{f}+(r-1)\cdot W$\label{alg:TileRowAddr}
+                            \State $Acc_{tile}{\gets}Acc_{tile}+$$\numBytesOffChip({Addr_{(f,r)},contSz,BW})$\label{alg:TileAccessFor2End}
+	    	           \EndFor
+	    	       \EndIf
+	            \EndFor	
+	    
+	    \EndIf
+	    \label{alg:FuncTileAccessEnd}	 	
+	 	\State \textbf{return} $Acc_{tile}$
+	 	\EndProcedure	
+	
+	
+	 	\Procedure{GetTileDim}{$c,r,n$,$\langle T_c, T_r,T_n\rangle$,$\langle W,H,N\rangle$} \label{alg:FuncTileDimEnd}
+	 	\State $T^1_c\gets min(T_c,W-c)$
+	 	\State $T^1_r\gets min(T_r,H-r)$
+	 	\State $T^1_n\gets min(T_n,N-n)$
+	 	\State \textbf{return} ${\langle T^1_c,T^1_r,T^1_n\rangle}$
+	 	\EndProcedure
 
-		\myalg{\BWAware{$Addr_{data},\langle T_c,T_r,T_n\rangle,\langle W,H,N\rangle,\numOverlap$}}{
-			$Acc_{data}\leftarrow 0$\;
-			$Addr_{tile}\leftarrow Addr_{data}$\;
-			\For{$x,y,z\leftarrow (0,0,0)$ \KwTo $(\ceil[\big]{\frac{W}{T_c-\numOverlap}}-1,\ceil[\big]{\frac{H}{T_r-\numOverlap}}-1,\ceil[\big]{\frac{N}{T_n}}-1)${\label{alg:ForAllTilesLoopk}}}{
-                $c\leftarrow x\cdot (T_c-\numOverlap)$\label{alg:idxc}\;
-				$r\leftarrow y\cdot (T_r-\numOverlap)$\label{alg:idxr}\;
-				$n\leftarrow z\cdot T_n$\label{alg:idxn}\;
-				$Addr_{tile}\leftarrow$ \ComputeTileAddress{$Addr_{data},c,r,n,\langle W,H,N\rangle$}\label{alg:tileAddr}\;
-				$\langle T_c^1,T_r^1,T_n^1\rangle\leftarrow$ \ComputeTileDimensions{$c,r,n,\langle T_c,T_r,T_n\rangle,\langle W,H,N\rangle$}\label{alg:tileDim}\;
-				$Acc_{data}\leftarrow Acc_{data}+$ \BWAwareTileAccess{$Addr_{tile},\langle T_c^1,T_r^1,T_n^1\rangle,\langle W,H,N\rangle$}\label{alg:tileAcc}
-			}\label{alg:loopkEnd}
-			\KwRet $Acc_{data}$}{}
-		
-		\myproc{\BWAwareTileAccess{Addr$_{tile}$,$\langle T_c,T_r,T_n\rangle$,$\langle W,H,N\rangle$}}{
-			$Acc_{tile}\leftarrow 0$\label{alg:FuncTileAccess}\; 
-			\If{$T_c = W$ {\bf and} $T_r=H${\label{alg:TileAccessIf1}}}
-			{
-				$contSz\leftarrow T_c\cdot T_r\cdot T_n\cdot DW$\label{alg:TileAccessSingleTxn}\;
-				$Acc_{tile}\leftarrow$\NumBytesAcc{$Addr_{tile},contSz,BW$}\label{alg:TileAccessIf1End}
-			}
-			\Else
-			{
-				\For{$f\leftarrow 1$ \KwTo $T_n${\label{alg:TileAccessFor1}}}
-				{ 
-					Addr$_{f} \leftarrow Addr_{tile} + (f-1)\cdot H\cdot W$\label{alg:TileAccessFrameAddr}\;
-					\If{$T_c = W${\label{alg:TileAccessIf2}}}
-					{
-						$contSz\leftarrow T_c\cdot T_r\cdot DW$\; 
-						%$Acc_f\leftarrow$\NumBytesAcc{$Addr_f,contSz,BW$}\;
-						$Acc_{tile}\leftarrow Acc_{tile}+$ \NumBytesAcc{$Addr_f,contSz,BW$}\label{alg:TileAccess2}
-					}
-					\Else
-					{
-						$contSz \leftarrow T_c\cdot DW$\;
-						\For{$r\leftarrow 1$ \KwTo $T_r${\label{alg:TileAccessFor2}}}
-						{
-							$Addr_{(f,r)}\leftarrow Addr_{f}+(r-1)\cdot W$\label{alg:TileRowAddr}\;
-							$Acc_{tile}\leftarrow Acc_{tile}+$\NumBytesAcc{$Addr_{(f,r)}, contSz,BW$}\label{alg:TileAccessFor2End}
-						}
-					}
-				}
-			}
-			\KwRet $Acc_{tile}$\label{alg:FuncTileAccessEnd}}
-		\myproc{\ComputeTileDimensions{$c,r,n$,$\langle T_c, T_r,T_n\rangle$,$\langle W,H,N\rangle$}}{
-		    $T^1_c\leftarrow min(T_c,W-c)$\;
-		    $T^1_r\leftarrow min(T_r,H-r)$\;
-			$T^1_n\leftarrow min(T_n,N-n)$\;
-			\KwRet ${\langle T^1_c,T^1_r,T^1_n\rangle}$\label{alg:FuncTileDimEnd}}
-		\caption{BW Aware off-chip memory access}
-		\label{Algorithm1}
-	\end{algorithm}
-	%\caption{BW Aware off-chip memory accesses}
-%	\vspace{-1.42em}
-%\end{figure}
+	\end{algorithmic}
+\end{algorithm}

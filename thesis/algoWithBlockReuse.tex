@@ -1,0 +1,192 @@
+\begin{algorithm}[H]
+	\caption{SACC algorithm}
+   \label{Algo:SACCAlgo}
+	\begin{algorithmic}[1]
+		\Procedure{CompLSTMCell}{$W$,$R$,$b$,$x_{t+1}$} \label{alg:CompLSTMCell}
+\State $q_{t+1}\gets \Call{MxV}{W,x_{t+1},4N,L}{+}b$\label{alg:Wx+b}
+\If{($stage$ is even)}
+\State $(h_{t},c_{t},s_{t+1}){\gets}\Call{UpDiaReuse}{R,q_t,h_t,c_t,s_{t+1}}$\label{alg:callUpDiaReuse}
+\State $stage\gets odd$
+\Else
+\State $(h_{t},c_{t},s_{t+1}){\gets}\Call{LowDiaReuse}{R,q_t,h_t,c_t,s_{t+1}}$\label{alg:callLowDiaReuse}
+\State $stage\gets even$
+\EndIf
+%\State ($h_{t},c_{t},s_{t+1})\gets (h_{t+1},c_{t+1},s_{t+2})$
+\State \textbf{return} $(h_{t})$
+\EndProcedure	
+%	\end{algorithmic}
+%\end{algorithm}
+%
+%\begin{algorithm}[ht]
+%	\caption{SACC algorithm}
+%   \label{Algo:BlockReuse}
+%	\begin{algorithmic}[1]
+%		\Procedure{Init}{}
+%		\State$s_{t+1}\gets \vec{0}$\Comment{partial sum}
+%		\State ($h_{t},c_{t}){\gets} (\vec{0},\vec{0})$\Comment{LSTM cell state}
+%		\State $stage{\gets} even$
+%		\EndProcedure				
+		\Procedure{LowDiagReuse}{$R,q_t,h_t,c_t,s_{t+1}$} \label{alg:LowDiagReuse}
+		\For {$r\leftarrow 0~\textbf{to}~(\ceil{\frac{N}{B}}{-}1)$} \label{alg:LowDiag_outFor} 
+		\State $(i_s,i_e) \gets (r{\cdot}B,(r{+}1){\cdot}B{-}1), s^B_{t+2} \gets \vec{0}$
+%		\State $s^B_{t+2} \gets \vec{0}$
+		\For {$m \leftarrow 0~\textbf{to}~r$} \label{alg:LowDiag_inFor}
+		\State $\textbf{R}^B {\gets}\Call{getDDRBlks}{R,r,m,B}$	     \label{alg:LowDiag_GetDDRBlks}   		     
+       \State $(h^B_t,c^B_t,q^B_t)\gets \Call{GetSlice}{h_t,c_t,q_t,m}$ \label{alg:LowDiag_GetSlice}
+       \State $s^B_{t+1}\gets \Call{GetSlices}{s_{t+1},m}$ \label{alg:LowDiag_GetSlices}
+		\State $s^B_{t+1}\gets s^B_{t+1}{+}\Call{MxV}{\textbf{R}^B,h^B_t,4B,B}$ \label{alg:LowDiag_ReuseR1}  
+		
+		%\Comment{if diagonal block}
+		\If{$m=r$} \label{alg:LowDiag_if}
+		\State$(h^B_{t+1},c^B_{t+1}){\gets}\Call{lstmEqns}{v^B_x,s^B_{t+1},c^B_t}$ \label{alg:LowDiag_LstmEq} 
+		\State $h_{t+1}\left [i_s\colon i_e\right ]\gets h^B_{t+1}, c_{t+1}\left [i_s\colon i_e\right ]\gets c^B_{t+1}$ \label{alg:LowDiag_UpdateH} 
+%		\State $c_{t+1}\left [i_s\colon i_e\right ]\gets c^B_{t+1}$\label{alg:LowDiag_UpdateC}
+		\EndIf
+
+		\State $h^B_{t+1}\gets h_{t+1}\left [m{\times}B\colon (m{+}1){\times}B{-}1\right ]$
+		\State $s^B_{t+2}\gets s^B_{t+2}{+}\Call{MxV}{\textbf{R}^B,h_{t+1}^B, 4B,B}$  \label{alg:LowDiag_ReuseR2}  
+		\EndFor
+		\State $s_{t+2}\gets \Call{updateVect}{s_{t+2},s_{t+2}^B,r}$
+		\EndFor
+		\State \textbf{return} $(s_{t+2},h_{t+1},c_{t+1})$	
+		\EndProcedure
+		
+		\Procedure{UpDiagReuse}{$R,q_t,h_t,c_t,s_{t+1}$}\label{alg:UpDiagReuse}
+		\For {$r\leftarrow (\ceil{\frac{N}{B}}{-}1)~\textbf{downto}~0$}\label{alg:UpDiag_outFor} 
+		\State $(i_s,i_e) \gets (r{\cdot}B,(r{+}1){\cdot}B{-}1),  s^B_{t+2} \gets \vec{0}$
+%		\State $s^B_{t+2} \gets \vec{0}$
+		
+		\For {$m \leftarrow (\ceil{\frac{N}{B}}){-}1~\textbf{downto}~r{+}1$} \label{alg:UpDiag_inFor} 
+		\State $\textbf{R}^B {\gets}\Call{getDDRBlks}{R,r,m,B}$ \label{alg:UpDiag_GetDDRBlks}   
+       %\State $(h^B_t,c^B_t,q^B_t,s^B_{t+1})\gets \Call{GetOnChipVecSlice}{h_t,c_t,q_t,s_{t+1},m}$
+        \State $(h^B_t,c^B_t,q^B_t)\gets \Call{GetSlice}{h_t,c_t,q_t,m}$ \label{alg:UpDiag_GetSlice}
+        \State $s^B_{t+1}\gets \Call{GetSlices}{s_{t+1},m}$ \label{alg:UpDiag_GetSlices}
+ 
+		\State $s^B_{t+1}\gets s^B_{t+1}{+}\Call{MxV}{\textbf{R}^B,h^B_t,4B,B}$\label{alg:UpDiag_ReuseR1} 
+		\State $h^B_{t+1}\gets h_{t+1}\left [i_s\colon i_e\right ]$
+		\State $s^B_{t+2}\gets s^B_{t+2}{+}\Call{MxV}{\textbf{R}^B,h_{t+1}^B, 4B,B}$; \label{alg:UpDiag_ReuseR2}   
+		\EndFor
+		
+		\State$(h^B_{t+1},c^B_{t+1}){\gets}\Call{lstmEqns}{v^B_x,s^B_{t+1},c^B_t}$ \label{alg:UpDiag_LstmEq}
+		\State $h_{t+1}\left[i_s\colon i_e\right ]\gets h^B_{t+1}, c_{t+1}\left[i_s\colon i_e\right ]\gets c^B_{t+1}$ \label{alg:UpDiag_UpdateH}
+%       \State $c_{t+1}\left [i_s\colon i_e\right ]\gets c^B_{t+1}$\label{alg:UpDiag_UpdateC}
+		\State $s_{t+2}\gets \Call{updateVect}{s_{t+2},s_{t+2}^B,r}$        
+		\EndFor    
+		\State \textbf{return} $(s_{t+2},h_{t+1},c_{t+1})$	
+		\EndProcedure
+	\end{algorithmic}
+\end{algorithm}
+
+\begin{algorithm}[h]
+	\caption{LSTM Equations}
+   \label{Algo:LSTMEq}
+	\begin{algorithmic}[1]
+		\Procedure{lstmEqns}{$q_{t+1},s_{t+1},c_t$}
+		\State $(v_i,v_f,v_g,v_o)\gets ExtractVecs(q_t,B)$
+		\State $(s_i,s_f,s_g,s_o)\gets ExtractVecs(s_{t+1},B)$
+		\For{$n\leftarrow 0~\textbf{to}~B{-1}$}
+		\State $i[n]\gets \Call{sigmoid}{s_i[n]+ v_i[n]}$
+		\State $f[n]\gets \Call{sigmoid}{s_f[n]+ v_f[n]}$
+		\State $g[n]\gets    \Call{tanh}{s_g[n]+v_g[n]}$
+		\State $o[n]\gets  \Call{sigmoid}{s_o[n]+ v_o[n]}$
+		\State $c_{t+1}[n]\gets f[n]\otimes c_t[n] + i[n]\otimes g[n]$
+		\State $h_{t+1}[n]\gets o[n]\otimes \Call{tanh}{c}[n]$
+		\State \textbf{return}$(h_{t+1},c_{t+1})$	
+		\EndFor
+		\EndProcedure
+	\end{algorithmic}
+\end{algorithm}
+
+%\begin{algorithm}[t]
+%	\caption{BlockReuse algorithm}
+%	\label{BlockReuse}
+%	\begin{algorithmic}[1]
+%\Procedure{Init}{}
+%\State$s_{t+1}{=}(s_i,s_f,s_g,s_o)\gets (\vec{0},\vec{0},\vec{0},\vec{0})$\Comment{partial sum}
+%\State ($h_{t},c_{t}){\gets} (\vec{0},\vec{0})$\Comment{LSTM cell state}
+%\State $stage{\gets} 0$
+%\EndProcedure			
+%\Procedure{CompLSTMCell}{$W,R,b,x_t,N,L$}
+%	\State $q_t \gets \Call{MxV}{W,x_t,4N,L}{+}b$
+%	\If{($stage$ is even)}
+%	\State $(h_{t},c_{t},s_{t+1}){\gets}\Call{UpDiaReuse}{R,q_t,h_t,c_t,s_{t+1}}$
+%	\State $stage\gets odd$
+%	\Else
+%	\State $(h_{t},c_{t},s_{t+1}){\gets}\Call{LowDiaReuse}{R,q_t,h_t,c_t,s_{t+1}}$
+%	\State $stage\gets even$
+%	\EndIf
+%	\State \textbf{return} $(h_{t})$
+%\EndProcedure			
+%		
+%\Procedure{LowDiaReuse}{$R,q_t,h_t,c_t,s_{t+1}$}
+%      \For {$r\leftarrow 0~\textbf{to}~(\ceil{\frac{N}{B}}{-}1)$}
+%       \State $(i_s,i_e) \gets (r{\cdot}B,(r{+}1){\cdot}B{-}1)$
+%        \State $s^B_{t+2} \gets \vec{0}$
+%		  \For {$cc \leftarrow 0~\textbf{to}~r$}
+%		     \State $R^B {\gets}\Call{getDDRBlks}{R,r,cc,B}$	        		     
+%             \State $h^B_t\gets h_t\left [i_s\colon i_e\right ]$
+%             \State $c^B_t\gets c_t\left [i_s\colon i_e\right ]$
+%             \State $q_t^B\gets q_t\left [i_s\colon i_e\right ]$             
+%             \State $s^B_{t+1}\gets \Call{getSubVect}{s_{t+1},cc,B}$
+%             \State $s^B_{t+1}\gets s^B_{t+1}{+}\Call{MxV}{R^B,h^B_t,4B,B}$
+%                                       
+%            %\Comment{if diagonal block}
+%            \If{$c=r$}
+%                \State$(h^B_{t+1},c^B_{t+1}){\gets}\Call{lstmEqns}{v^B_x,s^B_{t+1},c^B_t}$
+%                \State $h_{t+1}\gets \Call{UpdateVect}{h_{t+1},h^B_{t+1},cc}$
+%                 \State $c_{t+1}\gets \Call{UpdateVect}{c_{t+1},c^B_{t+1},cc}$
+%            \EndIf
+%%            \State $h^B_{t+1}\gets \Call{getSubVect}{h_{t+1},cc,B}$;
+%            \State $h^B_{t+1}\gets h_{t+1}\left [i_s\colon i_e\right ]$;
+%
+%            \State $s^B_{t+2}\gets s^B_{t+2}{+}\Call{MxV}{\textbf{R}^B,h_{t+1}^B, 4B,B}$;
+%		  \EndFor
+%          \State $s_{t+2}\gets \Call{updateVect}{s_{t+2},s_{t+2}^B,r}$
+%      \EndFor
+%    \State \textbf{return} $(s_{t+2},h_{t+1},c_{t+1})$	
+%\EndProcedure
+%	
+%\Procedure{UpDiagReuse}{$R,q_t,h_t,c_t,s_{t+1}$}
+%      \For {$r\leftarrow (\ceil{\frac{N}{B}}{-}1)~\textbf{downto}~0$}
+%             \State $(i_s,i_e) \gets (r{\cdot}B,(r{+}1){\cdot}B{-}1)$
+%             \State $s^B_{t+2} \gets \vec{0}$
+%             
+%         \For {$c \leftarrow (\ceil{\frac{N}{B}}){-}1~\textbf{downto}~(r-1)$}
+%          \State $R^B {\gets}\Call{getDDRBlks}{R,r,cc,B}$
+%           \State $h^B_t\gets h_t\left [i_s\colon i_e\right ]$
+%        \State $c^B_t\gets c_t\left [i_s\colon i_e\right ]$
+%       \State $q_t^B\gets q_t\left [i_s\colon i_e\right ]$             
+%       \State $s^B_{t+1}\gets \Call{getSubVect}{s_{t+1},cc,B}$
+%       \State $s^B_{t+1}\gets s^B_{t+1}{+}\Call{MxV}{R^B,h^B_t,4B,B}$
+%        \State $h^B_{t+1}\gets h_{t+1}\left [i_s\colon i_e\right ]$
+%       \State $s^B_{t+2}\gets s^B_{t+2}{+}\Call{MxV}{\textbf{R}^B,h_{t+1}^B, 4B,B}$;
+%        \EndFor
+%        
+%          \State$(h^B_{t+1},c^B_{t+1}){\gets}\Call{lstmEqns}{v^B_x,s^B_{t+1},c^B_t}$
+%\State $h_{t+1}\gets \Call{UpdateVect}{h_{t+1},h^B_{t+1},cc}$
+%\State $c_{t+1}\gets \Call{UpdateVect}{c_{t+1},c^B_{t+1},cc}$
+%    \State $s_{t+2}\gets \Call{updateVect}{s_{t+2},s_{t+2}^B,r}$        
+%      \EndFor    
+%    \State \textbf{return} $(s_{t+2},h_{t+1},c_{t+1})$	
+%    		
+%\EndProcedure
+%\end{algorithmic}
+%\end{algorithm}
+%
+%\begin{algorithm}[h]\caption{LSTM Equations}
+%\begin{algorithmic}[1]
+%\Procedure{lstmEqns}{$q_t,s_{t+1},c_t$}
+%\State $(v_i,v_f,v_g,v_o)\gets ExtractVecs(q_t,B)$
+%\State $(s_i,s_f,s_g,s_o)\gets ExtractVecs(s_{t+1},B)$
+%\For{$n\leftarrow 0~\textbf{to}~B{-1}$}
+%\State $i[n]\gets \Call{sigmoid}{s_i[n]+ v_i[n]}$
+%\State $f[n]\gets \Call{sigmoid}{s_f[n]+ v_f[n]}$
+%\State $g[n]\gets    \Call{tanh}{s_g[n]+v_g[n]}$
+%\State $o[n]\gets  \Call{sigmoid}{s_o[n]+ v_o[n]}$
+%\State $c_{t+1}[n]\gets f[n]\otimes c_t[n] + i[n]\otimes g[n]$
+%\State $h_{t+1}[n]\gets o[n]\otimes \Call{tanh}{c}[n]$
+%\State \textbf{return}$(h_{t+1},c_{t+1})$	
+%\EndFor
+%\EndProcedure
+%\end{algorithmic}
+%\end{algorithm}

@@ -1,12 +1,12 @@
 \graphicspath{{./Ch2-AnalyticalFw/images/}}
 
 \chapter{Analytical Framework} \label{chap:analyticalFw}
-NN accelerators use on-chip memory and reuse the data from it to minimize off-chip memory accesses. Figure~\ref{fig:memsAccess} illustrates the impact of on-chip memory data reuse on off-chip memory accesses, and data access energy. Figure~\ref{fig:memsAccessSingle} shows the memory accesses and energy estimates when $N$ bytes are directly accessed from the off-chip memory and Figure~\ref{fig:memsAccessDouble} shows the reduction in off-chip memory accesses when re-using the data from on-chip memory. If the energy per bytes access from the off-chip and on-chip memories are $e_{1}$ and $e_{2}$, respectively, the energy efficiency can be expressed as, 
-\begin{equation}\label{e_efficiency}
+NN accelerators use on-chip memory and reuse the data from it to minimize off-chip memory accesses. Figure~\ref{fig:memsAccess} illustrates the impact of on-chip memory data reuse on data access energy. Figure~\ref{fig:memsAccessSingle} shows the memory accesses and energy estimates when $N$ bytes are directly accessed from the off-chip memory and Figure~\ref{fig:memsAccessDouble} shows the reduction in off-chip memory accesses when re-using the data from on-chip memory. If the energy per bytes access from the off-chip and on-chip memories are $e_{1}$ and $e_{2}$, respectively, the energy efficiency can be expressed as, 
+\begin{equation}\label{e_efficiency} 
 	E_{efficiency}=1-\frac{E_2}{E_1}=1-(\frac{1}{n}+\frac{e_{2}}{e_{1}})
 \end{equation}
-For a given architecture, $e_{1}$ and $e_{2}$ are fixed and $e_1$ is significantly high compared to $e_2$. Energy efficiency mainly depends on data reuse and improves significantly with it. DNN accelerators use multiple levels of on-chip memories and techniques to maximize the data reuse from the lower memories to improve energy efficiency. 
-\begin{figure}[!h]
+For a given architecture, $e_{1}$ and $e_{2}$ are fixed and $e_1$ is significantly high compared to $e_2$. Equation~\ref{e_efficiency} shows energy efficiency mainly depends on data reuse and improves significantly with data reuse. DNN accelerators use multiple levels of on-chip memories and apply techniques to maximize the data reuse from the lower memories to improve energy efficiency. 
+\begin{figure}[!htb]
 	\centering
 	\captionsetup{font=sf}
 	\subfloat[]{\includegraphics[width=0.25\textwidth]{memAccessSingleLevel}
@@ -59,8 +59,8 @@ The off-chip memory access of a partitioned 3D data can be computed as follows
 \end{align}
 where $N_{tiles}$ is the number of tiles. $r$ and $\numBytesOffChip_{t}$ are the trips count and the number of bytes accessed from off-chip memory for the $t^{th}$ tile, respectively. 
 
-The analytical framework computes the off-chip memory accesses of a given 3D data using the above methodology while considering the data resolution and architectural constraint. The framework considers the bus width and data alignment to precisely compute the off-chip memory accesses. The algorithm takes the
-address of the data, tile dimensions, data shape, as input and iterates for all the tiles. Analytical framework implements models for different layer-types and data reuse schemes to precisely compute the memory accesses and data access energy. 
+The analytical framework computes the off-chip memory accesses of a given 3D data using the above methodology while considering the data resolution and architectural constraint. The framework considers the bus width and data alignment to precisely compute the off-chip memory accesses. It takes the
+address and shape of the data as input and iterates for all the tile dimensions. Analytical framework implements models for different layer-types and data reuse schemes to precisely compute the memory accesses and data access energy. 
 
 \section{Analytical study of architectural parameters}\label{sec:OffChipAccessModel}
 \begin{figure}[!htb]
@@ -180,10 +180,10 @@ Figure~\ref{fig:measVsEst} shows the comparison between the off-chip memory acce
 \begin{figure}[!htb]
 	\centering
 	\captionsetup{font=sf}
-	\subfloat[]{\includegraphics[width=0.35\textwidth]{measuredVsEstimated.pdf}
+	\subfloat[]{\includegraphics[width=0.4\textwidth]{measuredVsEstimated.pdf}
 		\label{fig:measVsEst}}
 	\hfil
-	\subfloat[]{\includegraphics[width=0.35\textwidth]{memAccessDistribution.pdf}
+	\subfloat[]{\includegraphics[width=0.4\textwidth]{memAccessDistribution.pdf}
 		\label{fig:ifmOfmWtsDistribution}}
 	\hfil   
 	\caption{Off-chip memory accesss of VGG16 layers (a) Comparison between the analytical framework and measured on hardware. (b) Breakdown by data type using analytical framework.}
