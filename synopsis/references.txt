@@ -17,12 +17,17 @@ https://docs.xilinx.com/r/en-US/am009-versal-ai-engine/AI-Engine-Array-Interface
 
 https://www.allerin.com/blog/3-types-of-neural-networks-that-ai-uses
    classifies 3 type of NN, FeedForward, RNN/LSTM, CNN
+
+About writing the thesis introduction, aims and objective   
+https://www.student.unsw.edu.au/introductions
+https://patthomson.net/2014/06/09/aims-and-objectives-whats-the-difference/
+   
    different kinds of neural networks are being developed to solve different kinds of problems. While there are numerous types of artificial neural networks being developed and used by researchers, a few have found greater applicability -- and hence, popularity -- as compared to the rest. 
   
    https://www.sciencedirect.com/science/article/pii/S2405844018332067
    
 Mendeley:   A Survey of FPGA-based Neural Network Inference Accelerators
-Efficient Processing of Deep Neural Network
+Efficient Processing of Deep Neural Networks: A Tutorial and Survey
 Eyeriss: A Spatial Architecture for Energy-Efﬁcient Dataﬂow for Convolutional Neural Networks: 
 A Method to Estimate the Energy Consumption of Deep Neural Networks: 
 Using Dataflow to Optimize Energy Efficiency of Deep Neural Network Accelerators: 
