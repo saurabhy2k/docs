@@ -1,11 +1,28 @@
 \graphicspath{{./Ch2-AnalyticalFw/images/}}
 
-\chapter{Analytical Framework} \label{chap:analyticalFw}
-NN accelerators use on-chip memory and reuse the data from it to minimize off-chip memory accesses. Figure~\ref{fig:memsAccess} illustrates the impact of on-chip memory data reuse on data access energy. Figure~\ref{fig:memsAccessSingle} shows the memory accesses and energy estimates when $N$ bytes are directly accessed from the off-chip memory and Figure~\ref{fig:memsAccessDouble} shows the reduction in off-chip memory accesses when re-using the data from on-chip memory. If the energy per bytes access from the off-chip and on-chip memories are $e_{1}$ and $e_{2}$, respectively, the energy efficiency can be expressed as, 
-\begin{equation}\label{e_efficiency} 
-	E_{efficiency}=1-\frac{E_2}{E_1}=1-(\frac{1}{n}+\frac{e_{2}}{e_{1}})
+\chapter{Analyzing Off-chip Memory Accesses} \label{chap:analyticalFw}
+Performance of NN accelerators is often limited by the off-chip memory bandwidth and their high energy consumption also results due to large volume of off-chip memory accesses. NN accelerators use on-chip memories and reuse the data from it to minimize the number of off-chip memory accesses. Assuming that the data movement energy primarily depends on the number of bytes accessed from the memory, Figure~\ref{fig:memsAccess} illustrates the impact of data reuse from the on-chip memory on data movement energy. Figure~\ref{fig:memsAccessSingle} and Figure~\ref{fig:memsAccessDouble} show the number of memory accesses and energy estimates when data is directly accessed from the off-chip memory and when re-using the data from on-chip memory, respectively. Let $N$ is the number of bytes accessed by the processing element (PE) and $e_{1}$ and $e_{2}$ are the energy per bytes access from the off-chip and on-chip memories respectively. If $E_1$ is the data movement energy when PE accesses $N$ bytes of data directly from off-chip memory (Figure~\ref{fig:memsAccessSingle}), $E_1$ can be expressed as following
+\begin{equation}\label{eq:E_1} 
+	E_{1}= N\cdot e_1
 \end{equation}
-For a given architecture, $e_{1}$ and $e_{2}$ are fixed and $e_1$ is significantly high compared to $e_2$. Equation~\ref{e_efficiency} shows energy efficiency mainly depends on data reuse and improves significantly with data reuse. DNN accelerators use multiple levels of on-chip memories and apply techniques to maximize the data reuse from the lower memories to improve energy efficiency. 
+If $E_2$ is the data movement energy when two levels of memory is used (Figure~\ref{fig:memsAccessDouble}) and $n$ is the data reuse from the on-chip memory per byte of off-chip memory access. In this two level of memory hierarchy Figure~\ref{fig:memsAccessDouble}, although the total number of bytes accessed by PE are still the same ($N$), the number of off-chip memory accesses are reduced to $\frac{N}{n}$. The data movement energy ($E_2$ ) in this case can be expressed as following,
+\begin{align}\label{eq:E_2}
+	\begin{split}
+	E_{2}&= \frac{N}{n}\cdot e_1 + \frac{N}{n}\cdot n\cdot e_2 \\
+	&= N\cdot e_1\cdot (\frac{1}{n}+ \frac{e_2}{e_1})
+	\end{split}
+\end{align}
+The energy efficiency compared to (Figure~\ref{fig:memsAccessSingle}) can be expressed as, 
+%\begin{equation}\label{eq:e_efficiency} 
+%	E_{efficiency}=1-\frac{E_2}{E_1}=1-(\frac{1}{n}+\frac{e_{2}}{e_{1}})
+%\end{equation}
+\begin{align}\label{eq:e_efficiency}
+	\begin{split}
+	E_{efficiency}&=1-\frac{E_2}{E_1}\\
+	&=1-(\frac{1}{n}+\frac{e_{2}}{e_{1}})
+	\end{split}
+\end{align}
+For a given architecture, $e_{1}$ and $e_{2}$ are fixed and $e_1$ is significantly high compared to $e_2$. Equation~\ref{eq:e_efficiency} shows energy efficiency improves significantly with data reuse from lower level of memory ($n$). DNN accelerators use multiple levels of on-chip memories and apply techniques to maximize the data reuse from the lower memories to improve energy efficiency. 
 \begin{figure}[!htb]
 	\centering
 	\captionsetup{font=sf}
@@ -28,7 +45,7 @@ The NN accelerator reads the input data (or input activations), filter weights, 
 	\label{fig:nnDataFlow}
 \end{figure}
 
-The layer data is stored as multi-dimensional arrays in the off-chip memory, which is generally too large to fit in the local on-chip memory. In order to perform the computations, the large layer data is partitioned into small tiles.  These tiles are fetched from the off-chip memory, repeatedly to compute the final output sum. Figure~\ref{fig:impactOfTileDims} shows the impact of tile dimensions on off-chip memory accesses for a popular CNN, VGG16, for a given tile scheduling scheme. Figure~\ref{fig:varyingTileDims} shows using different tile dimensions results in different volume of off-chip memory accesses. A good tile dimension can reduce the off-chip memory accesses upto 90\% compared to a bad tile dimension as shown in Figure~\ref{fig:maxNMinLayerAccess} for different layers of VGG16. The tile dimensions and the order in which these tiles are processed (scheduling of the tile operations) significantly impact the volume of data reuse and, thus, the overall energy consumption and throughput of DNN accelerators.
+The layer data is stored as multi-dimensional arrays in the off-chip memory, which is generally too large to fit in the local on-chip memory. In order to perform the computations, the large layer data is partitioned into small tiles.  These tiles are fetched from the off-chip memory, repeatedly to compute the final output sum. To observe the impact of tile dimensions on off-chip memory accesses for a given data reuse scheme we measured the off-chip memory accesses for a popular CNN, VGG16 for different tile dimensions using the algorithm described in section~\ref{sec:Access3DData}. Figure~\ref{fig:impactOfTileDims} shows the impact of tile dimensions on off-chip memory accesses for VGG16, for a given tile scheduling scheme. Figure~\ref{fig:varyingTileDims} shows using different tile dimensions results in different volume of off-chip memory accesses. A good tile dimension can reduce the off-chip memory accesses upto 90\% compared to a bad tile dimension as shown in Figure~\ref{fig:maxNMinLayerAccess} computed for different layers of VGG16. The tile dimensions and the order in which these tiles are processed (scheduling of tiles) significantly impact the volume of data reuse and, thus, the overall energy consumption and throughput of DNN accelerators.
 \begin{figure}[!h]
 	\centering
 	\captionsetup{font=sf}
@@ -44,7 +61,7 @@ The layer data is stored as multi-dimensional arrays in the off-chip memory, whi
 
 Determining the optimal tile dimensions and scheduling scheme requires comparing the off-chip memory accesses for different tile dimensions and scheduling schemes. Modern DNNs have a variety of layers (e.g., convolution, fully connected, recurrent, pooling, etc.), each exhibiting different types of data access patterns. Even the layers of the same type differ in shape and size. Due to varying layer shapes, sizes and type, optimal partitioning and scheduling vary among layers. Finding the optimal partitioning and scheduling scheme, by performing the measurements on the hardware, is time-consuming, and large search space makes it practically impossible.
 
-To address this, we have developed an analytical framework that integrates models of NN layers to compute a layer's off-chip memory accesses, data access energy and the number of compute cycles for mapping a layer on a given PE array. Figure~\ref{fig:analyticalModel} shows the block diagram of the analytical framework. The framework is used as a design space exploration engine to find the optimal partitioning and scheduling scheme for a given layer-type and layer-shape to optimize NN accelerators' energy efficiency and throughput. 
+To address this, we have developed an analytical framework that integrates models of NN layers to compute a layer's off-chip memory accesses, data access energy and the number of compute cycles for mapping a layer on a NN accelerator(Figure~\ref{fig:typicalDNNAccelerator}). Figure~\ref{fig:analyticalModel} shows the block diagram of the analytical framework. The framework is used as a design space exploration engine to find the optimal partitioning and scheduling scheme for a given layer-type and layer-shape to optimize NN accelerators' energy efficiency and throughput. 
 \begin{figure}[!htb]
 	\centering
     \captionsetup{font=sf}	
@@ -57,9 +74,9 @@ The off-chip memory access of a partitioned 3D data can be computed as follows
 \begin{align}\label{eq:BasicOffChip3DDataAccess}
 	\numBytesOffChip_{3D}{=}\sum_{t=1}^{N_{tiles}}(\numBytesOffChip_{t}{\times}r)
 \end{align}
-where $N_{tiles}$ is the number of tiles. $r$ and $\numBytesOffChip_{t}$ are the trips count and the number of bytes accessed from off-chip memory for the $t^{th}$ tile, respectively. 
+where $N_{tiles}$ is the number of tiles. $r$ and $\numBytesOffChip_{t}$ are the trips count and the number of bytes accessed from off-chip memory for the $t^{th}$ tile, respectively. In equation~\ref{eq:BasicOffChip3DDataAccess}, $r$ depends on the layer type (e.g., Convolution), layer shape, tile dimensions and tile scheduling scheme and it is same for all the tiles of a given data. However $B_t$ in equation~\ref{eq:BasicOffChip3DDataAccess} varies among the tiles as it  depends not only on the tile dimensions but also on architectural parameters.
 
-The analytical framework computes the off-chip memory accesses of a given 3D data using the above methodology while considering the data resolution and architectural constraint. The framework considers the bus width and data alignment to precisely compute the off-chip memory accesses. It takes the
+The analytical framework computes the off-chip memory accesses of a given 3D data using the above methodology equation~\ref{eq:BasicOffChip3DDataAccess} while considering the data resolution and architectural constraint. The framework considers the bus width and data alignment to precisely compute the off-chip memory accesses. It takes the
 address and shape of the data as input and iterates for all the tile dimensions. Analytical framework implements models for different layer-types and data reuse schemes to precisely compute the memory accesses and data access energy. 
 
 \section{Analytical study of architectural parameters}\label{sec:OffChipAccessModel}
@@ -114,31 +131,31 @@ Fig.~\ref{fig:bitPerPixelEffect} shows the size ($H\times{W}$) and off-chip memo
 
 The DNN accelerators use a wide data bus to access off-chip memory to meet the high memory bandwidth requirement~\cite{Chen2016EyerissAS,chen2014diannao}. If the number of bytes accessed from an off-chip memory address is not a multiple of bus width or the address is not aligned to the word boundary, it results in unused bytes lanes of the data bus. Figure~\ref{fig:AXI_AccesseOn64BitDataBus} illustrates memory accesses on a 64-bit data bus.  Fig.~\ref{fig:AXI_AccesseOn64BitDataBus}a shows a read transaction of 8 bytes from an aligned address and uses the full bus width. However, if only 5 bytes are read from an aligned address, as shown in \figurename~\ref{fig:AXI_AccesseOn64BitDataBus}b, 8 bytes are still accessed. If 5 bytes are read from an unaligned address, it results in 16 bytes of data access, as shown in Fig.~\ref{fig:AXI_AccesseOn64BitDataBus}c. The unused byte lanes do not carry any useful data, but they contribute to overall energy consumption. The length of the data read should be chosen such that bus utilization is high and off-chip memory accesses and energy consumption are minimized.
 
-To analyze the effect of bus width and address alignment, we express number of bytes accessed from off-chip memory ($\numBytesOffChip$) for $\dataLength$ bytes of data as a function of $\dataLength$, its off-chip memory address ($\addressSym$), and the bus width ($\busWidth$).
-\subsection{Bus Width}
+\subsection{Aligned Access}
 Number of bytes accessed from off-chip memory ($\numBytesOffChip_{align}$) from aligned addresses for different data length ($\dataLength$) is in multiples of bus width ($\busWidth$), e.g., reading 10 bytes results in 16 bytes of off-chip memory access.  $\numBytesOffChip_{align}$ for $\dataLength$ bytes and bus width $\busWidth$ can be expressed as
-\begin{align*}\label{eq:accessOfLengthL}
+\begin{align}\label{eq:alignedAccess}
 	\begin{aligned}[b]
 		\numBytesOffChip_{align}(\dataLength,\busWidth) = \ceil[\big]{\frac{\dataLength}{\busWidth}}\times {\busWidth}
 	\end{aligned}
-\end{align*}
-\subsection{Address Alignment}
+\end{align}
+\subsection{General Case}
+To analyze the effect of bus width and address alignment, we express number of bytes accessed from off-chip memory ($\numBytesOffChip$) for $\dataLength$ bytes of data as a function of $\dataLength$, its off-chip memory address ($\addressSym$), and the bus width ($\busWidth$).
 The off-chip memory bus protocol supports burst based transactions where multiple data transfers of \emph{transfer size} happen from a starting address~\cite{AxiProtocolSpec}. Most transfers in a transaction are aligned to the \emph{transfer size}. However first transfer may be unaligned to the word boundary. 
 
 The number of bytes accessed from off-chip memory for accessing $\dataLength$ bytes from address $\addressSym$ on $\busWidth$ bytes of bus width can be expressed as
-\begin{equation}\label{eq:accessfromUnalignedAddr}
+\begin{equation}\label{eq:unalignedAccess}
 	\begin{aligned}
 		\numBytesOffChip(\addressSym,\dataLength,\busWidth)=(\ceil[\big]{\frac{\addressSym+\dataLength}{\busWidth}}-\floor[\big]{\frac{\addressSym}{\busWidth}})\cdot{\busWidth}
 	\end{aligned}
 \end{equation}
-%\vspace{-1.5em}
+Equation~\ref{eq:alignedAccess} is a special case of Equation~\ref{eq:unalignedAccess} when memory accesses are from aligned addresses.
 \section{Off-Chip Memory Access of 3D Data}\label{sec:Access3DData}
 Consider a 3D data of shape $\langle W,H,N\rangle$, partitioned into tiles of dimension $\langle T_c,T_r,T_n\rangle$ as shown in  Fig.~\ref{fig:3dTiledData} and Fig.~\ref{fig:3dTile}. Each tile is identified by index $(x,y,z)$ where $x, y, z \in \mathbb{Z}$ and 
 \begin{align}\label{eq:TileIndexing}
 	\begin{aligned}
-		0\leq x<\ceil[\big]{\frac{W}{T_c-\numOverlap}},
-		0\leq y<\ceil[\big]{\frac{H}{T_r-\numOverlap}},
-		0\leq z<\ceil[\big]{\frac{N}{T_n}}
+		0\leq &x<\ceil[\big]{\frac{W}{T_c-\numOverlap}}, \\
+		0\leq &y<\ceil[\big]{\frac{H}{T_r-\numOverlap}}, \\
+		0\leq &z<\ceil[\big]{\frac{N}{T_n}}
 	\end{aligned}
 \end{align}
 \begin{figure}[htb]
@@ -174,7 +191,7 @@ If the data dimensions are not multiples of corresponding tile dimensions, the t
 
 The function GetTileAcc in Lines~\ref{alg:FuncTileAccess}--\ref{alg:FuncTileAccessEnd} computes the addresses and number of bytes ($contSz$) for each off-chip memory transaction. $contSz$ is the number of contiguous bytes to access in a transaction. Let $T_n$ is the number of frames in the tile. If the tile width ($T_c$) is the same as the data width ($W$) (line~\ref{alg:TileAccessIf2}), then all the data elements of $T_r$ rows of a frame are contiguous, and the complete tile can be accessed using $T_n$ number of addresses. If the condition in line~\ref{alg:TileAccessIf1} is true, then all elements of the tile are contiguous and can be accessed using a single transaction of $T_c\cdot T_r\cdot T_n\cdot DW$ bytes (line~\ref{alg:TileAccessSingleTxn}). In all other cases, the tile is accessed using row addresses computed in line~\ref{alg:TileRowAddr}. The function computes the number of bytes accessed from off-chip memory for a tile ($Acc_{tile}$) in lines~\ref{alg:TileAccessIf1End},~\ref{alg:TileAccess2}, and~\ref{alg:TileAccessFor2End} using equation~\ref{eq:accessfromUnalignedAddr}. 
 
-DNN accelerators access layer data (ifm, ofm, and weights) partitioned into tiles. The tile dimensions should be chosen carefully to minimize the transfer of extra bytes to reduce off-chip memory access. We proposed a bus width aware approach (BWA) that factors in the architectural parameters to precisely compute the off-chip memory access of 3D tiles and the layer data.
+DNN accelerators access layer data (ifm, ofm, and weights) partitioned into tiles. The tile dimensions should be chosen carefully to minimize the transfer of extra bytes to reduce off-chip memory access. We have proposed a bus width aware approach (BWA) that factors in the architectural parameters to precisely compute the off-chip memory access of 3D tiles and the layer data.
 
 Figure~\ref{fig:measVsEst} shows the comparison between the off-chip memory accesses estimated by the analytical framework and measurements performed on Xilinx FPGA for different layers of varying shapes and sizes of a popular CNN, VGG16. The experimental results on popular CNNs, AlexNet, and VGG16, show that the difference between estimated and measured off-chip memory accesses is less than 4\%. The framework is also helpful in analyzing the layer-wise distribution and breakdown of memory accesses, as shown in Figure~\ref{fig:ifmOfmWtsDistribution}. The proposed framework is a valuable tool for quickly analyzing the memory accesses and data access energy for different tile dimensions, and data reuse schemes to search for the optimal solution. 
 \begin{figure}[!htb]

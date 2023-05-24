@@ -1,6 +1,13 @@
 \begin{algorithm}[H]
 	\caption{BW Aware off-chip memory access}
 	 \label{Algorithm1}
+     \hspace*{\algorithmicindent}\textbf{Inputs:}\\
+     \hspace*{\algorithmicindent}{$Addr_{data}$:Starting address of the data in off-chip memory}\\
+     \hspace*{\algorithmicindent}{$\langle T_c,T_r,T_n\rangle$: Tile dimensions}\\
+     \hspace*{\algorithmicindent}{$\langle W,H,N\rangle$: Input data shape}\\
+     \hspace*{\algorithmicindent}{$\numOverlap$: Number of overlapped elements between consecutive tiles}\\
+     \hspace*{\algorithmicindent}\textbf{Output:}\\
+     \hspace*{\algorithmicindent}{$Acc_{data}$: Number of bytes accessed from off-chip memory}\\
 	 \begin{algorithmic}[1]
 	 	\Procedure{BWA}{$Addr_{data},\langle T_c,T_r,T_n\rangle,\langle W,H,N\rangle,\numOverlap$} \label{alg:BWA}
 	 	\State $Acc_{data}\gets 0$
