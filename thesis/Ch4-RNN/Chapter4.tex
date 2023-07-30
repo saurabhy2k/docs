@@ -143,7 +143,7 @@ Similarly, stage 4, stage 5 and stage 6 reuse weights of $R^L[2]$ to compute $h_
 %	\label{fig:blockApproach}
 %	\vspace{-1.0em}	
 %\end{figure}
-The basic approach accesses one elements of $R$ at each stage. LSTM accelerator can store several elements of $R$. To process several element of $R$, the basic approach can be extended by partitioning $R$ into square matrices. The size of the square matrices is determined by the available on-chip memory of the accelerator. Let $R$ is partitioned into square matrices $P$ of size $B{\times}B$, such that $P$ fits in the accelerator's on-chip memory. Each $P$ matrix can be indexed as $(r,m)$, where $0{\le}r,m{\le} (\ceil{\frac{N}{B}}{-}1)$, as shown in \figurename{~\ref{fig:squareMatrix}}. We group these small matrices into $R^L$ and $R^U$ such that $R^L$ has all the matrices with index $r{\geq}m$  and $R^U$ has all the matrices with index $r{<}m$, as shown in \figurename{~\ref{fig:lowerSquareMatrix}} and \figurename{~\ref{fig:upperSquareMatrix}}, respectively.
+The basic approach accesses one elements of $R$ at each stage. LSTM accelerator can store several elements of $R$. To process several element of $R$, the basic approach can be extended by partitioning $R$ into square matrices. The size of the square matrices is determined by the available on-chip memory of the accelerator. Let $R$ is partitioned into square matrices $P$ of size $B{\times}B$, such that $P$ fits in the accelerator's on-chip memory. Each $P$ matrix can be indexed as $(r,m)$, where $0{\le}r,m{\le} (\ceil{\frac{N}{B}}{-}1)$, as shown in \figurename{~\ref{fig:squareMatrix}}. We group these small matrices into $R^L$ and $R^U$ such that $R^L$ has all the matrices with index $r{<}m$  and $R^U$ has all the matrices with index $r{\geq}m$, as shown in \figurename{~\ref{fig:lowerSquareMatrix}} and \figurename{~\ref{fig:upperSquareMatrix}}, respectively.
 \begin{figure}[htb!]
 	\centering
 	\subfloat[]
@@ -239,7 +239,7 @@ To demonstrate the efficiency of our approach, we have experimented with LSTM mo
 \end{table}
 \subsection{Results}
 \subsubsection{Off-Chip Memory Access}
-Using our FPGA designs for conventional, TSI-WR and our proposed approach that can configured for different input vector lengths, on-chip buffer sizes, and the number of hidden units we measured the off-chip memory accesses. The hardware implementation was integrated with Xilinx AXI Performance Monitor (APM) IP to log the number of bytes transferred between DDR3 and FPGA design.
+Using our FPGA designs that can configured for different input vector lengths, on-chip buffer sizes, and the number of hidden units we measured the off-chip memory accesses for conventional, TSI-WR and our SACC approach. The hardware implementation was integrated with Xilinx AXI Performance Monitor (APM) IP to log the number of bytes transferred between DDR3 and FPGA design.
 We have experimented for different on-chip memory sizes smaller than $R$. \figurename{~\ref{fig:memAccessImprovement}} shows the off-chip memory accesses for two time-steps for conventional, TSI-WR, and SACC approaches.  \figurename{~\ref{fig:memTsiwrComparison} and \figurename{~\ref{fig:memAccessAllThree} show the results computed using Algorithm~\ref{Algorithm1} of chapter~\ref{chap:analyticalFw} and measured using our hardware implementation on FPGA, respectively. 
 
 \begin{figure}[htb!]

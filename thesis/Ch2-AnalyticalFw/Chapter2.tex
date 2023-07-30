@@ -150,7 +150,7 @@ The number of bytes accessed from off-chip memory for accessing $\dataLength$ by
 		\numBytesOffChip(\addressSym,\dataLength,\busWidth)=(\ceil[\big]{\frac{\addressSym+\dataLength}{\busWidth}}-\floor[\big]{\frac{\addressSym}{\busWidth}})\cdot{\busWidth}
 	\end{aligned}
 \end{equation}
-Equation~\ref{eq:alignedAccess} is a special case of Equation~\ref{eq:unalignedAccess} when memory accesses are from aligned addresses.
+Equation~\ref{eq:alignedAccess} is a special case of Equation~\ref{eq:unalignedAccess} when memory access is from aligned address.
 \section{Off-Chip Memory Access of 3D Data}\label{sec:Access3DData}
 Consider a 3D data of shape $\langle W,H,N\rangle$, partitioned into tiles of dimension $\langle T_c,T_r,T_n\rangle$ as shown in  Fig.~\ref{fig:3dTiledData} and Fig.~\ref{fig:3dTile}. Each tile is identified by index $(x,y,z)$ where $x, y, z \in \mathbb{Z}$ and 
 \begin{align}\label{eq:TileIndexing}
