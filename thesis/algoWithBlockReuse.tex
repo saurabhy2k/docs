@@ -77,25 +77,25 @@
 	\end{algorithmic}
 \end{algorithm}
 
-\begin{algorithm}[h]
-	\caption{LSTM Equations}
-   \label{Algo:LSTMEq}
-	\begin{algorithmic}[1]
-		\Procedure{lstmEqns}{$q_{t+1},s_{t+1},c_t$}
-		\State $(v_i,v_f,v_g,v_o)\gets ExtractVecs(q_t,B)$
-		\State $(s_i,s_f,s_g,s_o)\gets ExtractVecs(s_{t+1},B)$
-		\For{$n\leftarrow 0~\textbf{to}~B{-1}$}
-		\State $i[n]\gets \Call{sigmoid}{s_i[n]+ v_i[n]}$
-		\State $f[n]\gets \Call{sigmoid}{s_f[n]+ v_f[n]}$
-		\State $g[n]\gets    \Call{tanh}{s_g[n]+v_g[n]}$
-		\State $o[n]\gets  \Call{sigmoid}{s_o[n]+ v_o[n]}$
-		\State $c_{t+1}[n]\gets f[n]\otimes c_t[n] + i[n]\otimes g[n]$
-		\State $h_{t+1}[n]\gets o[n]\otimes \Call{tanh}{c}[n]$
-		\State \textbf{return}$(h_{t+1},c_{t+1})$	
-		\EndFor
-		\EndProcedure
-	\end{algorithmic}
-\end{algorithm}
+%\begin{algorithm}[h]
+%	\caption{LSTM Equations}
+%   \label{Algo:LSTMEq}
+%	\begin{algorithmic}[1]
+%		\Procedure{lstmEqns}{$q_{t+1},s_{t+1},c_t$}
+%		\State $(v_i,v_f,v_g,v_o)\gets ExtractVecs(q_t,B)$
+%		\State $(s_i,s_f,s_g,s_o)\gets ExtractVecs(s_{t+1},B)$
+%		\For{$n\leftarrow 0~\textbf{to}~B{-1}$}
+%		\State $i[n]\gets \Call{sigmoid}{s_i[n]+ v_i[n]}$
+%		\State $f[n]\gets \Call{sigmoid}{s_f[n]+ v_f[n]}$
+%		\State $g[n]\gets    \Call{tanh}{s_g[n]+v_g[n]}$
+%		\State $o[n]\gets  \Call{sigmoid}{s_o[n]+ v_o[n]}$
+%		\State $c_{t+1}[n]\gets f[n]\otimes c_t[n] + i[n]\otimes g[n]$
+%		\State $h_{t+1}[n]\gets o[n]\otimes \Call{tanh}{c}[n]$
+%		\State \textbf{return}$(h_{t+1},c_{t+1})$	
+%		\EndFor
+%		\EndProcedure
+%	\end{algorithmic}
+%\end{algorithm}
 
 %\begin{algorithm}[t]
 %	\caption{BlockReuse algorithm}
