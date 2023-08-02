@@ -205,25 +205,37 @@ When all the blocks of the $r^{th}$ row are processed, $s^B_{t+1}$ has the total
 Both the procedures reuse the blocks of $R$ to reduce the off-chip memory accesses. Algorithm~\ref{Algo:LSTMEq} implements the LSTM equations using the partial sum vector.
 \input{algoWithBlockReuse}
 \section{Experimental Setup And Results}
-We have implemented LSTM layers using conventional and proposed approaches and synthesized the design using the SDSoC framework, SDx v2018.3. The designs can be configured for different input vector lengths, on-chip buffer sizes, and the number of hidden units. To compare the performance for different number of compute resources we have implemented multiple designs for each of the three approach. We carried out the experiments on Zedboard, and the target frequency is 100MHz.  The off-chip memory is DDR3 connected using a 64-bit AXI bus. We have integrated the Xilinx AXI Performance Monitor (APM) IP to log the number of bytes transferred and memory access latencies for DRAM accesses.
+We have implemented LSTM layers using conventional, TSIWR~\cite{park2020time}, and our approach and synthesized the design using the SDSoC framework, SDx v2018.3. 
+\figurename{~\ref{fig:lstmFpgaDesign} shows the main components and interfaces of the FPGA design. The design reads $B{\times}B$ size blocks of the four input $R$ matrices ($R_i, R_f, R_g$, and $R_o$) into the local buffers using bufferCopy component and then performs the matrix vector multiplications using $MxV$ component. The blocks are read in the order specified by the schedule. The schedule for all three approaches is prepared offline. The top level logic first reads the blocks of $R$ matrices ($R_i, R_f, R_g$, and $R_o$) and invokes computeMxV to compute the four matrix vector multiplications in parallel. The design uses dual buffering scheme to overlap the data-transfer and computations. The four matrix multiplication units ($MxV_i, MxV_f, MxV_g$, and $MxV_o$) perform matrix vector multiplications in parallel, and amount of parallelism in each $MxV$ unit can be configured for number of compute resources ($PARL\_FACTOR$). 
+\begin{figure}[!htb]
+	\centering
+	\includegraphics[width=0.65\columnwidth]{SACC_FPGA_Design}
+	\caption{Block level FPGA Design for LSTM Implementation.}
+	\label{fig:lstmFpgaDesign}
+\end{figure}
 
-\subsection{Baseline}
-We have compared our approach with conventional and TSI-WR~\cite{park2020time} approaches. We have used the exact implementation for off-chip memory transfer, matrix-vector multiplication, sigmoid, and tanh for both approaches to perform a fair comparison. The on-chip buffer size ($4{\times}B{\times}B$) used to store the weight matrices is also kept the same for both the approaches. Table~\ref{tab:fpgaResources} shows the FPGA resources utilization reported by Vivado for conventional and proposed approaches. 
+The design can be configured for different on-chip buffer sizes, and the number of hidden units ($N$), and number of compute resources. To compare the throughput for different number of compute resources and buffer sizes we have implemented multiple designs for each of the three approaches. We carried out the experiments on Zedboard, and the target frequency is 100MHz.  The off-chip memory is DDR3 connected using a 64-bit AXI bus. We have integrated the Xilinx AXI Performance Monitor (APM) IP to log the number of bytes transferred and memory access latencies for DRAM accesses.
+
+There are 8, $B{\times}B$ local buffers used to store the blocks of matrices (\figurename{~\ref{fig:lstmFpgaDesign}}), and 2 buffers, each of dimension $N$, for storing the vector $h_t$ and $h_{t{+}1}$. Table~\ref{tab:fpgaResources} shows the FPGA resources utilization reported by Vivado for conventional, TSIWR and our approach, for $B{=}64$ and using 8 DSPs resources ($PARL\_FACTOR{=}8$) in each of the four $MxV$ component.  Total number of DSPs required in this case are $4{\times}PARL\_FACTOR{=}32$.
+Each of the 8 arrays are partitioned into 8 ($PARL\_FACTOR$) to perform the parallel reads and matrix vector multiplications. That results in 64 FPGA RAMB18 resources for storing the $B{\cdot}B$ blocks and 2 FPGA RAMB18 resources for storing the vector $h_t$ and $h_{t{+}1}$. The remaining ($20$) RAMB18 are used for other logic and I/O. The LUTs and FFs in case of TSIWR and our approach are higher due to additional control logic.
 \begin{table}[htb]
 	\centering
-	\caption{FPGA Resource Utilization(\%) for B=64}
+	\caption{FPGA resource utilization for B=64, PARL\_FACTOR=8, and N=128 }
 	\label{tab:fpgaResources}
-	\begin{tabular}{@{}ccccl@{}}
-		\toprule
-		\multicolumn{1}{l}{} & \multicolumn{1}{l}{LUT} & \multicolumn{1}{l}{FF} & \multicolumn{1}{l}{Block RAM} & DSP   \\ \midrule
-		Conv.                & 66.8                    & 40.61                  & 61.07                         & 82.73 \\ \midrule
-		SAC                  & 63.3                    & 37.87                  & 65.36                         & 75.45 \\ \bottomrule
+	\begin{tabular}{ccccc}
+		\hline
+		& RAMB18 & DSPs & LUTs  & FFs   \\ \hline
+		Conv. & 86     & 32   & 14107 & 17768 \\ \hline
+		TSIWR & 86     & 32   & 16669 & 22465 \\ \hline
+		SACC  & 86     & 32   & 15738 & 18571 \\ \hline
 	\end{tabular}
 \end{table}
-Our approach requires additional on-chip memory to store the four partial sum vectors ($4{\times}N$) and four temporary vectors ($4{\times}B$).  We have also implemented the models to compute the off-chip memory accesses for all three approaches and integrated them with analytical framework (Chapter~\ref{chap:analyticalFw}) to compare the off-chip memory accesses of the three approaches.
+\subsection{Baseline}
+We have compared our approach (SACC) with conventional and TSI-WR~\cite{park2020time} approaches. To perform the fair comparison, the size of the on-chip memory, matrix multiplication logic and number of compute resources are kept same for all the three approaches.
+
+We have also implemented the models to compute the off-chip memory accesses for all three approaches and integrated them with analytical framework (Chapter~\ref{chap:analyticalFw}) to compare the off-chip memory accesses of the three approaches.
 \subsection{Benchmarks}
 To demonstrate the efficiency of our approach, we have experimented with LSTM models used in speech recognition (for TIMIT~\cite{garofolo1993timit}) and character level Language Modelling (LM)~\cite{sundermeyer2015feedforward}, which is widely used in natural language processing. The LSTM models are adopted from \cite{azari2020elsa,park2018maximizing,han2017ese}. Each model has two LSTM layers and the parameters are described in Table~\ref{tab:lstmModels}.
-
 \begin{table}[]
 	\caption{LSTM Models used for experiments}
 	\label{tab:lstmModels}
@@ -239,8 +251,8 @@ To demonstrate the efficiency of our approach, we have experimented with LSTM mo
 \end{table}
 \subsection{Results}
 \subsubsection{Off-Chip Memory Access}
-Using our FPGA designs that can configured for different input vector lengths, on-chip buffer sizes, and the number of hidden units we measured the off-chip memory accesses for conventional, TSI-WR and our SACC approach. The hardware implementation was integrated with Xilinx AXI Performance Monitor (APM) IP to log the number of bytes transferred between DDR3 and FPGA design.
-We have experimented for different on-chip memory sizes smaller than $R$. \figurename{~\ref{fig:memAccessImprovement}} shows the off-chip memory accesses for two time-steps for conventional, TSI-WR, and SACC approaches.  \figurename{~\ref{fig:memTsiwrComparison} and \figurename{~\ref{fig:memAccessAllThree} show the results computed using Algorithm~\ref{Algorithm1} of chapter~\ref{chap:analyticalFw} and measured using our hardware implementation on FPGA, respectively. 
+Using our FPGA designs (\figurename{~\ref{fig:lstmFpgaDesign}}) that can configured for different input vector lengths, on-chip buffer sizes, and the number of hidden units we measured the off-chip memory accesses for conventional, TSI-WR and our SACC approach. The hardware implementation was integrated with Xilinx AXI Performance Monitor (APM) IP to log the number of bytes transferred between DDR3 and FPGA design.
+We have experimented for different on-chip memory sizes smaller than the size of $R$. \figurename{~\ref{fig:memAccessImprovement}} shows the off-chip memory accesses for two time-steps for conventional, TSI-WR, and SACC approaches.  \figurename{~\ref{fig:memTsiwrComparison} shows the results computed using~\eqref{eq:unalignedAccess} of chapter~\ref{chap:analyticalFw}, and \figurename{~\ref{fig:memAccessAllThree} shows the results measured using our hardware implementation on FPGA (\figurename{~\ref{fig:lstmFpgaDesign}}). 
 
 \begin{figure}[htb!]
 	\centering
@@ -273,9 +285,9 @@ The TSI-WR approach schedules the tiles in a way to reuse the data from the on-c
 	}
 	\caption{Throughput variation with different on-chip buffer/R ratio}	\label{fig:throughputVsMem}
 \end{figure}
-To analyze the throughput variation with on-chip buffer sizes, we synthesized FPGA designs with different on-chip buffer sizes for all the three approaches and measured the total run time of each design. Total number of multiply and accumlate operations (MACs) performed per output $h$ can be computed using the hidden state vector dimension ($N$) and input vector length ($L$). We measured the run times of different FPGA designs for $T$ time steps and used it to compute the throughput, as follows 
+To analyze the throughput variation with on-chip buffer sizes, we synthesized FPGA designs with different on-chip buffer sizes for all the three approaches and measured the total run time of each design. Total number of multiply and accumlate operations (MACs) performed for output $h$ at each time step is computed using the hidden state vector dimension ($N$) and input vector length ($L$). We measured the run times of different FPGA designs for $T$ time steps and used it to compute the throughput, as follows 
 \begin{align}\label{eq:througput}
-	Throughput{=}\frac{\text{Number of MACs per output}{\times}T}{\text{measured run-time}}
+	\text{Throughput}=\frac{\text{Number of MACs per output}{\times}T}{\text{measured run-time}}
 \end{align}
 \figurename{~\ref{fig:throughPutVsMem_64}} and \figurename{~\ref{fig:throughPutVsMem_128}} compares the throughput for different ratios of on-chip buffer to weight matrix size for 64 and 128 KB on-chip buffer size, respectively.  We experimented with different number of hidden units ($N$) to vary $R$ matrix size. Increasing on-chip buffer to $R$ matrix size ratio results in larger tile sizes and fewer number of iterations, resulting in throughput improvement, for all the three approaches. The TSI-WR approach performs worse than the conventional approach for smaller on-chip buffer/$R$ ratio due to its control logic overhead which overshadows the data reuse benefits. However, for a larger on-chip buffer/$R$ size ratio (e.g., 50\%), the TSI-WR approach outperforms the conventional approach due to better data-reuse. Our approach performs better than the other two approaches for all the on-chip buffer to $R$ matrix size ratio due to its significant data-reuse of weight matrix $R$ and small control logic overhead.
 For 50\% on-chip buffer to matrix size ratio, our approach improves the throughput by 42\% and 33\% for 64~KB and 41\% and 29\% for 128~KB on-chip buffer size, compared to conventional and TSI-WR approaches, respectively.
@@ -294,7 +306,7 @@ For 50\% on-chip buffer to matrix size ratio, our approach improves the throughp
 	\caption{Throughput variation of MxV with compute resources for 50\% on-chip buffer/$R$ ratio}	\label{fig:throughputVsPF}
 \end{figure}
 \subsubsection{Throughput variation with compute resources}
-Matrix-Vector multiplication dominates the LSTM accelerators' processing. The performance of LSTM accelerators is limited by the memory bandwidth. Data reuse reduces the memory bandwidth bottleneck. To observe the impact of data reuse on memory bandwith we have implemented multiple FPGA designs with different number of compute resources, for each of the three approaches. For each approach throughput is measured using \eqref{eq:througput}. We have compared the results when on-chip buffer to matrix size ratio of 50\%. 
+The performance of LSTM accelerators is limited by the memory bandwidth. Data reuse reduces the memory bandwidth bottleneck. To observe the impact of data reuse on memory bandwith we have implemented multiple FPGA designs with different number of compute resources, for each of the three approaches. For each approach throughput is measured using \eqref{eq:througput}. We have compared the results when on-chip buffer to matrix size ratio of 50\%. 
 
 \figurename{~\ref{fig:throughputVsPF}} compares the throughput of the conventional, TSI-WR and our approach. 
 For the conventional approach, increasing the number of computing resources does not improve the performance. TSI-WR approach improves the performance with increasing compute resources as it reuses the on-chip data and improves the operational intensity (operations/byte). However, the improvement in the TSI-WR approach is noticable only for the large on-chip buffer/$R$ size ratios. Our approach (SACC), has better operational intensity (operations/byte) and alleviates the memory bandwith issue compared to other two approaches, which results in throughput improvement with increasing the number of parallel resources. The improvement in throughput with increased number of compute resource using our approach is observed for different on-chip buffer sizes as shown in \figurename{~\ref{fig:throughPutVsPF_64}} and \figurename{~\ref{fig:throughPutVsPF_128}}.
