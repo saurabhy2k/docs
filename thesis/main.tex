@@ -248,20 +248,20 @@
 %===          Switch on this part to generate Coverpage, Certificate, ACK
 %==================================================================================
 
-%\doublespacing
+\doublespacing
 \pagestyle{empty}
-%\cleardoublepage
-%\newpage \ \newpage
-\onehalfspacing 
+\cleardoublepage
+\newpage \ \newpage
+%\onehalfspacing 
 %\newpage \ \newpage
 %------------------------------------------------------------------------- 
 \pagenumbering{gobble}
 \include{ThesisSpecificPages/cover_page}
 % \cleardoublepage
 % \include{ThesisSpecificPages/copyright}
-%\cleardoublepage
+\cleardoublepage
 \include{ThesisSpecificPages/inner_cover_page}
-%\cleardoublepage
+\cleardoublepage
 \pagenumbering{roman}
 
 %\newpage  \newpage
@@ -274,14 +274,14 @@
 %	\textsf{\textit{\large{} My daughter Anika.}}
 %	\par \end{center}{\large \par}
 
-%\doublespacing 
+\doublespacing 
 \include{ThesisSpecificPages/certificate}
 \cleardoublepage
 
 \pagestyle{plain}
 
-%\doublespacing 
-%\include{ThesisSpecificPages/acknowledge}
+\doublespacing 
+\include{ThesisSpecificPages/acknowledge}
 %\addcontentsline{toc}{chapter}{\numberline{}Acknowledgements}
 %==================================================================================
 %===
@@ -294,11 +294,11 @@
 %==================================================================================
 %\singlespacing
 \cleardoublepage
-%\doublespacing 
+\doublespacing 
 \include{abstract}
 \cleardoublepage
 %\onehalfspacing 
-%\includepdf[pages=-]{Hindi_Abstract.pdf}
+\includepdf[pages=-]{hindiAbstract.pdf}
 \cleardoublepage
 \setcounter{page}{7}
 %\pagestyle{fancy}
@@ -328,7 +328,7 @@
 \pagestyle{fancy}
 %\singlespacing
 %\onehalfspacing
-%\doublespacing
+\doublespacing
 %\part{Prologue}
 \input{Ch1-Introduction/Chapter1.tex}
 \input{Ch2-AnalyticalFw/Chapter2.tex}
@@ -352,15 +352,15 @@
 %\cleardoublepage
 
 \pagestyle{plain}
-%\doublespacing
+\doublespacing
 \cleardoublepage
 
 \input{ThesisSpecificPages/publication}
-%\cleardoublepage
+\cleardoublepage
 %\onehalfspacing
 
 %\doublespacing 
-%\input{ThesisSpecificPages/bio}
+\input{ThesisSpecificPages/bio}
 \cleardoublepage
 %\onehalfspacing
 \pagestyle{plain}

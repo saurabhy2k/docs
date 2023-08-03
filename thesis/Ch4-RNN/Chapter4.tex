@@ -55,26 +55,30 @@ Our approach schedules the computations in a way that reuses all the weights of 
 \section{Split And Combine Computations Approach}
 In this section, we first describe basic idea of Split And Combine Computations (\textbf{SACC}) approach and then its extension to block-wise reuse of data.
 \subsection{Basic Approach}\label{sec:elementWiseApproach}
-The computation of the $h_t$ can be expressed as shown below
+The computation of $h_t$ can be expressed as follows:
 \begin{align}\label{eq:h_{t}}
 	h_{t}[k] &= F( S_{t}[k]+q_{t}[k])
 \end{align}
-where $F$ is a non-linear function. $q_{t}$ is computed as $W{\cdot}x_t{+}b$ and its computations are independent of previous step cell states. $S_{t}[k]$ is the sum of $N$ product terms as shown below,
+Where $F$ is a non-linear function, and $q_{t}$ is computed as $W{\cdot}x_t{+}b$. The computations of $q_{t}$ are independent of the previous step's cell states. $S_{t}[k]$ is the sum of $N$ product terms, given by:
 \begin{align}\label{eq:S_{t}}
 	S_{t}[k] = \sum_{n=0}^{N-1}R[k][n]\cdot h_{t-1}[n]
 \end{align}
-Computations of $S_{t}[k]$, and therefore $h_{t}[k]$, depends on all the $N$ elements of $h_{t-1}$. Conventional approaches first compute all the $N$ elements of $h_{t-1}$, which require accessing the full matrix $R$, before initiating the computations of $h_{t}$. Due to limited on-chip memory, elements of matrix $R$ are replaced by other elements of $R$ required for $h_{t}$ computations. When accelerator starts computing $h_{t+1}$, weights of $R$ are accessed again from the off-chip memory .
+Computation of $S_{t}[k]$ (and, consequently, $h_{t}[k]$) depends on all $N$ elements of $h_{t-1}$. Traditional approaches compute all $N$ elements of $h_{t-1}$ first, requiring access to the full matrix $R$, before initiating computations for $h_{t}$. However, due to limited on-chip memory, elements of matrix $R$ are replaced by other elements required for $h_{t}$ computations, and when the accelerator starts computing $h_{t+1}$, the weights of $R$ are accessed again from the off-chip memory.
 
-To reuse the weights of $R$, we split the computations of \eqref{eq:S_{t}} into the following two partial sums 
+To enable reuse of the weights of $R$, we split the computations of $S_{t}[k]$ into two partial sums as follows:
 \begin{align}\label{eq:S_{t}_split}
 	S_{t}[k] = \sum_{n=0}^{k}R[k][n]\cdot h_{t-1}[n] + \sum_{n=k+1}^{N-1}R[k][n]\cdot h_{t-1}[n]
 \end{align}
-Let $S_{t}^{L}[k]$ and $S_{t}^{U}[k]$ are the first and second partial sums in \eqref{eq:S_{t}_split}, respectively.  $S_{t}^{L}[k]$ and $S_{t}^{U}[k]$ are expressed in equations below, 
+We define $S_{t}^{L}[k]$ and $S_{t}^{U}[k]$ as the first and second partial sums in the above equation, respectively. They are expressed as follows: 
 \begin{align}
 	S_{t}^{L}[k] &= \sum_{n=0}^{k}R[k][n]\cdot h_{t-1}[n] \label{eq:S_L_{t}}\\
 	S_{t}^{U}[k] &= \sum_{n=k{+}1}^{N-1}R[k][n]\cdot h_{t-1}[n] \label{eq:S_U_{t}}
 \end{align}
-\eqref{eq:S_L_{t}} uses the lower-diagonal and diagonal elements of $R$ ($R^L$), and~\eqref{eq:S_U_{t}} uses the upper diagonal elements of $R$ ($R^U$). \figurename{~\ref{fig:LowerDiagR}} and \figurename{~\ref{fig:UpperDiagR}} shows the elements of $R$ used in the partial sum computations of $S_{t}^{L}$ and $S_{t}^{U}$, respectively for an example $3\times3$ matrix $R$. Each element of $S$ is a sum of three product terms in this case. Partial sum vectors $S^L_t$ and $S^U_t$ have only a fraction of the total sum $S$. The fraction of the sum in each element of $S^L_t$ and $S^U_t$ are highlighted using colored rectangles in \figurename{~\ref{fig:partialSumComputations}}.
+Here, $S_{t}^{L}[k]$ uses the lower-diagonal and diagonal elements of $R$ ($R^L$), while $S_{t}^{U}[k]$ uses the upper-diagonal elements of $R$ ($R^U$). The elements of $R$ used in the computations of $S_{t}$ are also required for the partial sum computations of $S_{t+1}$.
+In our approach $S_{t{+}1}^{L}[k]$ computations can be initated soon after first $k{+}1$ elements of $h_{t}$ are computed. Similarly at the next time step, the computations of $S^U_{t{+}2}[k]$ can be initiated soon after the last $N{-}(k{+}1)$ elements of $h_{t{+}1}$ are computed. By dividing the computations into two partial sums, we enable the reuse of weights of $R$ between two consecutive time steps. Our approach accesses the weights of $R$ and reuses them for computations of partial sums for two consecutive time steps.
+
+In \figurename{~\ref{fig:LowerDiagR}} and \figurename{~\ref{fig:UpperDiagR}}, we can observe the elements of matrix $R$ that are utilized in the partial sum computations of $S_{t}^{L}$ and $S_{t}^{U}$, respectively, for an example $3\times3$ matrix $R$. In this case, each element of the resulting vector $S$ is the sum of three product terms. Notably, the partial sum vectors $S^L_t$ and $S^U_t$ only contain a fraction of the total sum $S$, and these fractions are visually highlighted using colored rectangles in \figurename{~\ref{fig:partialSumComputations}}.
+
 \begin{figure}[htb!]
 	\centering
 	\subfloat[]
@@ -90,60 +94,28 @@ Let $S_{t}^{L}[k]$ and $S_{t}^{U}[k]$ are the first and second partial sums in \
 	\label{fig:partialSumComputations}
 \end{figure}
 
-The elements of $R$ used in the computations of $S_{t}$ are also required for the partial sum computations of $S_{t{+}1}$, as shown below
-\begin{align}
-	S_{t{+}1}^{L}[k] &= \sum_{n=0}^{k}R[k][n]\cdot h_{t}[n] \label{eq:S_L_{t+1}}\\
-	S_{t{+}1}^{U}[k] &= \sum_{n=k{+}1}^{N-1}R[k][n]\cdot h_{t}[n] \label{eq:S_U_{t+1}}
-\end{align}
-The partial sum $S_{t{+}1}^{L}[k]$ (\eqref{eq:S_L_{t+1}}) depends on the first $k{+}1$ elements of $h_{t}$ and the second partial sum $S_{t{+}1}^{U}[k]$ (\eqref{eq:S_U_{t+1}}) depends on the remaining $N{-}(k{+}1)$ elements of $h_{t-1}$. $S_{t{+}1}^{L}[k]$ computations can be initated soon after first $k{+}1$ elements of $h_{t}$ are computed. Similarly at the next time step, the computations of $S^U_{t{+}2}[k]$ can be initiated soon after the last $N{-}(k{+}1)$ elements of $h_{t{+}1}$ are computed. 
-
-Dividing the computations into two partial sums gives opportunity to reuse the weights of matrix $R$ between two consecutive time steps. In our approach, we access the weights of $R$ and reuse it for computations of partial sums for two consecutive time steps.
-%Later, when the remaining $N{-}(k{+}1)$ elements of $h_{t}$ are computed, the partial sum $S_{t{+}1}^{U}[k]$ is computed to finally compute the sum $S_{t{+}1}[k]$, and $h_{t{+}1}[k]$. 
-
-%\begin{figure}[!tb]
-%	\centerline{\includegraphics[width=0.33\textwidth]{TwoTimeSteps.pdf}}
-%	\caption{Splitting the hidden state vector computations into partial sums}
-%	\label{fig:TwoTimeStepsComputation}
-%\end{figure}
-%Elements of $R^L$ are accessed from top to bottom, left to right, while elements of $R^U$ are accessed in the reverse order to satisfy the dependencies. 
-
-%As shown in \figurename{~\ref{fig:dataDependencyProposed}}, weights of $R^L$ and $R^U$ are reused in the partial sum computations of two steps. At time step $t$, $S_t^U$ and $h_{t-1}$ are the inputs from the previous time step, and $R^L$ is used to compute the partial sums $S_{t}^{L}$ and then added to $S_{t}^{U}$ to compute elements of $h_{t}$. Computed elements of $h_{t}$ are then immediately used to compute elements of  $S_{t+1}^L$. $S_{t+1}^L$ is then passed to $(t{+}1)^{th}$ step computations. In the same way, at time step $t{+}1$, weights of $R^U$ are reused to compute $S_{t+1}^{U}$ and $S_{t+2}^{U}$.  
-\begin{comment}
-\begin{figure*}[htbp]
-	\centerline{\includegraphics[width=0.9\textwidth]{proposedWithInit_withH.pdf}}
-	\caption{Computation of consecutive hidden state vectors $h_1$, $h_2$ and $h_3$ while accessing $R$ matrix from off-chip memory.}
-	\label{fig:ExampleComputation}
-\end{figure*}
-\figurename{~\ref{fig:ExampleComputation}} illustrates the compute-steps (C1 to C9) and weights accessed for computing the outputs of two time steps for $N{=}3$. The shaded rectangular blocks shows the product terms input from the previous time step ($t{=}1$). When all the product terms ($R[k][j]{\cdot}h_{t-1}[j]$) for the partial sum vector  element ($S_t[k]$) are computed, then $h_t[k]$ is computed (shown as pink blocks in \figurename{\ref{fig:ExampleComputation}}). The weights of $R$ are reused for the product terms $R[k][j]{\cdot}h_{t}[j]$ for computing the partial sum $S_{t+1}$, using the values of $h_t$ computed in previous or present compute-step. As shown in \figurename{\ref{fig:ExampleComputation}} matrix $R$ is accessed in 9 compute-steps ($N{\times}N$) to compute $h_t$ and $h_{t+1}$ and the partial sum $S_{t+2}$ for the next time step ($t{+}1$).
-\end{comment}
+An illustrative example that demonstrates the computations performed in two consecutive steps, $t$ and $t{+}1$, is presented in \figurename{~\ref{fig:ExampleComputation_t}} and \figurename{~\ref{fig:ExampleComputation_t+1}} for a $3{\times}3$ matrix $R$. The bold lines in \figurename{~\ref{fig:ExampleComputation_t}} and \figurename{~\ref{fig:ExampleComputation_t+1}} highlight the reuse of weights from matrix $R$ at different stages.
 \begin{figure}[htbp]
-	\centerline{\includegraphics[keepaspectratio=true, width=\textwidth]{LSTMStepStages_t.pdf}}
+	\centerline{\includegraphics[width=\textwidth]{LSTMStepStages_t.pdf}}
 	\caption{Computation steps (stages) at time step $t$ for computing hidden state vectors $h_t$ and partial sum $S^L_{t{+}1}$ while accessing $R^L$.}
 	\label{fig:ExampleComputation_t}
 \end{figure}
+
+At time step $t$, $R^L$ is accessed and there are $\frac{N{\times}(N{+}1)}{2}$ stages. In this specific example, with $N=3$, we have 6 stages at time step $t$. In each stage, an element of matrix $R$ is accessed and processed through a Multiply Accumulate Unit (MAC). This involves multiplying the element of $R$ with a corresponding element from the vector $h_{t{-}1}$, and the product is accumulated. This process continues until all the elements of a row of matrix $R^L$ have been accessed. Subsequently, the output of the MAC is added to the corresponding element of vector $S^U_{t}$ to compute the corresponding element of vector $h_t$, and the MAC unit is then reset to zero. Furthermore, the elements of matrix $R^L$ are efficiently reused to compute the partial sum vector $S^L_{t{+}1}$, utilizing the values of vector $h_{t}$ computed in previous stages or current stage.
 \begin{figure}[htbp]
-	\centerline{\includegraphics[keepaspectratio=true,width=\textwidth]{LSTMStepStages_t1.pdf}}
+	\centerline{\includegraphics[width=\textwidth]{LSTMStepStages_t1.pdf}}
 	\caption{Computation steps (stages) at time step $t{+}1$ for computing hidden state vectors $h_{t+1}$ and partial sum $S^U_{t{+}2}$ while accessing $R^U$.}
 	\label{fig:ExampleComputation_t+1}
 \end{figure}
-An example to describe different stages of computations performed in two consecutive steps $t$ and $t{+}1$ is shown in \figurename{~\ref{fig:ExampleComputation_t}} and \figurename{~\ref{fig:ExampleComputation_t+1}} , respectively, for a $3{\times}3$ matrix $R$.  The reuse of weights of $R$ at different stages are shown in bold lines in  \figurename{~\ref{fig:ExampleComputation_t}} and \figurename{~\ref{fig:ExampleComputation_t+1}}.
 
-There are 6 stages at time step $t$. At each stage an element of $R$ is accessed and passed as input to a multiply accumlate unit (MAC) that multiplies the element of $R$ with an element of $h_{t{-}1}$ and accumlates the product terms, until all the elements of a row of $R^L$ are accessed. After that output of MAC is passed to an adder to perform the addition with corresponding element of $S^U_{t}$ and accumlater is reset to zero. At stage 1, $R[0][0]$ is accessed, and the product $S^L_t[0]{=}R[0][0]{\cdot}h_{t{-}1}[0]$ is computed. $S^L_t[0]$ is then added to the input partial sum $S^U_t[0]$ to compute sum $S_t[0]$. $S_t[0]$ is used to compute $h_t[0]$ using \eqref{eq:h_{t}} and $h_t[0]$ is then immediately used to compute $S^L_{t{+}1}[0]$ while reusing the weight $R[0][0]$. 
+\figurename{~\ref{fig:ExampleComputation_t+1}} illustrates the computation stages for time step $t{+}1$, which utilizes the previously computed $S^L_{t{+}1}$ from time step $t$. At this particular time step, there are $\frac{N{\times}(N{-}1)}{2}$ stages. In this example, with $N=3$, we observe 3 stages at time step $t{+}1$. For each of these stages, the inputs are $h_t$ and $S^L_{t{+}1}$, both of which are carried over from the previous time step $t$. Subsequently, the computation results in the outputs $h_{t{+}1}$ and the partial sum vector $S^U_{t{+}2}$, efficiently reusing the weights of matrix $R^U$.
 
-Stage 2 and Stage 3 access the weight $R[1][0]$ and $R[1][1]$, respectively to compute $h_t[1]$ and the partial sum $S^L_{t{+}1}[1]$. At stage 2, $R[1][0]$ is multiplied with $h_{t{-}1}[0]$ to update $S^L_t[1]$. $R[1][0]$ is then reused to compute the product term $R[1][0]{\cdot}h_t[0]$, using $h_t[0]$ computed at stage 1. At stage 3, $R[1][1]$ is multiplied with $h_{t{-}1}[1]$ and added to $S^L_{t{+}1}[1]$ computed at stage 2, to get the partial sum $S^L_t[1]$. $S^L_t[1]$ is then passed to the adder which adds it to the input $S^U_t[1]$ to compute $S_t[1]$. $S_t[1]$ is used to compute $h_t[1]$ using \eqref{eq:h_{t}}. $h_t[1]$ is then immediately used to compute $S^L_{t{+}1}[1]$, while reusing the weight $R[1][1]$.
-
-Similarly, stage 4, stage 5 and stage 6 reuse weights of $R^L[2]$ to compute $h_t[2]$ and the partial sum $S^L_{t{+}1}[2]$. At time step $t$, $h_t$ and the partial sum $S^L_{t{+}1}$ is computed which are used as input to the next time step $t{+}1$.
- 
-\figurename{~\ref{fig:ExampleComputation_t+1}} shows the computation stages for $t{+}1$. At time step $t{+}1$, inputs are $h_t$ and partial sum $S^L_{t{+}1}$, and computes the output $h_{t{+}1}$ and the partial sum $S^U_{t{+}2}$. Together in \figurename{~\ref{fig:ExampleComputation_t}} and \figurename{~\ref{fig:ExampleComputation_t+1}}, accesses all the elements of $R$ once to compute the outputs $h_t$ and $h_{t{+}1}$ and a partial sum $S^U_{t{+}2}$ which is passed to next time step. 
+By analyzing both \figurename{~\ref{fig:ExampleComputation_t}} and \figurename{~\ref{fig:ExampleComputation_t+1}}, we can observe that all the elements of matrix $R$ are accessed once, enabling the computation of the outputs $h_t$ and $h_{t{+}1}$ along with the partial sum $S^U_{t{+}2}$, which is then passed on to the next time step.
 
 \subsection{Block-wise reuse}
-%\begin{figure}[!tb]
-%	\centerline{\includegraphics[width=0.5\textwidth]{blockApproachA.pdf}}
-%	\caption{Partitions of $R$ in $B{\times}B$ blocks and partial sum computations.}
-%	\label{fig:blockApproach}
-%	\vspace{-1.0em}	
-%\end{figure}
-The basic approach accesses one elements of $R$ at each stage. LSTM accelerator can store several elements of $R$. To process several element of $R$, the basic approach is extended by partitioning $R$ into square matrices. The size of the square matrices is determined by the available on-chip memory of the accelerator. Let $R$ is partitioned into square matrices $P$ of size $B{\times}B$, such that $P$ fits in the accelerator's on-chip memory. Each $P$ matrix can be indexed as $(r,m)$, where $0{\le}r,m{\le} (\ceil{\frac{N}{B}}{-}1)$, as shown in \figurename{~\ref{fig:squareMatrix}}. We group these small matrices into $R^L$ and $R^U$ such that $R^L$ has all the matrices with index $r{<}m$  and $R^U$ has all the matrices with index $r{\geq}m$, as shown in \figurename{~\ref{fig:lowerSquareMatrix}} and \figurename{~\ref{fig:upperSquareMatrix}}, respectively.
+The basic approach accesses one element of $R$ at each stage. However, to leverage the LSTM accelerator's capability of storing multiple elements of $R$ and to process multiple elements simultaneously, the basic approach is extended by partitioning $R$ into square matrices. The size of these square matrices is determined by the available on-chip memory of the accelerator. Specifically, let $R$ be partitioned into square matrices $P$ of size $B{\times}B$, where $B$ is chosen such that $P$ fits into the on-chip memory. Each $P$ matrix is indexed as $(r,m)$, where $0{\le}r,m{\le} (\ceil{\frac{N}{B}}{-}1)$, as illustrated in \figurename{~\ref{fig:squareMatrix}}.
+
+These small matrices are then grouped into two sets, $R^L$ and $R^U$. The set $R^L$ contains all the matrices with index $r{\geq}m$, while $R^U$ contains all the matrices with index $r{<}m$, as depicted in \figurename{~\ref{fig:lowerSquareMatrix}} and \figurename{~\ref{fig:upperSquareMatrix}}, respectively.
 \begin{figure}[htb!]
 	\centering
 	\subfloat[]
@@ -162,48 +134,44 @@ The basic approach accesses one elements of $R$ at each stage. LSTM accelerator 
 	}
 	\caption{(a) Partitions of a matrix $R_{N{\times}N}$ into $B{\times}B$ square matrices $P_{(r,m)}$ (b) $R^L{=}\{P_{(r,m)}:r{\geq}m$\} (b) $R^U{=}\{P_{(r,m)}:r{<}m$\}	}
 	\label{fig:SquareMatrices}
-	\vspace{-1.0em}	
 \end{figure} 
 
-In block approach, we divide the computations of $h_t$ into $(\ceil{\frac{N}{B}}{-}1)$ slices, each such slice having $B$ elements. \figurename{~\ref{fig:hVectorSlices}} shows an example vector $h_t$ of length $N{=}9$, divided into slices of length $B{=}3$. $r^{th}$ slice of $h_t$ require all the partitions $P_{r{\times}m}$ having the same row index $r$. Partitions $P$ used in the computations of each slice of $h$ are also shown under each slice in \figurename{~\ref{fig:hVectorSlices}}. Computed values of $h_t$ are then immediately used to compute the partial sum for the next time step while reusing the weights of partitions $P$.  
-\begin{figure}[!htb]
-	\centerline{\includegraphics[width=0.4\textwidth]{hVectorSlices.pdf}}
-	\caption{Slices of vector $h$ and partitions of $R$ required to compute each slice of $h$.}
-	\label{fig:hVectorSlices}
-	\vspace{-1.0em}	
-\end{figure}
-
-$k^{th}$ element of $r^{th}$ slice of $h_{t}$ can be computed as following, where $0{\le}k{\le}B{-}1$. 
+In the block approach, computations of $h_t$ are divided into $\ceil{\frac{N}{B}}$ slices, each containing $B$ elements. 
+%\figurename{~\ref{fig:hVectorSlices}} illustrates an example vector $h_t$ of length $N{=}9$, divided into slices of length $B{=}3$. The computations of $r^{th}$ slice of $h_t$ requires all the partitions $P_{r{\times}m}$ with the same row index $r$. The partitions $P$ utilized in the computations of each slice of $h$, are indicated below each slice in \figurename{~\ref{fig:hVectorSlices}}. This approach enables the computed values of $h_t$ to be immediately used for computing the partial sum of the next time step, while efficiently reusing the weights of partitions $P$. 
+%\begin{figure}[!htb]
+%	\centerline{\includegraphics[width=0.4\textwidth]{hVectorSlices.pdf}}
+%	\caption{Slices of vector $h$ and partitions of $R$ required to compute each slice of $h$.}
+%	\label{fig:hVectorSlices}
+%	\vspace{-1.0em}	
+%\end{figure}
+For computing the $k^{th}$ element of the $r^{th}$ slice of $h_{t}$, where $0{\le}k{\le}B{-}1$, the following equation is employed:
 \begin{align}
 	h_{t}[B{*}r{+}k]{=}F(\sum_{m{=}0}^{\ceil{\frac{N}{B}}{-}1}S_{(r,m)}[k]+q_{t}[B{*}r{+}k]) \label{eq:blockWiseh}
 \end{align}
-where $S_{(r,m)}$ is the partial sum of the $r^{th}$ slice of $S$, computed using the partition $P_{(r,m)}$, and $S_{(r,m)}[k]$ is the $k^{th}$element of $S_{(r,m)}$ vector that can be computed using the equation below,
+where $S_{(r,m)}$ represents the partial sum of the $r^{th}$ slice of $S$, computed using the partition $P_{(r,m)}$. The element $S_{(r,m)}[k]$ is calculated using the equation below:
 \begin{align}	 \label{eq:blockWiseSum}
 	\begin{split}
 	S_{(r,m)}[k]&{=}\sum_{j=0}^{B{-}1}P_{(r,m)}[k][j]\cdot h_{t-1}[B{*}m{+}j]\\
 	&{=}\sum_{j=0}^{B{-}1}R[B{*}r{+}k][B{*}m{+}j]\cdot h_{t-1}[B{*}m{+}j]
  \end{split}
 \end{align}
-The summation $\sum_{m{=}0}^{\ceil{\frac{N}{B}}{-}1}S_{(r,m)}[k]$ in~\eqref{eq:blockWiseh} can be split as following partial sums
+The summation $\sum_{m{=}0}^{\ceil{\frac{N}{B}}{-}1}S_{(r,m)}[k]$ in \eqref{eq:blockWiseh} can be broken down into two partial sums:
 \begin{align}
 	&\sum_{m{=}0}^{\ceil{\frac{N}{B}}{-}1}S_{(r,m)}[k]{=}\sum_{m{=}0}^{r}S_{(r,m)}^{L}[k]{+}\sum_{m{=}r{+}1}^{\ceil{\frac{N}{B}}{-}1}S_{(r,m)}^{U}[k] 
 \end{align}
 \begin{figure}[!htb]
-	\centerline{\includegraphics[keepaspectratio=true,width=0.7\textwidth]{blockPartialSum.pdf}}
-	\caption{Partitions $P_{(r,m)}$ of $R^L$ and $R^U$ required for computations of partial sum $S^L$ and $S^U$.}
+	\centerline{\includegraphics[width=0.7\textwidth]{blockPartialSum.pdf}}
+	\caption{Partitions of $R^L$ and $R^U$ required for computations of partial sum $S^L$ and $S^U$.}
 	\label{fig:blockPartialSum}
-	\vspace{-1.0em}	
 \end{figure}
 
-$\sum_{m{=}0}^{r}S_{(r,m)}^{L}[k]$ uses the partitions $P$ from $R^L$ (\figurename{~\ref{fig:lowerSquareMatrix}}), and $\sum_{m{=}r{+}1}^{\ceil{\frac{N}{B}}{-}1}S_{(r,m)}^{U}[k]$ uses partitions $P$ from $R^U$ (\figurename{~\ref{fig:upperSquareMatrix}}). \figurename{~\ref{fig:blockPartialSum}} describes the partitions $P$ used in the computation of $\sum_{m{=}0}^{r}S_{(r,m)}^{L}[k]$ and $\sum_{m{=}r{+}1}^{\ceil{\frac{N}{B}}{-}1}S_{(r,m)}^{U}[k]$.
+\figurename{~\ref{fig:blockPartialSum}} further illustrates the partitions $P$ used in computing $\sum_{m{=}0}^{r}S_{(r,m)}^{L}[k]$ and $\sum_{m{=}r{+}1}^{\ceil{\frac{N}{B}}{-}1}S_{(r,m)}^{U}[k]$.
+Partial sum computations of the $r^{th}$ slice of the $(t{+}1)^{th}$ time step can be initiated as soon as the first $r$ slices ($B{\times}r$ elements) of $h_t$ are computed. Computations of the $r^{th}$ slice of partial sums ($S_L$ and $S_U$) at different time steps use the same partitions $P$ of $R$. This enables the approach to effectively reuse the weights of $P$ for the computations of the partial sums of two consecutive time steps. This optimization ensures efficient data dependency handling and speeds up the overall computation process.
 
-Partial sum computations of $r^{th}$ slice of $(t{+}1)^{th}$ time step can be initiated as soon as the first $r$ slices ($B{\times}r$ elements) of $h_t$ are computed.
-Computations of the $r^{th}$ slice of partial sums ($S_L$ and $S_U$) at different time steps, use the same partitions $P$ of $R$. Our approach exploits this to reuse the weights of $P$ for the computations of partial sums of two consecutive time step, as shown in \figurename{~\ref{fig:dataDependencyProposed}}. 
-
-\input{algoWithBlockReuse}
 Algorithm~\ref{Algo:SACCAlgo} describes the block wise SACC approach. The dimensions of $W$, $R$, $b$, and $x_t$ are $4N{\times}L$, $4N{\times}N$, $4N{\times}1$, and $L{\times}1$, respectively. The algorithm stores the vectors $h_t$, $c_t$, and the partial sum vectors ($s_{t+1}$) in the on-chip memory and accesses the weights from the off-chip memory. It first computes the vector $q_t$ as $W{\cdot}x{+}b$, at line~\ref{alg:Wx+b} and then invokes the procedures $\textproc{UpDiagReuse}$ at line~\ref{alg:callUpDiaReuse} or  \textproc{LowDiagReuse} at line~\ref{alg:callLowDiaReuse} at alternate time steps. \textproc{LowDiagReuse} accesses blocks of $R^L$, and \textproc{UpDiagReuse} accesses blocks of $R^U$. The procedures have two nested loops. \textproc{LowDiagReuse} traverses the blocks from top to bottom (at line \ref{alg:LowDiag_outFor}), left to the right (at line \ref{alg:LowDiag_inFor}), while the \textproc{UpDiagReuse} traverses the blocks in the opposite order. The inner loop accesses the $(r,m)^{th}$ block of $R$ from the off-chip memory and reuses it to compute the partial sums $s^B_{t+1}$ and $s^B_{t+2}$. The outer loop iterations compute $r^{th}$ slices of $h_{t+1}$, $c_{t+1}$, and $s_{t+2}$.
 When all the blocks of the $r^{th}$ row are processed, $s^B_{t+1}$ has the total sum, which is then used to compute the $r^{th}$ slice of the vectors $h_{t+1}$ and $c_{t+1}$ using \textproc{LSTMEquations} at line~\ref{alg:LowDiag_LstmEq}. 
 Both the procedures reuse the blocks of $R$ to reduce the off-chip memory accesses. Algorithm~\ref{Algo:LSTMEq} implements the LSTM equations using the partial sum vector.
+\input{algoWithBlockReuse}
 \input{algoLSTMEqns}
 \section{Experimental Setup And Results}
 We have implemented LSTM layers using conventional, TSIWR~\cite{park2020time}, and our approach and synthesized the design using the SDSoC framework, SDx v2018.3. 
@@ -238,9 +206,8 @@ We have also implemented the models to compute the off-chip memory accesses for 
 \subsection{Benchmarks}
 To demonstrate the efficiency of our approach, we have experimented with LSTM models used in speech recognition (for TIMIT~\cite{garofolo1993timit}) and character level Language Modelling (LM)~\cite{sundermeyer2015feedforward}, which is widely used in natural language processing. The LSTM models are adopted from \cite{azari2020elsa,park2018maximizing,han2017ese}. Each model has two LSTM layers and the parameters are described in Table~\ref{tab:lstmModels}.
 \begin{table}[]
-	\caption{LSTM Models used for experiments}
-	\label{tab:lstmModels}
 	\centering
+	\caption{LSTM Models used for experiments}
 	\begin{tabular}{@{}ccccll@{}}
 		\toprule
 		\multirow{2}{*}{\textbf{Model}} & \multirow{2}{*}{\textbf{Input Size}} & \multicolumn{2}{c}{\textbf{\#Hidden units}} & \multicolumn{2}{l}{\multirow{5}{*}{}} \\ \cmidrule(lr){3-4}
@@ -249,6 +216,7 @@ To demonstrate the efficiency of our approach, we have experimented with LSTM mo
 		TIMIT-512 \cite{park2018maximizing}                      & 40                                   & 512                  & 512                  & \multicolumn{2}{l}{}                  \\ \cmidrule(r){1-4}
 		TIMIT-1024 \cite{han2017ese}                     & 160                                  & 1024                 & 1024                 & \multicolumn{2}{l}{}                  \\ \bottomrule
 	\end{tabular}
+	\label{tab:lstmModels}
 \end{table}
 \subsection{Results}
 \subsubsection{Off-Chip Memory Access}
@@ -273,12 +241,17 @@ We have experimented for different on-chip memory sizes smaller than the size of
 If the on-chip buffer size is small compared to the weight matrices, tiles of R are accessed from off-chip memory replacing the older tiles in the on-chip memory. In conventional approaches, there is no reuse of these tiles for subsequent time step computations, which results in accessing full matrix $R$ every step. For conventional approaches, the off-chip memory accesses remains same, even if on chip mem size is increased as shown by the horizontal line in \figurename{~\ref{fig:memTsiwrComparison}.
 The TSI-WR approach schedules the tiles in a way to reuse the data from the on-chip memory and reduces off-chip memory access. However, the extent of data reuse in the TSI-WR approach depends on the size of overlap between two consecutive tiles which is decided by the available on-chip buffer size. When the on-chip buffer to R matrix size is close to 48\%, TSI-WR reduces the memory access by $\approx$25\%, as shown in \figurename{~\ref{fig:memAccessImprovement}}. Our approach splits the computations and perform the scheduling of the tiles that reduces the memory accesses by $\approx$50\%, irrespective of the on-chip buffer size.
 \subsubsection{Throughput Analysis}
+To analyze the throughput variation with different on-chip buffer sizes, we synthesized FPGA designs with varying buffer sizes for all three approaches. For evaluating the throughput, we recorded the number of cycles (measured\_clocks) for different FPGA designs over $T$ time steps. Using this data, we computed the throughput using the following formula:
+\begin{align}\label{eq:througput}
+	\text{Throughput}=\frac{4{\times}N^2{\times}T{\times}{\text {clock\_freq}}}{\text{measured\_clocks}}
+\end{align}
+Here, clock\_freq represents the system clock frequency in MHz.
 \begin{figure}[htb!]
 	\centering
 	\subfloat[64KB on-chip buffer size]
 	{\includegraphics[width=0.35\textwidth]{througputVsMem_64KB.pdf}
 		\label{fig:throughPutVsMem_64}}
-	   \hspace{2.0em}
+	\hspace{2.0em}
 	\subfloat[128 KB on-chip buffer size]
 	{
 		\includegraphics[width=0.35\textwidth]{througputVsMem_128KB.pdf}
@@ -286,19 +259,17 @@ The TSI-WR approach schedules the tiles in a way to reuse the data from the on-c
 	}
 	\caption{Throughput variation with different on-chip buffer/R ratio}	\label{fig:throughputVsMem}
 \end{figure}
-To analyze the throughput variation with on-chip buffer sizes, we synthesized FPGA designs with different on-chip buffer sizes for all the three approaches and measured the total run time of each design. Total number of multiply and accumlate operations (MACs) performed for output $h$ at each time step is computed using the hidden state vector dimension ($N$) and input vector length ($L$). We measured the run times of different FPGA designs for $T$ time steps and used it to compute the throughput, as follows 
-\begin{align}\label{eq:througput}
-	\text{Throughput}=\frac{\text{Number of MACs per output}{\times}T}{\text{measured run-time}}
-\end{align}
 \figurename{~\ref{fig:throughPutVsMem_64}} and \figurename{~\ref{fig:throughPutVsMem_128}} compares the throughput for different ratios of on-chip buffer to weight matrix size for 64 and 128 KB on-chip buffer size, respectively.  We experimented with different number of hidden units ($N$) to vary $R$ matrix size. Increasing on-chip buffer to $R$ matrix size ratio results in larger tile sizes and fewer number of iterations, resulting in throughput improvement, for all the three approaches. The TSI-WR approach performs worse than the conventional approach for smaller on-chip buffer/$R$ ratio due to its control logic overhead which overshadows the data reuse benefits. However, for a larger on-chip buffer/$R$ size ratio (e.g., 50\%), the TSI-WR approach outperforms the conventional approach due to better data-reuse. Our approach performs better than the other two approaches for all the on-chip buffer to $R$ matrix size ratio due to its significant data-reuse of weight matrix $R$ and small control logic overhead.
 For 50\% on-chip buffer to matrix size ratio, our approach improves the throughput by 42\% and 33\% for 64~KB and 41\% and 29\% for 128~KB on-chip buffer size, compared to conventional and TSI-WR approaches, respectively.
+\subsubsection{Throughput variation with compute resources}
+The performance of LSTM accelerators is limited by the memory bandwidth. Data reuse reduces the memory bandwidth bottleneck. To observe the impact of data reuse on memory bandwith we have implemented multiple FPGA designs with different number of compute resources, for each of the three approaches. For each approach throughput is measured using \eqref{eq:througput}. We have compared the results when on-chip buffer to matrix size ratio of 50\%. 
 \begin{figure}[htb!]
 	\centering
 	\subfloat[64 KB on-chip buffer size]
 	{\includegraphics[width=0.35\textwidth]{througput_N128.pdf}
 		\label{fig:throughPutVsPF_64}
 	}
-   \hspace{2.0em}
+	\hspace{2.0em}
 	\subfloat[128 KB on-chip buffer size]
 	{
 		\includegraphics[width=0.35\textwidth]{througput_N256.pdf}
@@ -306,8 +277,6 @@ For 50\% on-chip buffer to matrix size ratio, our approach improves the throughp
 	}
 	\caption{Throughput variation of MxV with compute resources for 50\% on-chip buffer/$R$ ratio}	\label{fig:throughputVsPF}
 \end{figure}
-\subsubsection{Throughput variation with compute resources}
-The performance of LSTM accelerators is limited by the memory bandwidth. Data reuse reduces the memory bandwidth bottleneck. To observe the impact of data reuse on memory bandwith we have implemented multiple FPGA designs with different number of compute resources, for each of the three approaches. For each approach throughput is measured using \eqref{eq:througput}. We have compared the results when on-chip buffer to matrix size ratio of 50\%. 
 
 \figurename{~\ref{fig:throughputVsPF}} compares the throughput of the conventional, TSI-WR and our approach. 
 For the conventional approach, increasing the number of computing resources does not improve the performance. TSI-WR approach improves the performance with increasing compute resources as it reuses the on-chip data and improves the operational intensity (operations/byte). However, the improvement in the TSI-WR approach is noticable only for the large on-chip buffer/$R$ size ratios. Our approach (SACC), has better operational intensity (operations/byte) and alleviates the memory bandwith issue compared to other two approaches, which results in throughput improvement with increasing the number of parallel resources. The improvement in throughput with increased number of compute resource using our approach is observed for different on-chip buffer sizes as shown in \figurename{~\ref{fig:throughPutVsPF_64}} and \figurename{~\ref{fig:throughPutVsPF_128}}.

@@ -152,6 +152,24 @@ The number of bytes accessed from off-chip memory for accessing $\dataLength$ by
 \end{equation}
 Equation~\ref{eq:alignedAccess} is a special case of Equation~\ref{eq:unalignedAccess} when memory access is from aligned address.
 \section{Off-Chip Memory Access of 3D Data}\label{sec:Access3DData}
+\begin{figure}[htb]
+	\centering
+	\captionsetup{font=sf}
+	\begin{subfigure}[t]{0.5\columnwidth}
+		\centering
+		\includegraphics[width=0.6\columnwidth]{3DShapeAndZoomedTile1.pdf}
+		\caption{A 3D data partitioned into tiles}
+		\label{fig:3dTiledData}
+	\end{subfigure}
+	\begin{subfigure}[t]{0.4\columnwidth}
+		\centering
+		\includegraphics[width=0.6\columnwidth]{SingleTile.pdf}
+		\caption{A 3D tile}
+		\label{fig:3dTile}
+	\end{subfigure}
+	\caption{Off-Chip Accesses and a 3D partitioned data and tiles}
+	\label{fig:3DPartitionedData}
+\end{figure}
 Consider a 3D data of shape $\langle W,H,N\rangle$, partitioned into tiles of dimension $\langle T_c,T_r,T_n\rangle$ as shown in  Fig.~\ref{fig:3dTiledData} and Fig.~\ref{fig:3dTile}. Each tile is identified by index $(x,y,z)$ where $x, y, z \in \mathbb{Z}$ and 
 \begin{align}\label{eq:TileIndexing}
 	\begin{aligned}
@@ -160,28 +178,10 @@ Consider a 3D data of shape $\langle W,H,N\rangle$, partitioned into tiles of di
 		0\leq &z<\ceil[\big]{\frac{N}{T_n}}
 	\end{aligned}
 \end{align}
-\begin{figure}[htb]
-	\centering
-	\captionsetup{font=sf}
-	\begin{subfigure}[t]{0.5\columnwidth}
-		\centering
-		\includegraphics[width=0.8\columnwidth]{3DShapeAndZoomedTile1.pdf}
-		\caption{A 3D data partitioned into tiles}
-		\label{fig:3dTiledData}
-	\end{subfigure}
-	\begin{subfigure}[t]{0.4\columnwidth}
-		\centering
-		\includegraphics[width=0.8\columnwidth]{SingleTile.pdf}
-		\caption{A 3D tile}
-		\label{fig:3dTile}
-	\end{subfigure}
-	\caption{Off-Chip Accesses and a 3D partitioned data and tiles}
-	\label{fig:3DPartitionedData}
-	\vspace{-1.0em}	
-\end{figure}
 $\numOverlap$ is the number of elements or rows overlapping between adjacent tiles.
-\input{bwAwareAlgo}
+
 Algorithm~\ref{Algorithm1} computes the number of bytes accessed from off-chip memory for the 3D data. Each data element is represented by $DW$ bytes. The algorithm takes the address of the data ($Addr_{data}$), tile dimensions, data shape, and $\numOverlap$ as input and iterates lines~\ref{alg:ForAllTilesLoopk}--\ref{alg:loopkEnd} for all the tiles. It computes indices of the first element of the tile in the 3D array of the data using the tile index $(x,y,z)$ and $\numOverlap$ in lines~\ref{alg:idxc}--\ref{alg:idxn}. Using the indices of the first element it computes the address of the tile in line~\ref{alg:tileAddr}, and dimensions of the tile in line~\ref{alg:tileDim}. The algorithm computes the total number of bytes accessed from off-chip memory by accumulating the number of bytes accessed for each tile in line~\ref{alg:tileAcc}. 
+
 The address of the tile in line~\ref{alg:tileAddr} is computed by the function GetTileAddr using equation~\ref{eq:TileAddress} below
 \begin{align}\label{eq:TileAddress}
 	\begin{split}
@@ -192,7 +192,7 @@ The address of the tile in line~\ref{alg:tileAddr} is computed by the function G
 If the data dimensions are not multiples of corresponding tile dimensions, the tiles at the border of the data (e.g., the right-most or bottom-most tiles) will have smaller dimensions. The function GetTileDim computes the dimensions of the tiles.
 
 The function GetTileAcc in Lines~\ref{alg:FuncTileAccess}--\ref{alg:FuncTileAccessEnd} computes the addresses and number of bytes ($contSz$) for each off-chip memory transaction. $contSz$ is the number of contiguous bytes to access in a transaction. Let $T_n$ is the number of frames in the tile. If the tile width ($T_c$) is the same as the data width ($W$) (line~\ref{alg:TileAccessIf2}), then all the data elements of $T_r$ rows of a frame are contiguous, and the complete tile can be accessed using $T_n$ number of addresses. If the condition in line~\ref{alg:TileAccessIf1} is true, then all elements of the tile are contiguous and can be accessed using a single transaction of $T_c\cdot T_r\cdot T_n\cdot DW$ bytes (line~\ref{alg:TileAccessSingleTxn}). In all other cases, the tile is accessed using row addresses computed in line~\ref{alg:TileRowAddr}. The function computes the number of bytes accessed from off-chip memory for a tile ($Acc_{tile}$) in lines~\ref{alg:TileAccessIf1End},~\ref{alg:TileAccess2}, and~\ref{alg:TileAccessFor2End} using ~\eqref{eq:unalignedAccess}. 
-
+\input{bwAwareAlgo}
 DNN accelerators access layer data (ifm, ofm, and weights) partitioned into tiles. The tile dimensions should be chosen carefully to minimize the transfer of extra bytes to reduce off-chip memory access. We have proposed a bus width aware approach (BWA) that factors in the architectural parameters to precisely compute the off-chip memory access of 3D tiles and the layer data.
 
 Figure~\ref{fig:measVsEst} shows the comparison between the off-chip memory accesses estimated by the analytical framework and measurements performed on Xilinx FPGA for different layers of varying shapes and sizes of a popular CNN, VGG16. The experimental results on popular CNNs, AlexNet, and VGG16, show that the difference between estimated and measured off-chip memory accesses is less than 4\%. The framework is also helpful in analyzing the layer-wise distribution and breakdown of memory accesses, as shown in Figure~\ref{fig:ifmOfmWtsDistribution}. The proposed framework is a valuable tool for quickly analyzing the memory accesses and data access energy for different tile dimensions, and data reuse schemes to search for the optimal solution. 
@@ -205,6 +205,6 @@ Figure~\ref{fig:measVsEst} shows the comparison between the off-chip memory acce
 	\subfloat[]{\includegraphics[width=0.4\textwidth]{memAccessDistribution.pdf}
 		\label{fig:ifmOfmWtsDistribution}}
 	\hfil   
-	\caption{Off-chip memory accesss of VGG16 layers (a) Comparison between the analytical framework and measured on hardware. (b) Breakdown by data type using analytical framework.}
+	\caption{Off-chip memory accesss of VGG16 layers (a) Comparison between the analytical framework and hardware measurements. (b) Breakdown by data type using analytical framework.}
 	\label{fig:nnLayerData}
 \end{figure}
