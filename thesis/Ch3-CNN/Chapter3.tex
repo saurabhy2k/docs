@@ -5,9 +5,9 @@ CNNs are the state of the art machine learning algorithms. CNNs can achieve huma
 
 CNNs have a sequence of mainly three types of layers: convolution layer (CL), pooling layer, and fully connected layer (FCL). There are several CLs, and a pooling layer usually follows each CL. The last few layers of the CNNs are FCLs. VGG16 has thirteen CLs, and the last three layers are FC. Similarly, AlexNet has five CLs, followed by 3 FCLs. Pooling layer computations involve sliding a two-dimensional filter window over a single channel of \textit{ifm} and selecting one activation from the window using an operation like maximum or average. There are no parameters in pooling layers. The pooling layer helps reduce the activation sizes and, thus, the number of parameters in subsequent layers. CL and FC layers are compute-intensive, requiring millions of parameters. 
 
-Figure~\ref{fig:CLOps} and~\ref{fig:FCLOps} illustrate the computations of a CL and an FCL, respectively. Each CL and FCL layer takes 3D input frames (\textit{ifm}) and applies filter weights (\textit{wts}) to compute output frames (\textit{ofm}). 3D $ifm$, $wts$ and $ofm$ are composed of $2D$ matrices stacked together in depth dimension. The number of 2D matrices is referred to as channels or depth of the data type. The number of channels ($N_i$) in each filter and $ifm$ are the same.
+\figref{fig:CLOps} and~\figref{fig:FCLOps} illustrate the computations of a CL and an FCL, respectively. Each CL and FCL layer takes 3D input frames (\textit{ifm}) and applies filter weights (\textit{wts}) to compute output frames (\textit{ofm}). 3D $ifm$, $wts$ and $ofm$ are composed of $2D$ matrices stacked together in depth dimension. The number of 2D matrices is referred to as channels or depth of the data type. The number of channels ($N_i$) in each filter and $ifm$ are the same.
 
-The convolution is performed by element-wise product between $K{\times}K$ filter elements with a 2D window of $ifm$ of size $K{\times}K$, for all the $N_i$ channels and then adding resulting $K{\times}K{\times}N_i$ elements to compute one element of the $ofm$ channel. Other elements of the $ofm$ channel are computed by sliding the 2D filter over the spatial dimension of the $ifm$ ($H_i{\times}W_i$). Filter slides by S elements from left to right and then top to bottom. $K$ and $S$ are referred to as the filter size and stride of the filter, respectively. We assumed square filters of dimension $K{\times}K$, $K$ is an odd integer, filter stride in horizontal and vertical directions are same, and $S{\le}K$, which are typically the case. 
+The convolution is performed by element-wise product between $K{\times}K$ filter elements with a 2D window of $ifm$ of size $K{\times}K$, for all the $N_i$ channels and then adding resulting $K{\times}K{\times}N_i$ elements to compute one element of the $ofm$ channel. Other elements of the $ofm$ channel are computed by sliding the 2D filter over the spatial dimension of the $ifm$ ($H_i{\times}W_i$). Filter slides by S elements from left to right and then top to bottom. $K$ and $S$ are referred to as the filter size and stride of the filter, respectively. We assumed square filters of dimension $K{\times}K$, $K$ is an odd integer, filter stride in horizontal and vertical directions are identical, and $S{\le}K$, which are typically the case. 
 
 \begin{figure}[!htb]
 	\centering
@@ -22,7 +22,7 @@ The convolution is performed by element-wise product between $K{\times}K$ filter
 	\label{fig:CNNAcceleratorAndCLOps}
 \end{figure}
 
-$ofm$ dimensions of CL and FC layers can be computed using the $ifm$ dimensions, filter size ($K$), and stride ($S$). \figurename{~\ref{fig:CLInOutDimRel}} illustrates the relation of ofm dimension with ifm and filter dimensions for stride $S{=}1$. The filter can be placed at $W_i{-}(K{-}1)$ horizontal locations and $H_i{-}(K{-}1)$ locations in the vertical dimensions of the $ifm$. If $S{=}1$, the $ofm$ spatial dimensions are $K{-}1$ elements less than the $ifm$ dimensions. Several CNN architectures add padding elements to the border of the $ifm$ spatial dimensions. If the padding on the left, right, top, and bottom are $P_l$, $P_r$, $P_t$, and $P_b$, respectively, the $ofm$ dimensions for $S{=}1$ can be computed as follows,
+$ofm$ dimensions of CL and FC layers can be computed using the $ifm$ dimensions, filter size ($K$), and stride ($S$). \figref{fig:CLInOutDimRel} illustrates the relation of ofm dimension with ifm and filter dimensions for stride $S{=}1$. The filter can be placed at $W_i{-}(K{-}1)$ horizontal locations and $H_i{-}(K{-}1)$ locations in the vertical dimensions of the $ifm$. If $S{=}1$, the $ofm$ spatial dimensions are $K{-}1$ elements less than the $ifm$ dimensions. Several CNN architectures add padding elements to the border of the $ifm$ spatial dimensions. If the padding on the left, right, top, and bottom are $P_l$, $P_r$, $P_t$, and $P_b$, respectively, the $ofm$ dimensions for $S{=}1$ can be computed as follows,
 \begin{align}\label{eq:ifmOfmStrideOne}
 	\begin{split}
 W_o&=W_i+P_l+P_r-(K-1)\\
@@ -37,14 +37,14 @@ H_o&=H_i+P_t+P_b-(K-1)
 	\caption{Input and Output dimensions of CL layer for filter stride=1  }
 	\label{fig:CLInOutDimRel}
 \end{figure}
-If the stride is not 1, the number of elements in the $ofm$ spatial dimensions reduces by a factor of $S$. If the filter stride is $S$. $ofm$ spatial dimensions can be expressed as follows, which is the generalization of the equation~\eqref{eq:ifmOfmStrideOne}
+If the stride is not 1, the number of elements in the $ofm$ spatial dimensions reduces by a factor of $S$. If the filter stride is $S$, $ofm$ spatial dimensions can be expressed as follows, which is the generalization of the equation~\eqref{eq:ifmOfmStrideOne}
 \begin{align}\label{eq:ifmOfmStrideS}
 	\begin{split}
 		W_o&=\ceil[\big]{\frac{W_i+P_l+P_r-(K-1)}{S}}\\
 		H_o&=\ceil[\big]{\frac{H_i+P_t+P_b-(K-1)}{S}}
 	\end{split}
 \end{align}
-If the padding at the top, bottom, left and right are same as $P$, ~\eqref{eq:ifmOfmStrideS} can be simplified as following,
+If the padding at the top, bottom, left and right are the same as $P$, ~\eqref{eq:ifmOfmStrideS} can be simplified as follows,
 \begin{align}\label{eq:ifmOfmStrideS_P}
 	\begin{split}
 		W_o&={\frac{W_i+2\cdot P-K}{S}}{+}1\\
@@ -52,7 +52,7 @@ If the padding at the top, bottom, left and right are same as $P$, ~\eqref{eq:if
 	\end{split}
 \end{align}
 
-CNN accelerators have limited on-chip memory size. Layer activations and parameter sizes are too large to fit into the on-chip memory. CNN accelerators apply loop tiling to partition the layer data into small tiles that fit into on-chip memory. Loop tiling is a compiler  technique~\cite{aho2006compilers} that partitions the loop iteration space and large arrays into smaller tiles to increase the data locality and ensure data fits into smaller memories. Fig.~\ref{fig:partitioningDataUsingTiling} shows a layer's data stored in off-chip memory and its tiles in the accelerator's on-chip buffer.
+CNN accelerators have limited on-chip memory size. Layer activations and parameter sizes are too large to fit into the on-chip memory. CNN accelerators apply loop tiling to partition the layer data into small tiles that fit into on-chip memory. Loop tiling is a compiler  technique~\cite{aho2006compilers} that partitions the loop iteration space and large arrays into smaller tiles to increase the data locality and ensure data fits into smaller memories. \figref{fig:partitioningDataUsingTiling} shows a layer's data stored in off-chip memory and its tiles in the accelerator's on-chip buffer.
 \begin{figure}[!htb]
 	\centering
 	\captionsetup{font=sf}	
@@ -85,10 +85,10 @@ Listing~\ref{code:CNNTiledCode} shows the Pseudo code of the tiled version of a 
 	} } } }}
 \end{lstlisting}
 
-There are $4!$ permutations in which loop $L_M$ appears as the innermost loop. In these permutations, all iterations of the innermost loop $L_M$ use the same \textit{ifm} data. In all such loop orderings, the load statement of \textit{ifm} tile can be moved before the innermost loop $L_M$ and reused in all its iterations \cite{zhang2015optimizing}. The movement of ifm tile loading reduces the number of off-chip accesses of ifm tile by a factor of $\frac{M}{T_m}$. This ordering scheme exploits ifm data reuse and is referred to as Input reuse-oriented scheme (IRO). Similarly, the set of $4!$ permutations in which loop $L_N$ is an innermost loop exploits the data reuse of \textit{ofm} and is referred to as output reuse oriented (ORO). The remaining $3\times 4!$ permutations in which loops $L_D,L_R,L_C$ appear as the inner loops exploit the weight data reuse and are referred to as Weight Reuse Oriented scheme(WRO). The amount of data reuse in different schemes varies with layer shape.
+There are $4!$ permutations in which loop $L_M$ appears as the innermost loop. In these permutations, all iterations of the innermost loop $L_M$ use the same \textit{ifm} data. In all such loop orderings, the load statement of \textit{ifm} tile can be moved before the innermost loop $L_M$ and reused in all its iterations \cite{zhang2015optimizing}. The movement of ifm tile loading reduces the number of off-chip accesses of ifm tile by a factor of $\frac{M}{T_m}$. This ordering scheme exploits ifm data reuse and is referred to as Input reuse-oriented scheme (IRO). Similarly, the set of $4!$ permutations in which loop $L_N$ is an innermost loop exploits the data reuse of \textit{ofm} and is referred to as output reuse oriented (ORO). The remaining $3\times 4!$ permutations in which loops $L_D, L_R, L_C$ appear as the inner loops exploit the weight data reuse and are referred to as the Weight Reuse Oriented scheme(WRO). The amount of data reused in different schemes varies with layer shape.
 %The order of loops determines the scheduling of the tiles. The scheduling scheme, which minimizes the trips of the \textit{ifm} tiles between the accelerator and off-chip memory, is referred to as the input-reuse-oriented scheme (IRO). Similarly, the other two schemes, which minimize the trips of \textit{ofm} and \textit{wts}, are referred to as output-reuse-oriented (ORO) and weight-reuse-oriented (WRO) schemes, respectively. 
 
-CNN's layers have varying shapes. Fig.~\ref{fig:ParamsNactProp} shows the parameters and activation proportions in convolution (CL) and fully connected layers (FC) of VGG16 and AlexNet. The first few layers have a large volume of activations (\textit{ifm} and \textit{ofm}), and the last few CLs and FCLs have a large volume of parameters(\textit{wts} and \textit{biases}). Scheduling schemes that optimize the off-chip memory access of activations will work well in the first few layers but may not work well for deeper layers with a large volume of \textit{wts}. The scheduling scheme optimal for one layer may be suboptimal for other layers. Therefore, each layer needs to be analyzed here.
+CNN's layers have varying shapes. \figref{fig:ParamsNactProp} shows the parameters and activation proportions in convolution (CL) and fully connected layers (FC) of VGG16 and AlexNet. The first few layers have a large volume of activations (\textit{ifm} and \textit{ofm}), and the last few CLs and FCLs have a large volume of parameters(\textit{wts} and \textit{biases}). Scheduling schemes that optimize the off-chip memory access of activations will work well in the first few layers but may not work well for deeper layers with a large volume of \textit{wts}. The scheduling scheme optimal for one layer may be suboptimal for other layers. Therefore, each layer needs to be analyzed here.
 \begin{figure}[!htb]
 	\centering
 	\captionsetup{font=sf}	
@@ -119,9 +119,9 @@ A CNN accelerator accesses 3D data of \textit{ifm, ofm}, and \textit{wts} of eac
 	\end{bmatrix}
 \end{align}
 \end{comment}
-CNN accelerators access 3D data of \textit{ifm, ofm}, and \textit{wts} of each layer partitioned into tiles. It accesses tiles of the layer from off-chip memory one or multiple times. Trip counts of the tiles depend on the layer shape, tile dimensions, and the data reuse scheme. If the batch size is $D$, layer shape is $\langle W_o,H_o,N_i,M_o\rangle$ and tiling parameters are $\langle T_{c_o},T_{r_o},T_{n_i},T_{m_o}\rangle$, trip counts of tiles in IRO, ORO, and WRO schemes can be determined using layer shape and tiling parameters. 
+CNN accelerators access 3D data of \textit{ifm, ofm}, and \textit{wts} of each layer partitioned into tiles. It accesses tiles of the layer from off-chip memory one or multiple times. Trip counts of the tiles depend on the layer shape, tile dimensions, and the data reuse scheme. If the batch size is $D$, layer shape is $\langle W_o,H_o,N_i,M_o\rangle$, and tiling parameters are $\langle T_{c_o},T_{r_o},T_{n_i},T_{m_o}\rangle$, trip counts of tiles in IRO, ORO, and WRO schemes can be determined using layer shape and tiling parameters. 
 \subsection{Trip Counts of Tiles}\label{sec:TripCount}
-\figurename~\ref{fig:convPartitionedLayer} shows a toy convolution layer data partitioned into tiles. The $ifm$ is partitioned into two tiles in spatial dimension and two tiles in depth. There are two filters $wts_C$ and $wts_D$ in the layer, and each is partitioned into two tiles in depth. The convolution output is computed and stored as 4 $ofm$ tiles.
+\figref{fig:convPartitionedLayer} shows a toy convolution layer data partitioned into tiles. The $ifm$ is partitioned into two tiles in spatial dimension and two in depth. There are two filters $wts_C$ and $wts_D$ in the layer, and each is partitioned into two tiles in depth. The convolution output is computed and stored as 4 $ofm$ tiles.
 \begin{figure}[!htb]
 	\centering
 	\captionsetup{font=sf}	
@@ -129,7 +129,7 @@ CNN accelerators access 3D data of \textit{ifm, ofm}, and \textit{wts} of each l
 	\caption{A Convolution layer data partitioned into tiles }
 	\label{fig:convPartitionedLayer}
 \end{figure}
-\figurename~\ref{fig:differentScheduling} shows three different valid schedules for the tiles of the convolution layer shown in \figurename~\ref{fig:convPartitionedLayer}. 
+\figref{fig:differentScheduling} shows three different valid schedules for the tiles of the convolution layer shown in \figref{fig:convPartitionedLayer}. 
 \begin{figure}[!htb]
 	\centering
 	\captionsetup{font=sf}
@@ -146,9 +146,9 @@ CNN accelerators access 3D data of \textit{ifm, ofm}, and \textit{wts} of each l
 	\label{fig:differentScheduling}
 \end{figure}
 
-There are several ways in which a  combination of $ifm$, $ofm$, and $wts$ tiles can be accessed from the off-chip memory to perform the computations by the accelerator, resulting in a valid schedule. These schedules differ in how tile combinations are fetched from the off-chip memory and the volume of off-chip memory accesses. \figurename~\ref{fig:differentScheduling} shows three different schedules, which minimizes the off-chip memory accesses of one data type.
+There are several ways in which a  combination of $ifm$, $ofm$, and $wts$ tiles can be accessed from the off-chip memory to perform the computations by the accelerator, resulting in a valid schedule. These schedules differ in how tile combinations are fetched from the off-chip memory and the volume of off-chip memory accesses. \figref{fig:differentScheduling} shows three different schedules, which minimizes the off-chip memory accesses of one data type.
 
- \figurename~\ref{fig:IROScheduling} shows the schedule of Input Reuse Oriented (IRO) scheme which maximizes the input data reuse. In IRO scheduling scheme, all the operations involving a given $ifm$ tile are scheduled consecutively to access each $ifm$ tile only once from the off-chip memory. There are $\ceil[\big]{\frac{H_o}{T_{r_o}}}\ceil[\big]{\frac{W_o}{T_{c_o}}}$ number of $ifm$ tiles in spatial dimension and $\ceil[\big]{\frac{N_i}{T_{n_i}}}$ number of $ifm$ tiles in depth dimension. Each $wts$ tile is accessed repeatedly from the off-chip memory to convolve with different spatial $ifm$ tiles, and each $ofm$ tile is accessed repeatedly to compute the final outputs using the $ifm$ tiles in the depth dimension. Unlike the $wts$ tile which are only read from the off-chip memory, each $ofm$ tile needs to be written to and read from the off-chip memory, except the first time when it is only written. The trip count of $ifm$, $ofm$ and $wts$ tiles in IRO scheme can be computed as following,
+\figref{fig:IROScheduling} shows the Input Reuse Oriented (IRO) scheme schedule, which maximizes the input data reuse. In the IRO scheduling scheme, all the operations involving a given $ifm$ tile are scheduled consecutively to access each $ifm$ tile only once from the off-chip memory. There are $\ceil[\big]{\frac{H_o}{T_{r_o}}}\ceil[\big]{\frac{W_o}{T_{c_o}}}$ number of $ifm$ tiles in spatial dimension and $\ceil[\big]{\frac{N_i}{T_{n_i}}}$ number of $ifm$ tiles in depth dimension. Each $wts$ tile is accessed repeatedly from the off-chip memory to convolve with different spatial $ifm$ tiles, and each $ofm$ tile is accessed repeatedly to compute the final outputs using the $ifm$ tiles in the depth dimension. Unlike the $wts$ tile, which are only read from the off-chip memory, each $ofm$ tile needs to be written to and read from the off-chip memory, except the first time when it is only written. The trip count of $ifm$, $ofm$ and $wts$ tiles in IRO scheme can be computed as following,
 \begin{align}\label{eq:IROTripCount}
 	\begin{split}
 	r_{ifm} &= D \\
@@ -156,7 +156,7 @@ There are several ways in which a  combination of $ifm$, $ofm$, and $wts$ tiles 
 	r_{wts} &= \ceil[\big]{\frac{H_o}{T_{r_o}}}\ceil[\big]{\frac{W_o}{T_{c_o}}}D
 	\end{split}
 \end{align}
- \figurename~\ref{fig:IROScheduling} shows the Input Reuse Oriented (IRO) scheme schedule, which maximizes input data reuse. In the IRO scheduling scheme, all the operations involving a given $ifm$ tile are scheduled consecutively to access each $ifm$ tile only once from the off-chip memory. There are $\ceil[\big]{\frac{H_o}{T_{r_o}}}\ceil[\big]{\frac{W_o}{T_{c_o}}}$ number of $ifm$ tiles in spatial dimension and $\ceil[\big]{\frac{N_i}{T_{n_i}}}$ number of $ifm$ tiles in depth dimension. Each $wts$ tile is accessed repeatedly from the off-chip memory to convolve with different spatial $ifm$ tiles, and each $ofm$ tile is accessed repeatedly to compute the final outputs using the $ifm$ tiles in the depth dimension. The $wts$ tiles are only read from the off-chip memory. However, $ofm$ tiles need to be written to and read from the off-chip memory, except the first time when it is only written. The trip count of $ifm$, $ofm$ and $wts$ tiles in IRO scheme can be computed as following,
+\figref{fig:IROScheduling} shows the Input Reuse Oriented (IRO) scheme schedule, which maximizes input data reuse. In the IRO scheduling scheme, all the operations involving a given $ifm$ tile are scheduled consecutively to access each $ifm$ tile only once from the off-chip memory. There are $\ceil[\big]{\frac{H_o}{T_{r_o}}}\ceil[\big]{\frac{W_o}{T_{c_o}}}$ number of $ifm$ tiles in spatial dimension and $\ceil[\big]{\frac{N_i}{T_{n_i}}}$ number of $ifm$ tiles in depth dimension. Each $wts$ tile is accessed repeatedly from the off-chip memory to convolve with different spatial $ifm$ tiles, and each $ofm$ tile is accessed repeatedly to compute the final outputs using the $ifm$ tiles in the depth dimension. The $wts$ tiles are only read from the off-chip memory. However, $ofm$ tiles need to be written to and read from the off-chip memory, except the first time when it is only written. The trip count of $ifm$, $ofm$ and $wts$ tiles in IRO scheme can be computed as following,
 \begin{align}\label{eq:OROTripCount}
 	\begin{split}
 		r_{ifm} &= \ceil[\big]{\frac{M_o}{T_{m_o}}}D \\
@@ -164,7 +164,7 @@ There are several ways in which a  combination of $ifm$, $ofm$, and $wts$ tiles 
 		r_{wts} &= \ceil[\big]{\frac{H_o}{T_{r_o}}}\ceil[\big]{\frac{W_o}{T_{c_o}}} D
 	\end{split}
 \end{align}
-\figurename~\ref{fig:WROScheduling} shows the Weight Reuse Oriented (WRO) scheme that maximizes the weights reuse. Each $wts$ tile is accessed once from the off-chip memory, and all the operations involving the $wts$ tile are performed consecutively. This requires repeatedly accessing the $ifm$ and $ofm$ tiles from the off-chip memory. Each $ifm$ tile  is accessed $\ceil[\big]{\frac{M_o}{T_{m_o}}}$ times, once for each $wts$ tile. There are $\ceil[\big]{\frac{N_i}{T_{n_i}}}$ tiles in the input depth. The partial sums resulting from each $ifm$ tile in the input depth need to be read from and written to off-chip memory, except for the first tile, which is only written to the off-chip memory. Total trip counts of the output partial sums tiles are $(2\ceil[\big]{\frac{N_i}{T_{n_i}}}-1)$. In this case, the trip count of $ifm$, $ofm$ and $wts$ tiles can be computed as following,
+\figref{fig:WROScheduling} shows the Weight Reuse Oriented (WRO) scheme that maximizes the weights reuse. Each $wts$ tile is accessed once from the off-chip memory, and all the operations involving the $wts$ tile are performed consecutively. This requires repeatedly accessing the $ifm$ and $ofm$ tiles from the off-chip memory. Each $ifm$ tile  is accessed $\ceil[\big]{\frac{M_o}{T_{m_o}}}$ times, once for each $wts$ tile. There are $\ceil[\big]{\frac{N_i}{T_{n_i}}}$ tiles in the input depth. The partial sums resulting from each $ifm$ tile in the input depth need to be read from and written to off-chip memory, except for the first tile, which is only written to the off-chip memory. Total trip counts of the output partial sums tiles are $(2\ceil[\big]{\frac{N_i}{T_{n_i}}}-1)$. In this case, the trip count of $ifm$, $ofm$ and $wts$ tiles can be computed as following,
 \begin{align}\label{eq:WROTripCount}
 	\begin{split}
 		r_{ifm} &= \ceil[\big]{\frac{M_o}{T_{m_o}}}D\\
@@ -172,7 +172,7 @@ There are several ways in which a  combination of $ifm$, $ofm$, and $wts$ tiles 
 		r_{wts} &= 1
 	\end{split}
 \end{align}
-Trip counts of $ifm$, $ofm$, and $wts$ tiles in IRO, ORO, and WRO schemes can be expressed as the rows of the matrix $\mathbf{R}$ using equations~\ref{eq:IROTripCount},~\ref{eq:OROTripCount}, and~\ref{eq:WROTripCount}, where columns represent \textit{ifm, ofm}, and \textit{wts} trip counts as shown in~\eqref{eq:TripCount} below.
+Trip counts of $ifm$, $ofm$, and $wts$ tiles in IRO, ORO, and WRO schemes can be expressed as the rows of the matrix $\mathbf{R}$ using~\eqref{eq:IROTripCount},~\eqref{eq:OROTripCount}, and~\eqref{eq:WROTripCount}, where columns represent \textit{ifm, ofm}, and \textit{wts} trip counts as shown in~\eqref{eq:TripCount} below.
 \begin{align}\label{eq:TripCount}
 	\mathbf{R}=
 	\begin{bmatrix}
@@ -185,7 +185,7 @@ Trip counts of $ifm$, $ofm$, and $wts$ tiles in IRO, ORO, and WRO schemes can be
 	\end{bmatrix}
 \end{align}
 \subsection{Off-chip memory access of CL}\label{sec:AccessCLData}
-To compute the off-chip memory accesses for a CL layer, first we compute the off-chip memory accesses for one trip of $ifm$, $ofm$ and $wts$ using Algorithm~\ref{Algorithm1} of Chapter~\ref{chap:analyticalFw} as below
+To compute the off-chip memory accesses for a CL layer, first, we compute the off-chip memory accesses for one trip of $ifm$, $ofm$ and $wts$ using~\algref{Algorithm1} of~\chapref{chap:analyticalFw} as below
 \begin{align*}
 	\begin{split}
 		\numBytesOffChip_{ifm}=&\emph{BWA}(\addressSym_{ifm},\langle T_{c_i}, T_{r_i},T_{n_i}\rangle,\langle W_i,H_i,N_i\rangle,\numOverlap)\\
@@ -237,16 +237,16 @@ For FCLs, the trips count of different data reuse schemes can be computed using~
 \section{Implementation and Results}
 \subsection{Implementation}
 The optimal tile dimensions can be determined by computing the number of bytes accessed from off-chip memory ($\numBytesOffChip$) at all the feasible points in the solution space. 
-We have developed the model that computes $\numBytesOffChip$ of the CLs using the BWA approach (Algorithm~\ref{Algorithm1}) and finds the optimal tile dimensions. The tool also analyses the $\numBytesOffChip$ for different data reuse schemes to suggest the best scheme for each CL. It can be configured for different on-chip memory sizes, bus widths, and data bit widths. It took less than 60 minutes to determine the optimal solution for VGG16 on Intel Core i7-6700 CPU (@3.40GHz$\times$8).
+We have developed the model that computes $\numBytesOffChip$ of the CLs using the BWA approach (~\algref{Algorithm1}) and finds the optimal tile dimensions. The tool also analyses the $\numBytesOffChip$ for different data reuse schemes to suggest the best scheme for each CL. It can be configured for different on-chip memory sizes, bus widths, and data bit widths. It took less than 60 minutes to determine the optimal solution for VGG16 on Intel Core i7-6700 CPU (@3.40GHz$\times$8).
 \subsection{Validation}\label{Validation}
-We have validated the number of bytes accessed from off-chip memory computed by BWA (Algorithm~\ref{Algorithm1} of Chapter~\ref{chap:analyticalFw}) using the hardware implementation of CNN layers on Xilinx FPGA. We have implemented CNN layers using the Xilinx SDSoC framework, SDx v2018.3, which generates hardware functions from high-level languages like C/C++. We used the SDx pragmas to use zero\_copy as a data mover. The Xilinx tools provide the option to integrate the AXI Performance Monitor (APM) IP~\cite{APM}, which captures the real-time performance metrics like bus latency and amount of memory traffic for connected AXI interfaces. The target platform is ZedBoard, working at 100MHz frequency, and off-chip memory (DRAM) is accessed using 64 bits AXI bus. 
+We have validated the number of bytes accessed from off-chip memory computed by BWA (~\algref{Algorithm1} of~\chapref{chap:analyticalFw}) using the hardware implementation of CNN layers on Xilinx FPGA. We have implemented CNN layers using the Xilinx SDSoC framework, SDx v2018.3, which generates hardware functions from high-level languages like C/C++. We used the SDx pragmas to use zero\_copy as a data mover. The Xilinx tools allow integrating the AXI Performance Monitor (APM) IP~\cite{APM}, which captures the real-time performance metrics like bus latency and amount of memory traffic for connected AXI interfaces. The target platform is ZedBoard, working at 100MHz frequency, and off-chip memory (DRAM) is accessed using 64 bits AXI bus. 
 Our FPGA implementation takes the 3D shape and tile dimensions as input, and the generated hardware functions access the 3D data from DRAM using loop tiling. The integrated APM IP logs the number of bytes and latency of off-chip memory access transactions using which we validated the number of bytes accessed from off-chip memory computed by our approach for different 3D data shapes and tile dimensions.
 \subsection{Benchmarks}
 We carried out experiments on three popular CNN networks, VGG16~\cite{simonyan2014very}, AlexNet~\cite{krizhevsky2012imagenet}, and ResNet~\cite{he2016deep} having 8, 16, and 50 layers, respectively. These CNNs have varying shapes and use filters of dimensions $1{\times}1$, $3{\times}3$, $5{\times}5$, $7{\times}7$, and $11{\times}11$. To compare the results with other approaches, we have used the on-chip buffer size of 108 KB, batch size of 3 for VGG16, and 4 for ResNet and AlexNet, as used by Eyeriss~\cite{chen2016eyeriss} and SmartShuttle~\cite{Li2018SmartShuttleOO}. 
 \subsection{Baselines}
 We have implemented the SmartShuttle (SS)~\cite{Li2018SmartShuttleOO} approach to compare the results with our bus width aware (BWA) approach. SS statically determines the partitioning and scheduling scheme for each layer. It performs better than strategies that use a fixed tile dimension and data reuse scheme for all layers, e.g., Eyeriss~\cite{chen2016eyeriss} and  Zhang~\cite{zhang2015optimizing}. 
 \subsection{Results}
-\begin{figure}[!t]
+\begin{figure}[!htb]
 	\centering
 	\subfloat[$\numBytesOffChip_{VGG16}$]
 	{\includegraphics[width=0.32\textwidth]{VGG16_mem108_batch4_bw0_dW0_AD0.pdf}
@@ -265,8 +265,8 @@ We have implemented the SmartShuttle (SS)~\cite{Li2018SmartShuttleOO} approach t
 	\vspace{-1.0em}
 \end{figure}
 \subsubsection{Impact of Bus Width on memory access of CLs}
-Fig.~\ref{fig:AccessenOn64BitDataBus} shows the number of bytes accessed from off-chip memory ($\numBytesOffChip$) of CLs of the CNNs for different bus widths for 8 and 16 bits data width and 108 KB on-chip buffer size. For a wider data bus, $\numBytesOffChip$ is more. The BWA approach reduces bus-width's impact on off-chip memory accesses, as it selects the tile dimensions considering the bus width and address alignments. Whereas tile dimensions selected by SS remain the same, irrespective of the bus width of the accelerator, which results in a large value of $\numBytesOffChip$.
-As shown in Fig.~\ref{fig:AccessenOn64BitDataBus}, BWA reduces $\numBytesOffChip$ compared to SS for the three CNNs. For ResNet:50 it reduces $\numBytesOffChip_{ResNet}$ by 13\%, 28\%, 46\%, and 65\% for 8 bits data width and by 10\%, 22\% and 36\% for 16 bits data width on 64, 128, and 256 bits wide data bus, respectively, compared to SS. 
+\figref{fig:AccessenOn64BitDataBus} shows the number of bytes accessed from off-chip memory ($\numBytesOffChip$) of CLs of the CNNs for different bus widths for 8 and 16 bits data width and 108 KB on-chip buffer size. For a wider data bus, $\numBytesOffChip$ is more. The BWA approach reduces bus width's impact on off-chip memory accesses, as it selects the tile dimensions considering the bus width and address alignments. Whereas tile dimensions selected by SS remain the same, irrespective of the bus width of the accelerator, which results in a large value of $\numBytesOffChip$.
+As shown in~\figref{fig:AccessenOn64BitDataBus}, BWA reduces $\numBytesOffChip$ compared to SS for the three CNNs. For ResNet:50 it reduces $\numBytesOffChip_{ResNet}$ by 13\%, 28\%, 46\%, and 65\% for 8 bits data width and by 10\%, 22\% and 36\% for 16 bits data width on 64, 128, and 256 bits wide data bus, respectively, compared to SS. 
 BWA reduces $\numBytesOffChip_{VGG16}$ by 8\%, 16\%, 29\%, and 45\% and $\numBytesOffChip_{AlexNet}$ by 4\%, 9\%, 16\% and 27\% on 32, 64, 128, and 256 bits wide buses respectively, for 8 bits data width. 
 The impact of bus width is significant when accessing low-resolution data on a wide data bus. For 16 bits data width, the effectiveness of the BWA approach is noticeable for 64 or wider data buses. For 16 bits data width, BWA reduces $\numBytesOffChip_{VGG16}$ by 5\%, 13.5\% and 28\% and $\numBytesOffChip_{AlexNet}$ by 1.5\%, 5.7\% and 13\% compared to SS on 64, 128, and 256 bits wide data bus, respectively.
 \subsubsection{Off-Chip Memory Access of Data Reuse  Schemes}\label{sec:ResultsDataReuseScheme}
@@ -284,7 +284,7 @@ The impact of bus width is significant when accessing low-resolution data on a w
 	\label{fig:DataReuseSchemeCompare}
 	\vspace{-1.0em}	
 \end{figure}
-Figure~\ref{fig:DataReuseSchemeCompare} shows the layer-wise off-chip memory access of CLs of VGG16 and AlexNet for the three data reuse schemes using 64 bits wide bus and 8 bits data width. The results show that a single data reuse scheme is not optimal for all the layers. IRO and ORO perform better than the WRO scheme in the first few layers, while in the last few layers, WRO outperforms the other two schemes. The solid color at the top of the bars shows the reduction in off-chip memory accesses when optimal tile dimensions are selected using the BWA approach compared to when tile dimensions are selected using the tile size-based approach. The BWA approach performs better than the tile size based approach for all three data reuse schemes.
+\figref{fig:DataReuseSchemeCompare} shows the layer-wise off-chip memory access of CLs of VGG16 and AlexNet for the three data reuse schemes using 64 bits wide bus and 8 bits data width. The results show that a single data reuse scheme is not optimal for all the layers. IRO and ORO perform better than the WRO scheme in the first few layers, while in the last few layers, WRO outperforms the other two schemes. The solid color at the top of the bars shows the reduction in off-chip memory accesses when optimal tile dimensions are selected using the BWA approach compared to when tile dimensions are selected using the tile size-based approach. The BWA approach performs better than the tile size based approach for all three data reuse schemes.
 \subsubsection{On-chip Buffer Size}
 \begin{figure}[htb]
 	\centering
@@ -300,7 +300,7 @@ Figure~\ref{fig:DataReuseSchemeCompare} shows the layer-wise off-chip memory acc
 	\label{fig:EffectOfVaryingOnChipBuffer}
 	\vspace{-1.0em}
 \end{figure}
-Fig.~\ref{fig:VGG16OnChipMemoryEffect} and Fig.~\ref{fig:AlexNOnChipMemoryEffect} compares the number of bytes accessed from off-chip memory ($\numBytesOffChip$) for different on-chip buffer sizes ($\BuffSize$) for VGG16 and AlexNet, respectively. A large on-chip buffer can accommodate larger tiles, which reduces the tiles' trip counts (Equation~\ref{eq:TripCount}) and, therefore the total off-chip memory accesses of the CNN (Equation~\ref{eq:TotalOffChipAccess}). This behavior is observed for both the CNNs in Fig.~\ref{fig:VGG16OnChipMemoryEffect} and Fig.~\ref{fig:AlexNOnChipMemoryEffect}. Both the approaches select the dimensions of the tiles  with the constraints of on-chip buffer size. However, the proposed BWA approach performs better as it considers address alignments and bus width to reduce unwanted data transfers and optimize off-chip memory accesses. In contrast, the SS approach ignores the architectural parameters.
+\figref{fig:VGG16OnChipMemoryEffect} and \figref{fig:AlexNOnChipMemoryEffect} compares the number of bytes accessed from off-chip memory ($\numBytesOffChip$) for different on-chip buffer sizes ($\BuffSize$) for VGG16 and AlexNet, respectively. A large on-chip buffer can accommodate larger tiles, which reduces the tiles' trip counts (~\eqref{eq:TripCount}) and, therefore, the total off-chip memory accesses of the CNN (~\eqref{eq:TotalOffChipAccess}). This behavior is observed for both the CNNs in~\figref{fig:VGG16OnChipMemoryEffect} and~\figref{fig:AlexNOnChipMemoryEffect}. Both approaches select the dimensions of the tiles with the constraints of on-chip buffer size. However, the proposed BWA approach performs better as it considers address alignments and bus width to reduce unwanted data transfers and optimize off-chip memory accesses. In contrast, the SS approach ignores the architectural parameters.
 \subsubsection{Impact of Bus Width on $\numBytesOffChip$ of FCLs}
 \begin{figure}[htb]
 	\centering
@@ -316,7 +316,7 @@ Fig.~\ref{fig:VGG16OnChipMemoryEffect} and Fig.~\ref{fig:AlexNOnChipMemoryEffect
 	\label{fig:EffectOnFC}
 	\vspace{-1.0em}
 \end{figure}
-In FCLs, the height and width of tiles and data are the same. Tiles in FCL can be accessed from off-chip memory using a single transaction, resulting in fewer transactions in FCLs than CLs. Whereas in CLs, multiple transactions are required to access different rows of the tiles. Thus the impact of bus width is less on $\numBytesOffChip$ of FCLs than CLs. \figurename~\ref{fig:VGG16FCLayer} and \figurename~\ref{fig:AlexNetFCLayer} shows the off-chip memory accesses of FCLs of VGG16 and AlexNet, respectively, for 8 bits data width. BWA reduces $\numBytesOffChip_{VGG16}^{FC}$ by 1\%, 2\%, 3\%, and 4\% and $\numBytesOffChip_{AlexNet}^{FC}$ by 0.2\%, 1\%, 3\% and 6\% on 32, 64, 128, and 256 bits wide buses, respectively.
+In FCLs, the height and width of tiles and data are the same. Tiles in FCL can be accessed from off-chip memory using a single transaction, resulting in fewer transactions in FCLs than CLs. Whereas in CLs, multiple transactions are required to access different rows of the tiles. Thus the impact of bus width is less on $\numBytesOffChip$ of FCLs than CLs. \figref{fig:VGG16FCLayer} and~\figref{fig:AlexNetFCLayer} shows the off-chip memory accesses of FCLs of VGG16 and AlexNet, respectively, for 8 bits data width. BWA reduces $\numBytesOffChip_{VGG16}^{FC}$ by 1\%, 2\%, 3\%, and 4\% and $\numBytesOffChip_{AlexNet}^{FC}$ by 0.2\%, 1\%, 3\% and 6\% on 32, 64, 128, and 256 bits wide buses, respectively.
 \subsubsection{Latency And Energy Analysis}
 \begin{figure}[htb]
 	\centering
@@ -332,12 +332,12 @@ In FCLs, the height and width of tiles and data are the same. Tiles in FCL can b
 	\label{fig:EffectOnLatency}
 	\vspace{-1.0em}
 \end{figure}
-Using our FPGA implementation, we measured the memory access latencies and execution time for CLs for the optimal tile dimensions determined using the approach described in~\ref{MemAccess_CNN}. To estimate the energy efficiency achieved by the BWA compared to the SS approach, we computed the energy consumption using the following equation~\cite{tu2017deep}
+Using our FPGA implementation, we measured the memory access latencies and execution time for CLs for the optimal tile dimensions determined using the approach described in \secref{MemAccess_CNN}. To estimate the energy efficiency achieved by the BWA compared to the SS approach, we computed the energy consumption using the following equation~\cite{tu2017deep}
 \begin{align}\label{eq:energyEfficiency}
 	E~{=}~P\cdot Time~{+}~\numBytesOffChip\cdot E_{DDR}
 \end{align}
 where $P$ is the FPGA design power reported by the Vivado synthesis tool, $Time$ is the execution time, $\numBytesOffChip$ is the number of bytes accessed from off-chip memory logged using Xilinx APM IP, and $E_{DDR}$ is the off-chip memory access energy per bit. We have used $E_{DDR}$=70 pJ/bit, a typical value for the DDR3 memory access energy~\cite{6237004}.
 
-\figurename{~\ref{fig:VGG16EnergyEfficiency}} and \figurename{~\ref{fig:AlexEnergyEfficiency}} show the energy, off-chip memory accesses, and latency efficiency achieved using the BWA compared to the SS approach for VGG16 and AlexNet, respectively, for 8 bits data width and 64 bits bus width. We observed that the changes in energy and latency are proportional to the changes in memory access. This observation confirms that off-chip memory access dominates the energy consumption of the CNN accelerators. 
+\figref{fig:VGG16EnergyEfficiency} and \figref{fig:AlexEnergyEfficiency} show the energy, off-chip memory accesses, and latency efficiency achieved using the BWA compared to the SS approach for VGG16 and AlexNet, respectively, for 8 bits data width and 64 bits bus width. We observed that the changes in energy and latency are proportional to the changes in memory access. This observation confirms that off-chip memory access dominates the energy consumption of the CNN accelerators. 
 \section{Summary}
 Off-chip memory accesses dominate the energy consumption of CNN accelerators. Loop tiling is a common technique to partition the layer data into smaller tiles that fit into on-chip memory. The tile dimensions significantly impact the off-chip memory accesses of these accelerators. In this work, we propose a bus width and address alignment aware approach to compute the off-chip memory accesses of 3D data. Our tool statically analyses the memory accesses to find the optimal tile dimensions for CNN accelerators. Experimental results show that our approach reduces off-chip memory accesses of the CLs of VGG16 by 16\%, 29\%, and of AlexNet by 9\%, 16\% on 64 and 128 bits data bus, respectively, for 8 bits data width, compared to the state-of-the-art approach.

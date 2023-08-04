@@ -101,7 +101,7 @@ An illustrative example that demonstrates the computations performed in two cons
 	\label{fig:ExampleComputation_t}
 \end{figure}
 
-At time step $t$, $R^L$ is accessed and there are $\frac{N{\times}(N{+}1)}{2}$ stages. In this specific example, with $N=3$, we have six stages at time step $t$. In each stage, an element of matrix $R$ is accessed and processed through a Multiply Accumulate Unit (MAC). The processing involves multiplying the element of $R$ with a corresponding element from the vector $h_{t{-}1}$, and the product is accumulated. This process continues until all the elements of a row of matrix $R^L$ have been accessed. Subsequently, the output of the MAC is added to the corresponding element of vector $S^U_{t}$ to compute the corresponding element of vector $h_t$, and the MAC unit is then reset to zero. Furthermore, the elements of matrix $R^L$ are efficiently reused to compute the partial sum vector $S^L_{t{+}1}$, utilizing the values of vector $h_{t}$ computed in previous stages or current stage.
+At time step $t$, $R^L$ is accessed and there are $\frac{N{\times}(N{+}1)}{2}$ stages. In this specific example, with $N=3$, we have six stages at time step $t$. In each stage, an element of matrix $R$ is accessed and processed through a Multiply Accumulate Unit (MAC). The processing involves multiplying the element of $R$ with a corresponding element from the vector $h_{t{-}1}$, and the product is accumulated. This process continues until all the elements of a row of matrix $R^L$ have been accessed. Subsequently, the output of the MAC is added to the corresponding element of vector $S^U_{t}$ to compute the element of vector $h_t$, and the MAC unit is then reset to zero. Furthermore, the elements of matrix $R^L$ are efficiently reused to compute the partial sum vector $S^L_{t{+}1}$, utilizing the values of vector $h_{t}$ computed in previous stages or current stage.
 \begin{figure}[htbp]
 	\centerline{\includegraphics[width=\textwidth]{LSTMStepStages_t1.pdf}}
 	\caption{Computation stages at time step $t{+}1$.}
@@ -186,7 +186,7 @@ We have implemented LSTM layers using the conventional, TSIWR~\cite{park2020time
 The design can be configured for different on-chip buffer sizes, hidden units ($N$), and compute resources. We have implemented multiple designs for each of the three approaches to compare the throughput for different numbers of compute resources and buffer sizes. We carried out the experiments on Zedboard, and the target frequency is 100MHz. The off-chip memory is DDR3 connected using a 64-bit AXI bus. We have integrated the Xilinx AXI Performance Monitor (APM) IP to log the number of bytes transferred and memory access latencies for DRAM accesses.
 
 There are eight local buffers each to store the $B{\times}B$ elements of the matrices (\figurename{~\ref{fig:lstmFpgaDesign}}), and two buffers, each of dimension $N$, for storing the vector $h_t$ and $h_{t{+}1}$. Table~\ref{tab:fpgaResources} shows the FPGA resources utilization reported by Vivado for conventional, TSIWR, and our approach, for $B{=}64$ and using 8 DSPs resources ($PARL\_FACTOR{=}8$) in each of the four $MxV$ component. In this case, the total number of DSPs required is $4{\times}PARL\_FACTOR{=}32$.
-Each of the eight arrays is partitioned into 8 ($PARL\_FACTOR$) to provide the data to compute resources. That results in 64 FPGA RAMB18 resources for storing the $B{\cdot}B$ blocks and 2 FPGA RAMB18 resources for storing the vector $h_t$ and $h_{t{+}1}$. The remaining ($20$) RAMB18 is used for other logic and I/O. The LUTs and FFs in the case of TSIWR and our approach are higher due to additional control logic.
+Each of the eight arrays is partitioned into 8 ($PARL\_FACTOR$) to provide the data to compute resources. That results in 64 FPGA RAMB18 resources for storing the $B{\times}B$ blocks and 2 FPGA RAMB18 resources for storing the vector $h_t$ and $h_{t{+}1}$. The remaining RAMB18 blocks are used for other logic and vary for the three approaches. The conventional approach has the most straightforward control logic than TSIWR and our approach. The LUTs and FFs in the case of TSIWR and our approach are higher than the conventional approach. 
 \begin{table}[htb]
 	\centering
 	\caption{FPGA resource utilization for B=64, PARL\_FACTOR=8, and N=128 }
@@ -205,7 +205,7 @@ We have compared our approach (SACC) with conventional and TSI-WR~\cite{park2020
 We have also implemented the models to compute the off-chip memory accesses for all three approaches and integrated them with the analytical framework (Chapter~\ref{chap:analyticalFw}) to compare the off-chip memory accesses of the three approaches.
 \subsection{Benchmarks}
 To demonstrate the efficiency of our approach, we have experimented with LSTM models used in speech recognition (for TIMIT~\cite{garofolo1993timit}) and character level Language Modelling (LM)~\cite{sundermeyer2015feedforward}. These models are widely used in natural language processing. The LSTM models are adopted from \cite{azari2020elsa,park2018maximizing,han2017ese}. Each model has two LSTM layers, and Table~\ref{tab:lstmModels} list the parameters of these models.
-\begin{table}[]
+\begin{table}[htb]
 	\centering
 	\caption{LSTM Models used for experiments}
 	\begin{tabular}{@{}ccccll@{}}
@@ -241,9 +241,9 @@ We have experimented with different on-chip memory sizes smaller than the size o
 If the on-chip buffer size is small compared to the weight matrices, tiles of $R$ are accessed from off-chip memory, replacing the older tiles in the on-chip memory. In conventional approaches, these tiles are not reused for subsequent time step computations, which results in accessing full matrix $R$ every step. For conventional approaches, the off-chip memory accesses remain the same, even if the on-chip mem size is increased, as shown by the horizontal line in \figurename{~\ref{fig:memTsiwrComparison}.
 The TSI-WR approach schedules the tiles to reuse the data from the on-chip memory and reduces off-chip memory access. However, the extent of data reuse in the TSI-WR approach depends on the size of overlap between two consecutive tiles, which is decided by the available on-chip buffer size. When the on-chip buffer to R matrix size is close to 48\%, TSI-WR reduces the memory access by $\approx$25\%, as shown in \figurename{~\ref{fig:memAccessImprovement}}. Our approach splits the computations and performs the scheduling of the tiles that reduces the memory accesses by $\approx$50\%, irrespective of the on-chip buffer size.
 \subsubsection{Throughput Analysis}
-To analyze the throughput variation with different on-chip buffer sizes, we synthesized FPGA designs with varying buffer sizes for all three approaches. We recorded the number of cycles (measured\_clocks) for different FPGA designs over $T$ time steps to evaluate the throughput. Using this data, we computed the throughput using the following formula:
+To analyze the throughput variation with different on-chip buffer sizes, we synthesized FPGA designs (\figref{fig:lstmFpgaDesign}) with varying buffer sizes for all three approaches. We recorded the number of cycles (measured\_clock\_cycles) for different FPGA designs over $T$ time steps to evaluate the throughput. Using this data, we computed the throughput using the following formula:
 \begin{align}\label{eq:througput}
-	\text{Throughput}=\frac{4{\times}N^2{\times}T{\times}{\text {clock\_freq}}}{\text{measured\_clocks}}
+	\text{Throughput(Mega-MACs/sec)}=\frac{4{\times}N^2{\times}T{\times}{\text {clock\_freq}}}{\text{measured\_clock\_cycles}}
 \end{align}
 Here, clock\_freq represents the system clock frequency in MHz.
 \begin{figure}[htb!]
@@ -275,7 +275,7 @@ The memory bandwidth limits the performance of LSTM accelerators. Data reuse red
 		\includegraphics[width=0.35\textwidth]{througput_N256.pdf}
 		\label{fig:throughPutVsPF_128}
 	}
-	\caption{Throughput variation of MxV with compute resources for 50\% on-chip buffer/$R$ ratio}	\label{fig:throughputVsPF}
+	\caption{Throughput variation with compute resources for 50\% on-chip buffer/$R$ ratio}	\label{fig:throughputVsPF}
 \end{figure}
 
 \figref{fig:throughputVsPF} compares the throughput of the conventional, TSI-WR and our approach. 
