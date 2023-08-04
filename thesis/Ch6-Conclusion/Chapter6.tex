@@ -37,7 +37,6 @@ The findings presented in this work offer valuable insights into optimizing neur
 
 We hope that the outcomes of this research will inspire further exploration and innovation, ultimately leading to the development of smarter and more energy-conscious artificial intelligence systems that positively impact various aspects of human life.
 \end{comment}
-
 \section{Introduction}
 The past few years have witnessed remarkable growth in Neural Network (NN) based applications, with significant contributions in fields such as healthcare, agriculture, road safety, surveillance, defense, and many others. The availability of modern computing systems capable of handling large datasets and the development of deep learning frameworks like TensorFlow and PyTorch have propelled NNs to achieve human-like performance. These advancements have led to the widespread adoption of NNs in various domains, including embedded systems with limited computing resources and energy budget constraints.
 
@@ -54,7 +53,6 @@ In \chapref{chap:CNN}, we proposed a data reuse approach for CNN layers that con
 \chapref{chap:RNN} addressed the challenges of data reuse in recurrent neural networks (RNNs), particularly in Long-Short Term Memory Networks (LSTMs). We proposed a novel data reuse approach that efficiently reuses weights for consecutive time steps, significantly reducing off-chip memory accesses and improving energy efficiency.
 
 \chapref{chap:SOM} explored the impact of different bit resolutions on NN accuracy, focusing on Self-Organizing Maps (SOMs). We implemented different bit-width configurations on an FPGA and compared their performance, providing insights into energy-constrained systems' design.
-
 \section{Implications and Future Research Directions}
 The findings of this thesis have implications for optimizing NN accelerators in a wide range of applications, particularly in edge AI devices with limited energy and computing resources. The data reuse techniques and partitioning strategies can be extended and applied to modern AI models, such as Language Models (LLMs) and Stable Diffusion networks, to improve their energy efficiency and throughput.
 
@@ -63,14 +61,12 @@ Future research directions could involve exploring hardware co-design and archit
 We also suggest exploring the incorporation of hardware accelerators specialized for specific NN tasks to further improve energy efficiency and performance. Such accelerators can take advantage of the specific data access patterns and computations inherent in NN layers.
 
 Moreover, addressing the challenges posed by data reuse in more complex and deeply layered neural networks would be an interesting area of research. Investigating techniques to optimize data reuse in multi-layer and multi-modal NNs could lead to more efficient and powerful edge AI devices.
-
 \section{Closing Remarks}
 In conclusion, this thesis has contributed to the state-of-the-art in energy-efficient execution of modern NNs on parallel architectures. The proposed data reuse approaches and partitioning strategies have demonstrated significant improvements in energy efficiency and throughput for various NN layers. The analytical framework developed in this research provides a valuable tool for comparing different data reuse and scheduling schemes and exploring the design space for optimal solutions.
 
 The work presented here not only advances the field of NN accelerators but also opens up new research directions for the integration of modern AI models into energy-constrained systems. By focusing on efficient data reuse, hardware co-design, and innovative quantization techniques, future researchers can continue to push the boundaries of NN performance on parallel architectures.
-
 \section{Conclusion}
-This thesis has successfully addressed the challenges of optimizing neural network performance on parallel architectures with limited on-chip memory and high off-chip memory accesses. Through the development of novel data reuse approaches, data partitioning, and scheduling strategies, we have significantly improved energy efficiency and throughput for various NN layers.
+This thesis has successfully addressed the challenges of optimizing neural network performance on parallel architectures with limited on-chip memory. Through the development of novel data reuse approaches, data partitioning, and scheduling strategies, we have significantly improved energy efficiency and throughput for various NN layers.
 
 The findings of this research have broader implications for the design of efficient edge AI devices and contribute to the ongoing progress in the field of neural network accelerators. The proposed techniques can be extended and applied to modern AI models, such as Language Models (LLMs) and Stable Diffusion networks, to further enhance their performance on parallel architectures.
 
