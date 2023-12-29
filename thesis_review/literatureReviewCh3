@@ -1,0 +1,38 @@
+There are several work that aimed to optimize the off-chip memory accesses. There are several customized FPGA, ASIC accelerators proposed that implements optimizations to reduce the off-chip memory accesses. Loop transformations, loop ordering, loop tiling are the common techniques among these proposed schemes for optimizing off-chip memory accesses. For some of the work optimization goals was faster execution time and for some of the work energy was the optimization goals. For minimizing the run time, memory bandwidth as the bottleneck so these works also worked for optimizing the off-chip memory access.
+
+Due to limited on-chip memory which can not store the layer parameters and activation, loop tiling is a mandate. However these work haven't proposed a systematic approach to determine the tiling dimensions.
+
+Eyeriss and Zhang used uniform data reuse and loop tiling scheme, to simplify the hardware implemention. This is not optimal as layer shapes varies in DNNs across the layers and optimal solutions vary among the different layers.
+
+
+
+Several works considered the impact of huge amount of data transfer on performance and energy of DNN acclerators. Several works in past years focused on loop ordering, loop unrolling, and loop tiling techniques to optimize the off-chip memory accesses.
+
+Peeman et.al. presented an analytical method to optimize the convolution nested loops for inter-tile data reuse. They used loop transformations like loop interchange and tiling. Their main focus was to minimize off-chip data transfer by reusing data from on-chip memory.
+
+ Peeman et.al. (7092377) considered inter-tile reuse and proposed scheme to prune the search space to explore the large design space for best schedules for a given buffer scheme. However, intra-tile reuse creates the dependencies between the tiles and reduces the inter-tile parallelism.
+ 
+ Peeman et.al. (6657019) highlighted limited external memory bandwidth is the bottleneck for the design of efficient accelerator. To overcome this, they proposed a scheduler that uses tiling to optimize the data locality. They also highligted that using large on-chip memories does not solve the energy problem of the accelerators as it increases the energy consumption per access and the size.
+ They proposed a memory centric design flow to prepare a off-line loop iteration schedule to optimize the data reuse from on-chip buffers.
+ Their design flow quickly analyzes the possible scheduling alternatives to find the best schedule that minimizes external data transfers. 
+ 
+Shi et.al. (7302332) analyzed inter/intra output feature map parallelism and impact of on-chip buffer on external memory access is analysed. They proposed intra OFM reuse scheme to share the weights among the PEs together with inputs reuse. Weights were shared among the PEs. They used DRAM power consumption of loading all the input tiles of an image for a fixed buffer size to determine the tile size. For large layer shapes, observed in modern DNNs, experimentally determining the tile dimensions is time consuming.
+However their scheme is fixed for all the layers. They used seperate buffers for input and output feature maps, which reduces the flexibility of buffer sizes between different data types.  
+
+
+Ma et.al. (MaYufei), ignored the overlap between the ifm tiles, as the number of additional reads are negligible. They considered three loop optimization techniques namely, loop unrolling, loop tiling and loop interchange and provided in-depth analysis for convolution operations. By searching through the design space they determined data flow for minimizing the data movement and memory access. They analysed the impact of loop design variables (loop unrolling, loop tiling and loop interchange) in designing the accelerator with minimum computing latency, on-chip buffer sizes, on-chip and off-chip memory accesses. Overall they focused on minimizing the multiple factors and reducing off-chip memory access was not the primary goal.  They considered storing the full depth of ifm tiles to reduce the partial sum access. Which is not the optimal tile dimension for reducing off-chip memory accesses.
+To obtain a uniform structure and reduce the architecture complexity they used fixed loop interchange and loop tiling scheme to optimize the partial sum accesses. Their main goal was to obtain the accelerator efficiency by optimizing the reuse from on-chip buffers and reducing memory bottlenecks by reducing off-chip accesses. 
+
+
+Motamedi et. al. (7428073): developed a model that considers performance and data transfer and propsed an FPGA architecture. The qnantified the tradeoff of exploiting one source of parallelism vs another. Developed a DSE which yields the most efficient architecture.
+Highlighted the limited amount of on-chip memory mandates a tiled data transfer. They have considered the tiling at kernel level and feature map level. The goal of minimal execution time. They considered only the convolution layer , as more than 90% of the execution time in DCNNs is spent in the conv layer[4] (J. Cong Minimizing computation in convolutional neural networks. 2014)
+
+They have considered the impact of adaptive tiling on performance and shown that adaptive tiling scheme gives better performance compared to using static solution. However for the tile dimensions they have not considered the tiling in height and width. 
+analyzed the data access patterns and used on-chip buffers to store the tiles of external data and maximize the reusability of BRAM.
+Their approach focused on determining tile dimensions for input and output feature maps and used seperate buffers for each processing element. They have not considered the overall on-chip memory constraint to fit all the tiles and determining the feature map tile dimensions.
+
+ 
+
+
+
+

@@ -45,7 +45,12 @@ The NN accelerator reads the input data (or input activations), filter weights, 
 	\label{fig:nnDataFlow}
 \end{figure}
 
-The layer data is stored as multi-dimensional arrays in the off-chip memory, which is generally too large to fit in the local on-chip memory. In order to perform the computations, the large layer data is partitioned into small tiles. These tiles are repeatedly fetched from the off-chip memory to compute the final output sum. To observe the impact of tile dimensions on off-chip memory accesses for a given data reuse scheme, we measured the off-chip memory accesses for a popular CNN, VGG16, for different tile dimensions using the algorithm described in \secref{sec:Access3DData}.~\figref{fig:impactOfTileDims} shows the impact of tile dimensions on off-chip memory accesses for VGG16, for a given tile scheduling scheme.~\figref{fig:varyingTileDims} shows that using different tile dimensions results in different volumes of off-chip memory accesses. A good tile dimension can reduce off-chip memory accesses up to 90\% compared to a bad tile dimension, as shown in \figref{fig:maxNMinLayerAccess} computed for different layers of VGG16. The tile dimensions and the order in which these tiles are processed (scheduling of tiles) significantly impact the volume of data reuse and, thus, the overall energy consumption and throughput of DNN accelerators.
+The layer data is stored as multi-dimensional arrays in the off-chip memory, which is generally too large to fit in the local on-chip memory. In order to perform the computations, the large layer data is partitioned into small tiles. These tiles are repeatedly fetched from the off-chip memory to compute the final output sum. 
+
+To observe the impact of tile dimensions on off-chip memory accesses for a given data reuse scheme, we measured the off-chip memory accesses for a popular CNN, VGG16, for different tile dimensions using the algorithm described in \secref{sec:Access3DData}. \figref{fig:impactOfTileDims} illustrates the impact of tile dimensions on off-chip memory accesses for VGG16. Meanwhile, \figref{fig:varyingTileDims} provides a closer look at the significant variations in off-chip memory accesses within a single layer when different tile dimensions are chosen. On the x-axis, we represent a subset of the valid tile search space for the layer, while the y-axis indicates the corresponding off-chip memory access for the selected tile dimensions.
+
+This visualization demonstrates that the choice of tile dimensions plays a crucial role in determining off-chip memory accesses. A well-selected tile dimension can result in a substantial reduction, up to 90\%, in off-chip memory accesses compared to a poorly chosen tile dimension. This observation is further supported by \figref{fig:maxNMinLayerAccess}, which showcases the computed values for different layers of VGG16. The depicted variations emphasize the importance of optimizing tile dimensions to enhance overall system efficiency and minimize off-chip memory access overhead.
+
 \begin{figure}[!h]
 	\centering
 	\captionsetup{font=sf}
@@ -55,7 +60,7 @@ The layer data is stored as multi-dimensional arrays in the off-chip memory, whi
 	\subfloat[]{\includegraphics[width=0.4\textwidth]{impactOfTileDims.pdf}
 		\label{fig:maxNMinLayerAccess}}
 	\hfil	
-	\caption{Off-chip memory accesses for 64KB on-chip memory (a) off-chip memory accesses using different tile dimensions for a single layer. (b) Impact of good and bad tile dimensions on different Conv. layers of VGG16.}
+	\caption{Impact of tile dimensions on off-chip memory accesses (a) off-chip memory access variation in a convolution layer when using tiles of different dimensions, x-axis represents the subset of valid tiles of the layer (b) Impact of good and bad tile dimensions on different convolution layers of VGG16.}
 	\label{fig:impactOfTileDims}
 \end{figure}
 
@@ -177,7 +182,8 @@ Consider a 3D data of shape $\langle W,H,N\rangle$, partitioned into tiles of di
 		0\leq &z<\ceil[\big]{\frac{N}{T_n}}
 	\end{aligned}
 \end{align}
-$\numOverlap$ is the number of elements or rows overlapping between adjacent tiles.
+%$\numOverlap$ is the number of elements or rows overlapping between adjacent tiles. For CNNs, $\numOverlap$ is computed as $\numOverlap=(K-S)$, where $K$ is the filter dimensions and $S$ is the filter stride. Inter-tile overlap reuse, arising from the overlap between adjacent tiles, introduces dependencies in the order of accessing $ifm$ tiles. In our implementation, each tile is fetched separately, and we have not accounted for previously fetched data. This simplification is deliberate to avoid implementation complexity, with the assumption that any negligible impact on overall memory access can be safely disregarded.
+$\numOverlap$ represents the number of elements or rows that overlap between adjacent tiles. In the context of Convolutional Neural Networks (CNNs) when accessing input feature maps ($ifm$) with a stride ($S$) less than the filter size ($K$), there occurs an overlap between adjacent tiles. The computation of $\numOverlap$ is given by $\numOverlap=(K-S)$, where $K$ denotes the filter dimensions and $S$ is the filter stride. This overlap introduces a reuse opportunity known as Inter-tile overlap reuse. In our implementation, each tile is fetched separately, and we have not accounted for previously fetched data. This simplification is deliberate to avoid implementation complexity, with the assumption that any negligible impact on overall memory access can be safely disregarded.
 
 \algref{Algorithm1} computes the number of bytes accessed from off-chip memory for the 3D data. Each data element is represented by $DW$ bytes. The algorithm takes the address of the data ($Addr_{data}$), tile dimensions, data shape, and $\numOverlap$ as input and iterates lines~\ref{alg:ForAllTilesLoopk}--\ref{alg:loopkEnd} for all the tiles. It computes indices of the first element of the tile in the 3D array of the data using the tile index $(x,y,z)$ and $\numOverlap$ in lines~\ref{alg:idxc}--\ref{alg:idxn}. Using the indices of the first element, it computes the address of the tile in line~\ref{alg:tileAddr} and the dimensions of the tile in line~\ref{alg:tileDim}. The algorithm computes the total number of bytes accessed from off-chip memory by accumulating the number of bytes accessed for each tile in line~\ref{alg:tileAcc}. 
 \input{bwAwareAlgo}
@@ -194,16 +200,25 @@ The function GetTileAcc in Lines~\ref{alg:FuncTileAccess}--\ref{alg:FuncTileAcce
 
 DNN accelerators access layer data (ifm, ofm, and weights) partitioned into tiles. The tile dimensions should be chosen carefully to minimize the transfer of extra bytes to reduce off-chip memory access. We have proposed a bus width aware approach (BWA) that factors in the architectural parameters to precisely compute the off-chip memory access of 3D tiles and the layer data.
 
-\figref{fig:measVsEst} shows the comparison between the off-chip memory accesses estimated by the analytical framework and measurements performed on Xilinx FPGA for different layers of varying shapes and sizes of a popular CNN, VGG16. The experimental results on popular CNNs, AlexNet, and VGG16, show that the difference between estimated and measured off-chip memory accesses is less than 4\%. The framework is also helpful in analyzing the layer-wise distribution and breakdown of memory accesses, as shown in \figref{fig:ifmOfmWtsDistribution}. The proposed framework is a valuable tool for quickly analyzing the memory accesses and data access energy for different tile dimensions and data reuse schemes to search for the optimal solution. 
+\section{Implementation and Results}
+We've implemented a tool that calculates off-chip memory access for 3D data using the BWA algorithm (~\algref{Algorithm1}). This tool, which considers tile dimensions, layer shape, and the count of overlapping elements as inputs, is adaptable for different bus widths and data bit widths. Executed on a desktop machine, the tool quickly analyzes off-chip memory accesses for various tile dimensions. It seamlessly integrates with our analytical framework, estimating off-chip memory accesses, latencies and data movement energies of different NN layers across.
+
+Validation of the off-chip memory access calculations of the tool was conducted by accessing the same shape of 3D data and using the same tile dimensions on a Xilinx FPGA. FPGA implementation was done using the Xilinx SDSoC framework, SDx v2018.3. The FPGA implementation utilized SDx pragmas for zero\_copy data movement and integrated the AXI Performance Monitor (APM) IP~\cite{APM} for real-time performance metrics, including bus latency and memory traffic. Executed on the ZedBoard platform at a 100MHz frequency, the off-chip memory (DRAM) was accessed using a 64-bit AXI bus. The FPGA implementation, taking 3D shape and tile dimensions as inputs, accessed 3D data from DRAM using loop tiling. Validation was performed by comparing the tool's calculated off-chip memory bytes with the APM-logged values for various 3D data shapes and tile dimensions.
+\subsection{Results}
+\figref{fig:measVsEst} illustrates the comparison between off-chip memory accesses computed by the analytical framework and measurements obtained on a Xilinx FPGA. For various layers of different shapes and sizes in the popular CNN, VGG16, reveal that the variation between off-chip memory accesses calculated by the analytical framework and the measured values on FPGA is consistently less than 4\%.  
+
+Within the Convolution layers, three types of data are involved: filter weights ($wts$), input feature maps ($ifm$), and output feature maps ($ofm$). Our framework proves instrumental in not only accurately computing the off-chip memory accesses but also in analyzing the layer-wise distribution and breakdown of memory accesses for different types of data, filter weights ($wts$), input feature maps ($ifm$), and output feature maps ($ofm$), as depicted in \figref{fig:ifmOfmWtsDistribution}. The proposed framework is a valuable tool for quickly analyzing the memory accesses and data access energy for different tile dimensions and data reuse schemes to search for the optimal solution. 
 \begin{figure}[!htb]
 	\centering
 	\captionsetup{font=sf}
-	\subfloat[]{\includegraphics[width=0.4\textwidth]{measuredVsEstimated.pdf}
+	\subfloat[]{\includegraphics[width=0.4\textwidth]{VGG16_MeasVsEstMemAccess.pdf}
 		\label{fig:measVsEst}}
 	\hfil
-	\subfloat[]{\includegraphics[width=0.4\textwidth]{memAccessDistribution.pdf}
+	\subfloat[]{\includegraphics[width=0.4\textwidth]{VGG16_ifm_ofm_wts_splitMemAccess.pdf}
 		\label{fig:ifmOfmWtsDistribution}}
 	\hfil   
-	\caption{Off-chip memory accesss of VGG16 layers (a) Comparison between the analytical framework and hardware measurements. (b) Breakdown by data type using the analytical framework.}
+	\caption{Off-chip memory accesss of VGG16 layers (a) Comparison between the off-chip memory accesses estimated by the analytical framework and measured on FPGA. (b) Breakdown of off-chip memory access by data type estimated by the analytical framework.}
 	\label{fig:nnLayerData}
 \end{figure}
+\section{Summary}
+The chapter investigates the critical role of off-chip memory access in neural network (NN) accelerators, highlighting its impact on energy efficiency. The chapter addresses challenges arising from limited off-chip memory bandwidth and the energy-intensive nature of these accesses in NN accelerators. It introduces a sophisticated analytical framework that combines NN layer models to estimate performance metrics, off-chip memory accesses, and energy consumption. The proposed Bus Width Aware algorithm offers a precise method for computing off-chip memory accesses in 3D data, considering tile dimensions, layer shapes, and bus widths. The analytical tool's accuracy is validated through FPGA measurements, demonstrating less than 4\% variation. Overall, the chapter emphasizes the significance of optimizing memory access efficiency for NN accelerators and contributes a robust framework for achieving this goal.

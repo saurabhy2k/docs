@@ -44,8 +44,8 @@ On one hand there are single-layer NNs that consist of just two layers - an inpu
 output layer, with only the output layer performing the computation. Self-Organizing
 Maps (SOMs) are examples of single-layer NNs and are used in dimensionality reduction
 and clustering applications. On the other hand, there are modern NN architectures that
-are very deep and involve many layers and millions of parameters. Multilayer NNs with
-more than three layers are referred to as deep neural networks (DNNs). These DNNs
+are very deep and involve many layers and millions of parameters. Multilayer NNs with three or
+more hidden layers are often considered as deep neural networks (DNNs). These DNNs
 are capable of learning complex functions from the data.
 
 \section{Phases of NN Applications: Development to Deployment}
@@ -61,7 +61,7 @@ NNs need not be programmed explicitly, and they learn from the raw data to provi
 \end{figure}
 After the development phase, NNs undergo a training phase where they learn from examples. These DNNs require large training data sets for learning and must go through multiple iterations to achieve the desired accuracy. Training of NNs involves updating weights and biases using large input samples. It is a repetitive process until the desired accuracy is achieved. Training a DNN may last from a few hours to several weeks. Hence training of DNNs is generally performed on high-performance systems, typically using GPUs. 
 
-After the training phase, trained models are used in applications for inferencing, where the deployment platforms may range from cloud to embedded devices. Inference phase computations also involve millions of computations and access large volumes of data. For example, a popular CNN, VGG16, performs 15.47 GMAC operations and accesses 138 million parameters for a single inference. If the NNs are deployed on the cloud, the throughput and energy demands can be met using high-performance systems like GPU. However,  deployment on edge devices is challenging due to limited energy and computing resources. Hence optimizing these models before inferencing on edge devices is a must. In this work, we focused on optimizing NN models before deployment on edge devices for inferencing. This phase is shown as \textbf{Preprocessing and Optimization} block in \figref{fig:workFlow}.
+After the training phase, trained models are used in applications for inferencing, where the deployment platforms may range from cloud to embedded devices. Inference phase computations also involve millions of computations and access large volumes of data. For example, a popular CNN, VGG16, performs 15.47 GMAC operations and accesses 138 million parameters for a single inference. If the NNs are deployed on the cloud, the throughput and energy demands can be met using high-performance systems like GPU. However,  deployment on edge devices is challenging due to limited energy and computing resources. Hence optimizing these models before inferencing on edge devices is a must. In this work, we focused on optimizing NN models before deployment on edge devices for inferencing. This phase is shown as \emph{Preprocessing and Optimization} block in \figref{fig:workFlow}.
 
 \section{Edge AI: Inferencing on Edge Devices}
 Edge devices are battery-operated with limited resources and a tight energy budget. A few years back, edge devices were primarily used to collect real-world data, and inferences were performed on the cloud. There is a growing trend of shifting the processing of these DNN applications from the cloud to edge devices near the sensors as it improves the user experience, eliminates network bandwidth issues, and improves privacy and security. 
