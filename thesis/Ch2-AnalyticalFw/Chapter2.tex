@@ -49,7 +49,7 @@ The layer data is stored as multi-dimensional arrays in the off-chip memory, whi
 
 To observe the impact of tile dimensions on off-chip memory accesses for a given data reuse scheme, we measured the off-chip memory accesses for a popular CNN, VGG16, for different tile dimensions using the algorithm described in \secref{sec:Access3DData}. \figref{fig:impactOfTileDims} illustrates the impact of tile dimensions on off-chip memory accesses for VGG16. Meanwhile, \figref{fig:varyingTileDims} provides a closer look at the significant variations in off-chip memory accesses within a single layer when tiles of different dimensions are chosen. On the x-axis, we represent a subset of the valid tile search space for the layer, while the y-axis indicates the corresponding off-chip memory access for the selected tile dimensions.
 
-This visualization demonstrates that the choice of tile dimensions plays a crucial role in determining off-chip memory accesses. A well-selected tile dimension can result in a substantial reduction, up to 90\%, in off-chip memory accesses compared to a poorly chosen tile dimension. This observation is further supported by \figref{fig:maxNMinLayerAccess}, which showcases the computed values for different layers of VGG16. The depicted variations emphasize the importance of optimizing tile dimensions to enhance overall system efficiency and minimize off-chip memory access overhead.
+This visualization demonstrates that the choice of tile dimensions plays a crucial role in determining off-chip memory accesses. A well-selected tile dimension can result in a substantial reduction, as much as 90\% in some cases, in off-chip memory accesses compared to a poorly chosen tile dimension. This observation is further supported by \figref{fig:maxNMinLayerAccess}, which showcases the computed values for different layers of VGG16. The depicted variations emphasize the importance of optimizing tile dimensions to enhance overall system efficiency and minimize off-chip memory access overhead.
 
 \begin{figure}[!h]
 	\centering
@@ -60,7 +60,7 @@ This visualization demonstrates that the choice of tile dimensions plays a cruci
 	\subfloat[]{\includegraphics[width=0.4\textwidth]{impactOfTileDims.pdf}
 		\label{fig:maxNMinLayerAccess}}
 	\hfil	
-	\caption{Impact of tile dimensions on off-chip memory accesses (a) off-chip memory access variations of a single convolution layer input data when accessing with tiles of different dimensions, x-axis represents a subset of valid tile space of the layer (b) Impact of good and bad tile dimensions on different convolution layers of VGG16.}
+	\caption{Impact of tile dimensions on off-chip memory accesses (a) off-chip memory access variations of a single convolution layer when accessing with tiles of different dimensions, x-axis represents a subset of valid tile space of the layer (b) Impact of good and bad tile dimensions on different convolution layers of VGG16.}
 	\label{fig:impactOfTileDims}
 \end{figure}
 
@@ -186,8 +186,8 @@ Consider a 3D data of shape $\langle W,H,N\rangle$, partitioned into tiles of di
 $\numOverlap$ represents the number of elements or rows that overlap between adjacent tiles. In the context of Convolutional Neural Networks (CNNs) when accessing input feature maps ($ifm$) with a stride ($S$) less than the filter size ($K$), there occurs an overlap between adjacent tiles. The computation of $\numOverlap$ is given by $\numOverlap=(K-S)$, where $K$ denotes the filter dimensions and $S$ is the filter stride. This overlap introduces a reuse opportunity known as Inter-tile overlap reuse. In our implementation, each tile is fetched separately, and we have not accounted for previously fetched data. This simplification is deliberate to avoid implementation complexity, with the assumption that any negligible impact on overall memory access can be safely disregarded.
 
 \algref{Algorithm1} computes the number of bytes accessed from off-chip memory for the 3D data. Each data element is represented by $DW$ bytes. The algorithm takes the address of the data ($Addr_{data}$), tile dimensions, data shape, and $\numOverlap$ as input and iterates lines~\ref{alg:ForAllTilesLoopk}--\ref{alg:loopkEnd} for all the tiles. It computes indices of the first element of the tile in the 3D array of the data using the tile index $(x,y,z)$ and $\numOverlap$ in lines~\ref{alg:idxc}--\ref{alg:idxn}. Using the indices of the first element, it computes the address of the tile in line~\ref{alg:tileAddr} and the dimensions of the tile in line~\ref{alg:tileDim}. The algorithm computes the total number of bytes accessed from off-chip memory by accumulating the number of bytes accessed for each tile in line~\ref{alg:tileAcc}. 
-\input{bwAwareAlgo}
-The address of the tile in line~\ref{alg:tileAddr} is computed by the function GetTileAddr using ~\eqref{eq:TileAddress} below
+
+The address of the tile in line~\ref{alg:tileAddr} is computed by the function GetTileAddr using ~\eqref{eq:TileAddress}
 \begin{align}\label{eq:TileAddress}
 	\begin{split}
 		%&Addr_{tile}=Addr_{data} + z\cdot T_{n}\cdot H \cdot W + y\cdot T_{r}\cdot W + x\cdot T_{c} \\
@@ -197,6 +197,7 @@ The address of the tile in line~\ref{alg:tileAddr} is computed by the function G
 If the data dimensions are not multiples of corresponding tile dimensions, the tiles at the border of the data (e.g., the right-most or bottom-most tiles) will have smaller dimensions. The function GetTileDim computes the dimensions of the tiles.
 
 The function GetTileAcc in Lines~\ref{alg:FuncTileAccess}--\ref{alg:FuncTileAccessEnd} computes the addresses and number of bytes ($contSz$) for each off-chip memory transaction. $contSz$ is the number of contiguous bytes to access in a transaction. Let $T_n$ be the number of frames in the tile. If the tile width ($T_c$) is the same as the data width ($W$) (line~\ref{alg:TileAccessIf2}), then all the data elements of $T_r$ rows of a frame are contiguous, and the complete tile can be accessed using $T_n$ number of addresses. If the condition in line~\ref{alg:TileAccessIf1} is true, then all elements of the tile are contiguous and can be accessed using a single transaction of $T_c\cdot T_r\cdot T_n\cdot DW$ bytes (line~\ref{alg:TileAccessSingleTxn}). In all other cases, the tile is accessed using row addresses computed in line~\ref{alg:TileRowAddr}. The function computes the number of bytes accessed from off-chip memory for a tile ($Acc_{tile}$) in lines~\ref{alg:TileAccessIf1End},~\ref{alg:TileAccess2}, and~\ref{alg:TileAccessFor2End} using~\eqref{eq:unalignedAccess}. 
+\input{bwAwareAlgo}
 
 DNN accelerators access layer data (ifm, ofm, and weights) partitioned into tiles. The tile dimensions should be chosen carefully to minimize the transfer of extra bytes to reduce off-chip memory access. We have proposed a bus width aware approach (BWA) that factors in the architectural parameters to precisely compute the off-chip memory access of 3D tiles and the layer data.
 
